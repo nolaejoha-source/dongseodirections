@@ -3,7 +3,7 @@ import { Capacitor } from '@capacitor/core'
 import { Geolocation } from '@capacitor/geolocation'
 import L from 'leaflet'
 import { MapContainer, Marker, Polygon, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
-import { ArrowDownUp, ArrowRight, Box, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, Info, Languages, LocateFixed, LockKeyhole, Map as MapIcon, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, TrendingUp, X } from 'lucide-react'
+import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, Info, Languages, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, TrendingUp, X } from 'lucide-react'
 import { getBuildingAppearanceSvgDataUri } from './buildingAppearance'
 import { CAMPUS_BOUNDARY, CAMPUS_BOUNDS, CAMPUS_CENTER, CAMPUS_MASK_POLYGON, SEEDED_PATH_EDGES, SEEDED_PATH_NODES } from './campusData'
 import Campus3DIsoMap from './Campus3DIsoMap'
@@ -1584,26 +1584,6 @@ export default function App() {
             </div>
 
             <div className="map-top-actions">
-              {/* 2D <-> 3D Toggle Switch Button */}
-              <div className="map-view-switcher" role="group" aria-label="2D / 3D">
-                <button
-                  type="button"
-                  className={mapViewMode === '2d' ? 'view-mode-btn mode-2d active' : 'view-mode-btn mode-2d'}
-                  onClick={() => setMapViewMode('2d')}
-                >
-                  <MapIcon size={15} />
-                  <span>{tx.btn2DMap}</span>
-                </button>
-                <button
-                  type="button"
-                  className={mapViewMode === '3d' ? 'view-mode-btn active' : 'view-mode-btn'}
-                  onClick={() => setMapViewMode('3d')}
-                >
-                  <Box size={15} />
-                  <span>{tx.btn3DMap}</span>
-                </button>
-              </div>
-
               <button className="map-3d-launch" onClick={launch2DFollowMode}>
                 <Navigation size={16} />
                 <span>{tx.followMyViewBtn}</span>
