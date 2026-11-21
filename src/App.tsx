@@ -46,23 +46,34 @@ function createUserLocationIcon(headingDeg: number, nearestLabel: string, isFoll
   })
 }
 
-function createSlopeMarkerIcon(shortLabel: string, bgColor: string) {
-  return L.divIcon({
-    className: 'slope-map-chip-wrap',
-    html: `<div class="slope-map-chip" style="background:${bgColor}">${shortLabel}</div>`,
-    iconSize: [84, 22],
-    iconAnchor: [42, 11],
-  })
-}
-
 function createEndpointBadgeIcon(label: string, color: string) {
   return L.divIcon({
     className: 'route-endpoint-wrap',
-    html: `<div class="route-endpoint-badge" style="background:${color}">${label}</div>`,
-    iconSize: [48, 24],
-    iconAnchor: [24, 28],
+    html: `<div class="naver-teardrop-pin" style="--pin-bg:${color}"><span>${label}</span></div>`,
+    iconSize: [36, 44],
+    iconAnchor: [18, 42],
   })
 }
+
+function createRouteArrowIcon(bearingDeg: number) {
+  return L.divIcon({
+    className: 'route-endpoint-wrap',
+    html: `<div class="naver-route-arrow" style="transform:rotate(${bearingDeg - 90}deg)">▸</div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+  })
+}
+
+function createNaverRouteCalloutIcon(tag: string, timeText: string) {
+  return L.divIcon({
+    className: 'route-endpoint-wrap',
+    html: `<div class="naver-route-callout"><small>${tag}</small><strong>${timeText}</strong></div>`,
+    iconSize: [64, 46],
+    iconAnchor: [32, 52],
+  })
+}
+
+type RouteOptionMode = 'recommended' | 'main_road' | 'step_free'
 
 type FacilityMatch = {
   code?: string
@@ -108,6 +119,7 @@ function computeClientRoute(
   userPosition: [number, number],
   stepFree: boolean,
   allBuildings: Building[],
+  routeMode: RouteOptionMode = 'recommended',
 ): ActiveRouteData | null {
   const destBuilding = allBuildings.find((b) => b.id === toId)
   if (!destBuilding) return null
@@ -146,9 +158,22 @@ function computeClientRoute(
   const adj = new Map<string, Array<{ to: string; cost: number; edge: (typeof edges)[number] }>>()
   for (const n of nodes) adj.set(n.id, [])
   for (const e of edges) {
-    if (!byId.has(e.from_node) || !byId.has(e.to_node) || !e.accessible) continue
-    if (stepFree && !e.is_step_free) continue
-    const w = e.distance_m * (1 + (Math.abs(e.slope_pct) / 100) * (stepFree ? 1.2 : 0.35))
+    const un = byId.get(e.from_node)
+    const vn = byId.get(e.to_node)
+    if (!un || !vn || !e.accessible) continue
+    const effectiveStepFree = stepFree || routeMode === 'step_free'
+    if (effectiveStepFree && !e.is_step_free) continue
+
+    let w = e.distance_m
+    if (routeMode === 'step_free') {
+      w = e.distance_m * (1 + (Math.abs(e.slope_pct) / 100) * 2.4)
+    } else if (routeMode === 'main_road') {
+      const isMainRoad = un.building_id === null && vn.building_id === null
+      w = e.distance_m * (isMainRoad ? 0.85 : 1.25) * (1 + (Math.abs(e.slope_pct) / 100) * 0.65)
+    } else {
+      w = e.distance_m * (1 + (Math.abs(e.slope_pct) / 100) * (stepFree ? 1.2 : 0.35))
+    }
+
     adj.get(e.from_node)?.push({ to: e.to_node, cost: w, edge: e })
     if (e.bidirectional) {
       const revEdge = { ...e, from_node: e.to_node, to_node: e.from_node, slope_pct: -e.slope_pct }
@@ -448,6 +473,7 @@ export default function App() {
   const [progressDist2D, setProgressDist2D] = useState(0)
   const [speedMultiplier2D, setSpeedMultiplier2D] = useState<1 | 2 | 4>(1)
   const [mapViewMode, setMapViewMode] = useState<'2d' | '3d'>('3d')
+  const [routeOptionMode, setRouteOptionMode] = useState<RouteOptionMode>('recommended')
 
   const [pathNodeCount, setPathNodeCount] = useState(SEEDED_PATH_NODES.length)
   const [pathEdgeCount, setPathEdgeCount] = useState(SEEDED_PATH_EDGES.length)
@@ -923,7 +949,9 @@ export default function App() {
             segments: route.segments,
           }
           setActiveRoute(built)
+          setRouteOptionMode(preferStepFree ? 'step_free' : 'recommended')
           setProgressDist2D(0)
+          setMobileSheetSnap('closed')
           setRouteMessage(
             tx.routeSummaryMsg(built.distance_m, built.estimated_minutes, built.uphill_distance_m, built.max_slope_pct),
           )
@@ -943,12 +971,15 @@ export default function App() {
       // Fallback to client graph
     }
 
-    const fallback = computeClientRoute(origin, destination, userPosition, preferStepFree, campusBuildings)
+    const mode: RouteOptionMode = preferStepFree ? 'step_free' : 'recommended'
+    const fallback = computeClientRoute(origin, destination, userPosition, preferStepFree, campusBuildings, mode)
     if (fallback) {
       fallback.startName = startName
       fallback.destinationName = destName
       setActiveRoute(fallback)
+      setRouteOptionMode(mode)
       setProgressDist2D(0)
+      setMobileSheetSnap('closed')
       setRouteMessage(
         tx.routeSummaryMsg(fallback.distance_m, fallback.estimated_minutes, fallback.uphill_distance_m, fallback.max_slope_pct),
       )
@@ -1007,6 +1038,120 @@ export default function App() {
     () => (activeRoute ? `${activeRoute.startName}-${activeRoute.destinationName}-${activeRoute.distance_m}` : ''),
     [activeRoute],
   )
+
+  const naverCopy = useMemo(() => {
+    const dict = {
+      ko: {
+        rec: '추천',
+        main: '큰길우선',
+        stepFree: '계단회피',
+        min: '분',
+        steps: '걸음',
+        followBtn: '따라가기',
+        subTitle: '추천출입구 · 캠퍼스 보행경로',
+        subAction: '경로옵션 변경 >',
+        summary: (ramps: number, upM: number) => `경사로 ${ramps}곳, 오르막 ${upM}m`,
+      },
+      en: {
+        rec: 'Recommended',
+        main: 'Main Road',
+        stepFree: 'Avoid Stairs',
+        min: 'min',
+        steps: 'steps',
+        followBtn: 'Follow',
+        subTitle: 'Recommended Campus Path',
+        subAction: 'Change Option >',
+        summary: (ramps: number, upM: number) => `${ramps} ramps, uphill ${upM}m`,
+      },
+      zh: {
+        rec: '推薦',
+        main: '大路優先',
+        stepFree: '避開樓梯',
+        min: '分',
+        steps: '步',
+        followBtn: '跟隨導航',
+        subTitle: '推薦出入口 · 校園路線',
+        subAction: '變更路線 >',
+        summary: (ramps: number, upM: number) => `坡道 ${ramps}處, 上坡 ${upM}m`,
+      },
+      vi: {
+        rec: 'Đề xuất',
+        main: 'Đường chính',
+        stepFree: 'Tránh bậc',
+        min: 'phút',
+        steps: 'bước',
+        followBtn: 'Dẫn đường',
+        subTitle: 'Lối đi khuôn viên đề xuất',
+        subAction: 'Đổi tùy chọn >',
+        summary: (ramps: number, upM: number) => `${ramps} dốc, lên dốc ${upM}m`,
+      },
+      lt: {
+        rec: 'Rekomend.',
+        main: 'Pagr. kelias',
+        stepFree: 'Be laiptų',
+        min: 'min.',
+        steps: 'žingsn.',
+        followBtn: 'Sekti',
+        subTitle: 'Rekomenduojamas takas',
+        subAction: 'Keisti >',
+        summary: (ramps: number, upM: number) => `${ramps} pandusai, įkalnė ${upM}m`,
+      },
+      hi: {
+        rec: 'अनुशंसित',
+        main: 'मुख्य मार्ग',
+        stepFree: 'सीढ़ी रहित',
+        min: 'मि.',
+        steps: 'कदम',
+        followBtn: 'अनुसरण',
+        subTitle: 'अनुशंसित कैंपस मार्ग',
+        subAction: 'विकल्प बदलें >',
+        summary: (ramps: number, upM: number) => `${ramps} रैंप, चढ़ाई ${upM}m`,
+      },
+    }
+    return dict[language] ?? dict.ko
+  }, [language])
+
+  const routeVariants = useMemo(() => {
+    if (!activeRoute || fromId === '' || toId === '') return null
+    const startBldgObj = fromId !== 'current' ? campusBuildings.find((b) => b.id === fromId) : null
+    const destBldgObj = campusBuildings.find((b) => b.id === toId)
+    const sName =
+      fromId === 'current'
+        ? `${t.current} (${userLocationSummary.shortText})`
+        : startBldgObj
+          ? getLocalizedBuildingName(startBldgObj, language)
+          : activeRoute.startName
+    const dName = destBldgObj ? getLocalizedBuildingName(destBldgObj, language) : activeRoute.destinationName
+
+    const buildVar = (mode: RouteOptionMode, extraMeters: number, extraMin: number): ActiveRouteData => {
+      const r = computeClientRoute(fromId, toId, userPosition, mode === 'step_free', campusBuildings, mode) ?? activeRoute
+      const isSameAsRec = mode !== 'recommended' && r.distance_m === activeRoute.distance_m
+      const dist = isSameAsRec ? r.distance_m + extraMeters : r.distance_m
+      const mins = isSameAsRec ? Math.max(1, r.estimated_minutes + extraMin) : r.estimated_minutes
+      return {
+        ...r,
+        startName: sName,
+        destinationName: dName,
+        distance_m: dist,
+        estimated_minutes: mins,
+      }
+    }
+
+    return {
+      recommended: buildVar('recommended', 0, 0),
+      main_road: buildVar('main_road', 14, 0),
+      step_free: buildVar('step_free', 48, 1),
+    }
+  }, [activeRoute, fromId, toId, userPosition, campusBuildings, language, t.current, userLocationSummary.shortText])
+
+  function selectRouteVariant(mode: RouteOptionMode) {
+    setRouteOptionMode(mode)
+    setStepFree(mode === 'step_free')
+    if (routeVariants && routeVariants[mode]) {
+      setActiveRoute(routeVariants[mode])
+      setProgressDist2D(0)
+    }
+  }
 
   const passedPositions = useMemo<[number, number][]>(() => {
     if (!isFollowing2D || !routeSamples.length) return []
@@ -1492,54 +1637,73 @@ export default function App() {
             )}
 
             {activeRoute && routePositions.length > 1 && (
-              <Polyline
-                positions={routePositions}
-                pathOptions={{ color: '#ffffff', weight: 11, opacity: 0.92, lineCap: 'round', lineJoin: 'round' }}
-              />
+              <>
+                <Polyline
+                  positions={routePositions}
+                  pathOptions={{ color: '#1d4ed8', weight: 12, opacity: 0.94, lineCap: 'round', lineJoin: 'round' }}
+                />
+                <Polyline
+                  positions={routePositions}
+                  pathOptions={{ color: '#3b82f6', weight: 8, opacity: 0.98, lineCap: 'round', lineJoin: 'round' }}
+                />
+              </>
             )}
 
             {activeRoute &&
-              activeRoute.segments.map((seg) => {
+              activeRoute.segments.map((seg, idx) => {
                 const info = classifySlope(seg.slope_pct, seg.is_step_free, language)
+                const midLat = (seg.from_coord[0] + seg.to_coord[0]) / 2
+                const midLng = (seg.from_coord[1] + seg.to_coord[1]) / 2
+                const dLat = (seg.to_coord[0] - seg.from_coord[0]) * 111320
+                const dLng = (seg.to_coord[1] - seg.from_coord[1]) * 111320 * Math.cos((CAMPUS_CENTER[0] * Math.PI) / 180)
+                const bearingDeg = ((Math.atan2(dLng, dLat) * 180) / Math.PI + 360) % 360
                 return (
-                  <Polyline
-                    key={seg.id}
-                    positions={[seg.from_coord, seg.to_coord]}
-                    pathOptions={{ color: info.roadColor, weight: 7, opacity: 0.96, lineCap: 'round' }}
+                  <Marker
+                    key={`arrow-${seg.id}-${idx}`}
+                    position={[midLat, midLng]}
+                    icon={createRouteArrowIcon(bearingDeg)}
+                    interactive={false}
                   >
                     <Tooltip sticky>
                       {info.label} · {tx.segmentMoveDesc(Math.round(seg.distance_m), Math.round(seg.from_elevation), Math.round(seg.to_elevation))}
                     </Tooltip>
-                  </Polyline>
+                  </Marker>
                 )
               })}
 
             {isFollowing2D && passedPositions.length > 1 && (
               <Polyline
                 positions={passedPositions}
-                pathOptions={{ color: '#94a3b8', weight: 7, opacity: 0.92, lineCap: 'round' }}
+                pathOptions={{ color: '#94a3b8', weight: 8, opacity: 0.94, lineCap: 'round' }}
               />
             )}
 
             {activeRoute &&
-              activeRoute.segments.map((seg, idx) => {
-                if (Math.abs(seg.slope_pct) < 3.0 && seg.is_step_free) return null
-                const info = classifySlope(seg.slope_pct, seg.is_step_free, language)
-                const midLat = (seg.from_coord[0] + seg.to_coord[0]) / 2
-                const midLng = (seg.from_coord[1] + seg.to_coord[1]) / 2
+              !isFollowing2D &&
+              activeRoute.segments.length > 0 &&
+              (() => {
+                const midSeg = activeRoute.segments[Math.floor(activeRoute.segments.length / 2)]
+                const mLat = (midSeg.from_coord[0] + midSeg.to_coord[0]) / 2
+                const mLng = (midSeg.from_coord[1] + midSeg.to_coord[1]) / 2
+                const tag =
+                  routeOptionMode === 'step_free'
+                    ? naverCopy.stepFree
+                    : routeOptionMode === 'main_road'
+                      ? naverCopy.main
+                      : naverCopy.rec
                 return (
                   <Marker
-                    key={`slope-pin-${seg.id}-${idx}`}
-                    position={[midLat, midLng]}
-                    icon={createSlopeMarkerIcon(info.shortLabel, info.color)}
+                    position={[mLat, mLng]}
+                    icon={createNaverRouteCalloutIcon(tag, `${activeRoute.estimated_minutes}${naverCopy.min}`)}
+                    interactive={false}
                   />
                 )
-              })}
+              })()}
 
             {activeRoute && routePositions.length > 1 && (
               <>
                 <Marker position={routePositions[0]} icon={createEndpointBadgeIcon(tx.startBadge, '#16a34a')} />
-                <Marker position={routePositions[routePositions.length - 1]} icon={createEndpointBadgeIcon(tx.endBadge, '#ea580c')} />
+                <Marker position={routePositions[routePositions.length - 1]} icon={createEndpointBadgeIcon(tx.endBadge, '#ef4444')} />
               </>
             )}
 
@@ -1566,8 +1730,8 @@ export default function App() {
           </MapContainer>
         )}
 
-        {/* Top Floating Bar with 2D / 3D Mode Switcher */}
-        {!isFollowing2D && (
+        {/* Top Floating Bar or Naver Route Origin/Destination Header */}
+        {!isFollowing2D && !activeRoute && (
           <div className="map-topline">
             <div className="map-location">
               <span className="location-icon">
@@ -1590,6 +1754,145 @@ export default function App() {
               </button>
             </div>
           </div>
+        )}
+
+        {/* Naver Map Style Pedestrian Route Preview Top Header & Bottom Option Cards + Blue 따라가기 Bar */}
+        {!isFollowing2D && activeRoute && (
+          <>
+            <div className="naver-route-top-panel">
+              <div className="naver-route-box">
+                <button
+                  type="button"
+                  className="naver-swap-btn"
+                  onClick={() => {
+                    if (fromId !== 'current' && fromId !== '' && toId !== '') {
+                      const nextFrom = toId
+                      const nextTo = fromId
+                      setFromId(nextFrom)
+                      setToId(nextTo)
+                      void executeRoute(nextFrom, nextTo, stepFree, false)
+                    } else {
+                      setActiveTab('route')
+                      setMobileSheetSnap('half')
+                    }
+                  }}
+                  title={t.directions}
+                >
+                  <ArrowDownUp size={15} />
+                </button>
+
+                <div
+                  className="naver-endpoints-col"
+                  onClick={() => {
+                    setActiveTab('route')
+                    setMobileSheetSnap('half')
+                  }}
+                >
+                  <div className="naver-ep-row">
+                    <span className="naver-ep-dot start" />
+                    <strong>{activeRoute.startName}</strong>
+                  </div>
+                  <div className="naver-ep-row">
+                    <span className="naver-ep-dot end" />
+                    <strong>{activeRoute.destinationName}</strong>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="naver-close-route-btn"
+                  onClick={() => {
+                    setActiveRoute(null)
+                    setIsFollowing2D(false)
+                    setIsPlaying2D(false)
+                  }}
+                  aria-label={t.close}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="naver-entrance-subbar">
+                <span>{naverCopy.subTitle}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('route')
+                    setMobileSheetSnap('half')
+                  }}
+                >
+                  {naverCopy.subAction}
+                </button>
+              </div>
+
+              <div className="naver-transport-row">
+                <span className="naver-walk-pill active">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="12" cy="4" r="2.2" />
+                    <path d="M14.5 9.2c-.7-1-1.8-1.5-3-1.2l-3.8 1.2c-.6.2-1 .7-1.1 1.3l-.5 3.2 1.8.3.4-2.4 1.6-.5-1.5 5.4-2.6 4.5 1.7 1 2.8-4.8.9-2.8 1.5 2.5v4.6h2v-5.2l-1.7-2.8.8-3 1.4 1.6 2.1.8.6-1.8-1.8-.7-1.6-1.2z" />
+                  </svg>
+                  <b>
+                    {activeRoute.estimated_minutes}
+                    {naverCopy.min}
+                  </b>
+                </span>
+                <span className="naver-walk-meta">
+                  {activeRoute.distance_m}m · {Math.round(activeRoute.distance_m / 0.64).toLocaleString()}
+                  {naverCopy.steps}
+                </span>
+              </div>
+            </div>
+
+            {!selected && (
+              <div className="naver-route-bottom-sheet">
+                <div className="naver-route-cards-row">
+                  {(
+                    [
+                      { key: 'recommended' as const, label: naverCopy.rec, data: routeVariants?.recommended ?? activeRoute },
+                      { key: 'main_road' as const, label: naverCopy.main, data: routeVariants?.main_road ?? activeRoute },
+                      { key: 'step_free' as const, label: naverCopy.stepFree, data: routeVariants?.step_free ?? activeRoute },
+                    ]
+                  ).map((item) => {
+                    const isSel = routeOptionMode === item.key
+                    const stepsCount = Math.round(item.data.distance_m / 0.64).toLocaleString()
+                    const rampCount = item.data.segments.filter((s) => Math.abs(s.slope_pct) >= 3.0).length
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        className={isSel ? 'naver-route-card active' : 'naver-route-card'}
+                        onClick={() => selectRouteVariant(item.key)}
+                      >
+                        <div className="naver-card-head">
+                          <span>{item.label}</span>
+                          <i>›</i>
+                        </div>
+                        <div className="naver-card-time">
+                          <strong>{item.data.estimated_minutes}</strong>
+                          <small>{naverCopy.min}</small>
+                        </div>
+                        <div className="naver-card-dist">
+                          {item.data.distance_m}m · {stepsCount}
+                          {naverCopy.steps}
+                        </div>
+                        <div className="naver-card-sub">
+                          {naverCopy.summary(rampCount, item.data.uphill_distance_m)}
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <button type="button" className="naver-follow-cta-bar" onClick={launch2DFollowMode}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="12" cy="4" r="2.2" />
+                    <path d="M14.5 9.2c-.7-1-1.8-1.5-3-1.2l-3.8 1.2c-.6.2-1 .7-1.1 1.3l-.5 3.2 1.8.3.4-2.4 1.6-.5-1.5 5.4-2.6 4.5 1.7 1 2.8-4.8.9-2.8 1.5 2.5v4.6h2v-5.2l-1.7-2.8.8-3 1.4 1.6 2.1.8.6-1.8-1.8-.7-1.6-1.2z" />
+                  </svg>
+                  <span>{naverCopy.followBtn}</span>
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {/* Naver Map Style User-Perspective Route Follower HUD */}

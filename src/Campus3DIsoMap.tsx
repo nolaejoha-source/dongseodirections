@@ -354,9 +354,42 @@ export default function Campus3DIsoMap({
         }
       }
 
-      // 1. Slope Chips along active route
+      // 1. Naver Style Directional White Arrows, Slope Chips, Start/End Teardrop Pins & Route Time Callout
       if (st.activeRoute && st.activeRoute.segments.length > 0) {
-        for (const seg of st.activeRoute.segments) {
+        const segs = st.activeRoute.segments
+
+        // Draw directional white chevron arrows along the blue 3D route tube
+        for (const seg of segs) {
+          const pA = projectToScreen(toThreeVec3(seg.from_coord[0], seg.from_coord[1], 2.2))
+          const pB = projectToScreen(toThreeVec3(seg.to_coord[0], seg.to_coord[1], 2.2))
+          if (pA.z > -1 && pA.z < 1 && pB.z > -1 && pB.z < 1) {
+            const dx = pB.sx - pA.sx
+            const dy = pB.sy - pA.sy
+            const screenLen = Math.hypot(dx, dy)
+            if (screenLen >= 22) {
+              const angle = Math.atan2(dy, dx)
+              const count = Math.min(5, Math.max(1, Math.floor(screenLen / 34)))
+              for (let k = 1; k <= count; k++) {
+                const t = k / (count + 1)
+                const ax = pA.sx + dx * t
+                const ay = pA.sy + dy * t
+                ctx.save()
+                ctx.translate(ax, ay)
+                ctx.rotate(angle)
+                ctx.beginPath()
+                ctx.moveTo(-4, -3.5)
+                ctx.lineTo(3.5, 0)
+                ctx.lineTo(-4, 3.5)
+                ctx.strokeStyle = '#ffffff'
+                ctx.lineWidth = 2.2
+                ctx.lineCap = 'round'
+                ctx.lineJoin = 'round'
+                ctx.stroke()
+                ctx.restore()
+              }
+            }
+          }
+
           if (Math.abs(seg.slope_pct) >= 3.0 || !seg.is_step_free) {
             const midLat = (seg.from_coord[0] + seg.to_coord[0]) * 0.5
             const midLng = (seg.from_coord[1] + seg.to_coord[1]) * 0.5
@@ -380,6 +413,92 @@ export default function Campus3DIsoMap({
             }
           }
         }
+
+        // Draw Naver Speech-Bubble Time Callout on Route Midpoint (when previewing route)
+        if (!st.isFollowing) {
+          const midSeg = segs[Math.floor(segs.length / 2)]
+          const mLat = (midSeg.from_coord[0] + midSeg.to_coord[0]) * 0.5
+          const mLng = (midSeg.from_coord[1] + midSeg.to_coord[1]) * 0.5
+          const mSp = projectToScreen(toThreeVec3(mLat, mLng, 9.5))
+          if (mSp.z > -1 && mSp.z < 1) {
+            const tagTitle =
+              st.language === 'ko'
+                ? '추천'
+                : st.language === 'en'
+                  ? 'Best'
+                  : st.language === 'zh'
+                    ? '推薦'
+                    : st.language === 'vi'
+                      ? 'Đề xuất'
+                      : st.language === 'lt'
+                        ? 'Rekom.'
+                        : 'अनुशंसित'
+            const minUnit =
+              st.language === 'ko'
+                ? '분'
+                : st.language === 'en'
+                  ? 'm'
+                  : st.language === 'zh'
+                    ? '分'
+                    : st.language === 'vi'
+                      ? 'p'
+                      : 'm'
+            const timeTxt = `${st.activeRoute.estimated_minutes}${minUnit}`
+            const bw = 54
+            const bh = 38
+            const bx = mSp.sx - bw / 2
+            const by = mSp.sy - bh - 8
+
+            ctx.fillStyle = '#93c5fd'
+            ctx.beginPath()
+            ctx.roundRect(bx, by, bw, bh, 8)
+            ctx.fill()
+            ctx.beginPath()
+            ctx.moveTo(mSp.sx - 6, by + bh)
+            ctx.lineTo(mSp.sx + 6, by + bh)
+            ctx.lineTo(mSp.sx, by + bh + 7)
+            ctx.closePath()
+            ctx.fill()
+
+            ctx.fillStyle = '#1e3a8a'
+            ctx.font = '800 9.5px "Noto Sans KR", sans-serif'
+            ctx.textAlign = 'center'
+            ctx.fillText(tagTitle, mSp.sx, by + 13)
+            ctx.fillStyle = '#0f172a'
+            ctx.font = '900 13.5px Manrope, "Noto Sans KR", sans-serif'
+            ctx.fillText(timeTxt, mSp.sx, by + 30)
+          }
+        }
+
+        // Draw Naver Green "출발" and Red "도착" Teardrop Pins
+        const drawTeardropPin = (coord: [number, number], label: string, fill: string) => {
+          const sp = projectToScreen(toThreeVec3(coord[0], coord[1], 3.0))
+          if (sp.z <= -1 || sp.z >= 1) return
+          const r = 14
+          const cy = sp.sy - 20
+          ctx.save()
+          ctx.beginPath()
+          ctx.arc(sp.sx, cy, r, Math.PI * 0.82, Math.PI * 0.18, false)
+          ctx.lineTo(sp.sx, sp.sy)
+          ctx.closePath()
+          ctx.fillStyle = fill
+          ctx.shadowColor = 'rgba(0,0,0,0.45)'
+          ctx.shadowBlur = 8
+          ctx.fill()
+          ctx.shadowBlur = 0
+          ctx.strokeStyle = '#ffffff'
+          ctx.lineWidth = 2
+          ctx.stroke()
+
+          ctx.fillStyle = '#ffffff'
+          ctx.font = '900 9.5px "Noto Sans KR", sans-serif'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(label, sp.sx, cy)
+          ctx.restore()
+        }
+        drawTeardropPin(segs[0].from_coord, st.tx.startBadge, '#16a34a')
+        drawTeardropPin(segs[segs.length - 1].to_coord, st.tx.endBadge, '#ef4444')
       }
 
       // 2. Building Number Badges (1..31) & Names synced to Blender 3D Mesh rooftops
@@ -618,14 +737,13 @@ export default function Campus3DIsoMap({
       mid.y = toThreeVec3(midLat, midLng, 1.75).y
 
       const curve = new THREE.CatmullRomCurve3([p1, mid, p2])
-      const info = classifySlope(seg.slope_pct, seg.is_step_free, language)
 
-      const tubeGeom = new THREE.TubeGeometry(curve, 12, 1.45, 8, false)
+      const tubeGeom = new THREE.TubeGeometry(curve, 12, 1.55, 8, false)
       const tubeMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(info.roadColor),
-        emissive: new THREE.Color(info.roadColor),
-        emissiveIntensity: 0.35,
-        roughness: 0.3,
+        color: new THREE.Color('#2563eb'),
+        emissive: new THREE.Color('#1d4ed8'),
+        emissiveIntensity: 0.45,
+        roughness: 0.25,
       })
       const mesh = new THREE.Mesh(tubeGeom, tubeMat)
       group.add(mesh)
