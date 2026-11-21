@@ -1,0 +1,2762 @@
+[
+  {
+    "id": "edge-1",
+    "from_node": "osm-1762118438",
+    "to_node": "osm-1762118482",
+    "distance_m": 47.7,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-2",
+    "from_node": "osm-1762118527",
+    "to_node": "osm-4642036745",
+    "distance_m": 45.1,
+    "slope_pct": -26.6,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-3",
+    "from_node": "osm-1762118301",
+    "to_node": "osm-4642036701",
+    "distance_m": 23.5,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-4",
+    "from_node": "osm-4642036701",
+    "to_node": "osm-1762118163",
+    "distance_m": 6.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-5",
+    "from_node": "osm-1762118163",
+    "to_node": "osm-1762118518",
+    "distance_m": 24.2,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-6",
+    "from_node": "osm-1762118518",
+    "to_node": "osm-1762118178",
+    "distance_m": 92.1,
+    "slope_pct": 5.4,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-7",
+    "from_node": "osm-1762118178",
+    "to_node": "osm-1762118482",
+    "distance_m": 48.8,
+    "slope_pct": 8.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-8",
+    "from_node": "osm-1762118482",
+    "to_node": "osm-4642032058",
+    "distance_m": 110.2,
+    "slope_pct": 4.5,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-9",
+    "from_node": "osm-4642032058",
+    "to_node": "osm-4632371524",
+    "distance_m": 59.0,
+    "slope_pct": 1.7,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-10",
+    "from_node": "osm-436806147",
+    "to_node": "osm-1762118283",
+    "distance_m": 55.0,
+    "slope_pct": -1.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-11",
+    "from_node": "osm-1762118283",
+    "to_node": "osm-4710085538",
+    "distance_m": 33.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-12",
+    "from_node": "osm-4710085538",
+    "to_node": "osm-4710085537",
+    "distance_m": 15.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-13",
+    "from_node": "osm-4710085537",
+    "to_node": "osm-4710085531",
+    "distance_m": 29.5,
+    "slope_pct": -16.9,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-14",
+    "from_node": "osm-4710085531",
+    "to_node": "osm-1762118343",
+    "distance_m": 38.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-15",
+    "from_node": "osm-1762118343",
+    "to_node": "osm-4710085532",
+    "distance_m": 67.9,
+    "slope_pct": 16.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-16",
+    "from_node": "osm-4710085532",
+    "to_node": "osm-7247047825",
+    "distance_m": 28.9,
+    "slope_pct": -20.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-17",
+    "from_node": "osm-7247047825",
+    "to_node": "osm-1762118434",
+    "distance_m": 31.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-18",
+    "from_node": "osm-1762118434",
+    "to_node": "osm-4632371512",
+    "distance_m": 27.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-19",
+    "from_node": "osm-4632371512",
+    "to_node": "osm-1762118371",
+    "distance_m": 99.2,
+    "slope_pct": -27.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-20",
+    "from_node": "osm-4632371513",
+    "to_node": "osm-4632371514",
+    "distance_m": 36.1,
+    "slope_pct": 24.9,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-21",
+    "from_node": "osm-4632371514",
+    "to_node": "osm-4642036719",
+    "distance_m": 27.9,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-22",
+    "from_node": "osm-4642036719",
+    "to_node": "osm-4632371515",
+    "distance_m": 28.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-23",
+    "from_node": "osm-4632371515",
+    "to_node": "osm-4632371516",
+    "distance_m": 105.0,
+    "slope_pct": 6.7,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-24",
+    "from_node": "osm-4632371516",
+    "to_node": "osm-4632371517",
+    "distance_m": 29.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-25",
+    "from_node": "osm-4632371517",
+    "to_node": "osm-4642036717",
+    "distance_m": 94.1,
+    "slope_pct": 18.1,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-26",
+    "from_node": "osm-4642036717",
+    "to_node": "osm-4632371518",
+    "distance_m": 11.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-27",
+    "from_node": "osm-4632371517",
+    "to_node": "osm-4632371519",
+    "distance_m": 72.3,
+    "slope_pct": 2.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-28",
+    "from_node": "osm-4632371518",
+    "to_node": "osm-4632371520",
+    "distance_m": 17.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-29",
+    "from_node": "osm-4632371520",
+    "to_node": "osm-4632371521",
+    "distance_m": 36.8,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-30",
+    "from_node": "osm-4632371521",
+    "to_node": "osm-7351322764",
+    "distance_m": 2.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-31",
+    "from_node": "osm-7351322764",
+    "to_node": "osm-4632371524",
+    "distance_m": 76.7,
+    "slope_pct": 1.3,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-32",
+    "from_node": "osm-4632371516",
+    "to_node": "osm-4710085536",
+    "distance_m": 31.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-33",
+    "from_node": "osm-4710085536",
+    "to_node": "osm-4632371526",
+    "distance_m": 23.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-34",
+    "from_node": "osm-4632371526",
+    "to_node": "osm-4710085538",
+    "distance_m": 14.8,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-35",
+    "from_node": "osm-4710085536",
+    "to_node": "osm-4632371528",
+    "distance_m": 62.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-36",
+    "from_node": "osm-4642032041",
+    "to_node": "osm-4642032042",
+    "distance_m": 18.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-37",
+    "from_node": "osm-4642032042",
+    "to_node": "osm-4642032043",
+    "distance_m": 4.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-38",
+    "from_node": "osm-4642032043",
+    "to_node": "osm-4642032044",
+    "distance_m": 59.2,
+    "slope_pct": 1.7,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-39",
+    "from_node": "osm-4642032044",
+    "to_node": "osm-4642032045",
+    "distance_m": 13.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-40",
+    "from_node": "osm-4642032045",
+    "to_node": "osm-4642032046",
+    "distance_m": 21.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-41",
+    "from_node": "osm-4642032046",
+    "to_node": "osm-4642032047",
+    "distance_m": 13.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-42",
+    "from_node": "osm-4642032047",
+    "to_node": "osm-11285287769",
+    "distance_m": 6.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-43",
+    "from_node": "osm-11285287769",
+    "to_node": "osm-4642032048",
+    "distance_m": 6.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-44",
+    "from_node": "osm-4642032048",
+    "to_node": "osm-4642032049",
+    "distance_m": 10.4,
+    "slope_pct": -28.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-45",
+    "from_node": "osm-4642032049",
+    "to_node": "osm-4642032050",
+    "distance_m": 13.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-46",
+    "from_node": "osm-4642032050",
+    "to_node": "osm-4642032051",
+    "distance_m": 21.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-47",
+    "from_node": "osm-4642032051",
+    "to_node": "osm-4642032052",
+    "distance_m": 5.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-48",
+    "from_node": "osm-4642032052",
+    "to_node": "osm-4642032053",
+    "distance_m": 99.1,
+    "slope_pct": -1.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-49",
+    "from_node": "osm-4642032053",
+    "to_node": "osm-4642032054",
+    "distance_m": 10.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-50",
+    "from_node": "osm-4642032054",
+    "to_node": "osm-4642032055",
+    "distance_m": 15.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-51",
+    "from_node": "osm-4642032055",
+    "to_node": "osm-4642032056",
+    "distance_m": 17.3,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-52",
+    "from_node": "osm-4642032056",
+    "to_node": "osm-4642032057",
+    "distance_m": 19.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-53",
+    "from_node": "osm-4642032057",
+    "to_node": "osm-4642032058",
+    "distance_m": 21.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-54",
+    "from_node": "osm-4642032051",
+    "to_node": "osm-11285287781",
+    "distance_m": 3.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-55",
+    "from_node": "osm-11285287781",
+    "to_node": "osm-4642032059",
+    "distance_m": 8.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-56",
+    "from_node": "osm-4642032059",
+    "to_node": "osm-4642032060",
+    "distance_m": 23.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-57",
+    "from_node": "osm-1762118301",
+    "to_node": "osm-4642032085",
+    "distance_m": 10.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-58",
+    "from_node": "osm-4642032085",
+    "to_node": "osm-4642032061",
+    "distance_m": 22.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-59",
+    "from_node": "osm-4642032061",
+    "to_node": "osm-4642032062",
+    "distance_m": 20.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-60",
+    "from_node": "osm-4642032062",
+    "to_node": "osm-4642032063",
+    "distance_m": 69.2,
+    "slope_pct": -20.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-61",
+    "from_node": "osm-4642032064",
+    "to_node": "osm-4642032069",
+    "distance_m": 10.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-62",
+    "from_node": "osm-4642032069",
+    "to_node": "osm-4642032065",
+    "distance_m": 17.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-63",
+    "from_node": "osm-4642032065",
+    "to_node": "osm-4642032066",
+    "distance_m": 13.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-64",
+    "from_node": "osm-4642032066",
+    "to_node": "osm-4642032067",
+    "distance_m": 8.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-65",
+    "from_node": "osm-4642032067",
+    "to_node": "osm-4642032068",
+    "distance_m": 5.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-66",
+    "from_node": "osm-4642032069",
+    "to_node": "osm-4642032070",
+    "distance_m": 11.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-67",
+    "from_node": "osm-4642032070",
+    "to_node": "osm-4642032071",
+    "distance_m": 54.3,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-68",
+    "from_node": "osm-4642032071",
+    "to_node": "osm-4642032072",
+    "distance_m": 13.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-69",
+    "from_node": "osm-4642032072",
+    "to_node": "osm-4642032073",
+    "distance_m": 17.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-70",
+    "from_node": "osm-4642032073",
+    "to_node": "osm-4642032074",
+    "distance_m": 25.6,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-71",
+    "from_node": "osm-4642032074",
+    "to_node": "osm-4642032075",
+    "distance_m": 22.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-72",
+    "from_node": "osm-4642032075",
+    "to_node": "osm-4642032076",
+    "distance_m": 5.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-73",
+    "from_node": "osm-4642032071",
+    "to_node": "osm-4642032077",
+    "distance_m": 14.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-74",
+    "from_node": "osm-4642032077",
+    "to_node": "osm-4642032078",
+    "distance_m": 44.5,
+    "slope_pct": 31.5,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-75",
+    "from_node": "osm-4642032078",
+    "to_node": "osm-4642032079",
+    "distance_m": 7.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-76",
+    "from_node": "osm-4642032079",
+    "to_node": "osm-4642032080",
+    "distance_m": 12.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-77",
+    "from_node": "osm-4642032080",
+    "to_node": "osm-4642032081",
+    "distance_m": 12.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-78",
+    "from_node": "osm-4642032081",
+    "to_node": "osm-4642032082",
+    "distance_m": 29.0,
+    "slope_pct": 17.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-79",
+    "from_node": "osm-4642032082",
+    "to_node": "osm-4642032083",
+    "distance_m": 21.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-80",
+    "from_node": "osm-4642032083",
+    "to_node": "osm-4642032084",
+    "distance_m": 12.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-81",
+    "from_node": "osm-4642032084",
+    "to_node": "osm-1762118438",
+    "distance_m": 25.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-82",
+    "from_node": "osm-4642032085",
+    "to_node": "osm-4642032086",
+    "distance_m": 8.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-83",
+    "from_node": "osm-4642032086",
+    "to_node": "osm-4642032087",
+    "distance_m": 32.7,
+    "slope_pct": -30.6,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-84",
+    "from_node": "osm-4642032087",
+    "to_node": "osm-4642032088",
+    "distance_m": 26.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-85",
+    "from_node": "osm-4642032088",
+    "to_node": "osm-4642036689",
+    "distance_m": 5.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-86",
+    "from_node": "osm-4642036689",
+    "to_node": "osm-4642036690",
+    "distance_m": 3.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-87",
+    "from_node": "osm-4642036690",
+    "to_node": "osm-4642036691",
+    "distance_m": 69.7,
+    "slope_pct": 7.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-88",
+    "from_node": "osm-4642036691",
+    "to_node": "osm-4642036692",
+    "distance_m": 10.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-89",
+    "from_node": "osm-4642036692",
+    "to_node": "osm-4642036693",
+    "distance_m": 14.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-90",
+    "from_node": "osm-4642036694",
+    "to_node": "osm-4642036695",
+    "distance_m": 36.3,
+    "slope_pct": 5.5,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-91",
+    "from_node": "osm-4642036695",
+    "to_node": "osm-4642036696",
+    "distance_m": 32.1,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-92",
+    "from_node": "osm-4642036696",
+    "to_node": "osm-4642036697",
+    "distance_m": 52.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-93",
+    "from_node": "osm-4642036697",
+    "to_node": "osm-4642036698",
+    "distance_m": 11.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-94",
+    "from_node": "osm-4642036698",
+    "to_node": "osm-4642036699",
+    "distance_m": 30.1,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-95",
+    "from_node": "osm-4642036699",
+    "to_node": "osm-4642032076",
+    "distance_m": 14.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-96",
+    "from_node": "osm-4642032076",
+    "to_node": "osm-4642036700",
+    "distance_m": 99.0,
+    "slope_pct": -19.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-97",
+    "from_node": "osm-4642036700",
+    "to_node": "osm-1762118178",
+    "distance_m": 12.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-98",
+    "from_node": "osm-4642036701",
+    "to_node": "osm-4642036699",
+    "distance_m": 8.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-99",
+    "from_node": "osm-4642036693",
+    "to_node": "osm-4642036702",
+    "distance_m": 36.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-100",
+    "from_node": "osm-4642036702",
+    "to_node": "osm-4642036703",
+    "distance_m": 8.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-101",
+    "from_node": "osm-4642036703",
+    "to_node": "osm-4642036704",
+    "distance_m": 18.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-102",
+    "from_node": "osm-4642036704",
+    "to_node": "osm-4642036705",
+    "distance_m": 13.6,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-103",
+    "from_node": "osm-4642036705",
+    "to_node": "osm-4642036706",
+    "distance_m": 8.8,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-104",
+    "from_node": "osm-4642036706",
+    "to_node": "osm-4642036707",
+    "distance_m": 31.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-105",
+    "from_node": "osm-4642036693",
+    "to_node": "osm-4642036708",
+    "distance_m": 7.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-106",
+    "from_node": "osm-4642036708",
+    "to_node": "osm-4642036709",
+    "distance_m": 28.5,
+    "slope_pct": 14.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-107",
+    "from_node": "osm-4642036709",
+    "to_node": "osm-4642036710",
+    "distance_m": 22.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-108",
+    "from_node": "osm-4642036710",
+    "to_node": "osm-4642036711",
+    "distance_m": 12.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-109",
+    "from_node": "osm-4642036711",
+    "to_node": "osm-4642036712",
+    "distance_m": 16.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-110",
+    "from_node": "osm-4642036712",
+    "to_node": "osm-4642036713",
+    "distance_m": 24.5,
+    "slope_pct": 20.4,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-111",
+    "from_node": "osm-4642036713",
+    "to_node": "osm-4642036714",
+    "distance_m": 16.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-112",
+    "from_node": "osm-4642036705",
+    "to_node": "osm-4642036715",
+    "distance_m": 44.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-113",
+    "from_node": "osm-4642036715",
+    "to_node": "osm-4642036716",
+    "distance_m": 30.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-114",
+    "from_node": "osm-4642036716",
+    "to_node": "osm-4642036717",
+    "distance_m": 41.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-115",
+    "from_node": "osm-4642036707",
+    "to_node": "osm-4642036730",
+    "distance_m": 53.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-116",
+    "from_node": "osm-4642036730",
+    "to_node": "osm-4642036718",
+    "distance_m": 3.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-117",
+    "from_node": "osm-4642036718",
+    "to_node": "osm-4642036719",
+    "distance_m": 13.9,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-118",
+    "from_node": "osm-4642036714",
+    "to_node": "osm-4632371521",
+    "distance_m": 13.1,
+    "slope_pct": 0.0,
+    "is_step_free": false,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-119",
+    "from_node": "osm-4632371524",
+    "to_node": "osm-1762118540",
+    "distance_m": 121.2,
+    "slope_pct": -6.6,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-120",
+    "from_node": "osm-4642036738",
+    "to_node": "osm-4642036731",
+    "distance_m": 48.9,
+    "slope_pct": 26.6,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-121",
+    "from_node": "osm-4642036731",
+    "to_node": "osm-4642036732",
+    "distance_m": 89.7,
+    "slope_pct": -10.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-122",
+    "from_node": "osm-4642036733",
+    "to_node": "osm-6953410685",
+    "distance_m": 23.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-123",
+    "from_node": "osm-6953410685",
+    "to_node": "osm-4642036734",
+    "distance_m": 12.6,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-124",
+    "from_node": "osm-4642036734",
+    "to_node": "osm-4642036735",
+    "distance_m": 84.2,
+    "slope_pct": 17.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-125",
+    "from_node": "osm-4642036735",
+    "to_node": "osm-4642036738",
+    "distance_m": 16.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-126",
+    "from_node": "osm-4642036736",
+    "to_node": "osm-4642036737",
+    "distance_m": 103.9,
+    "slope_pct": 26.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-127",
+    "from_node": "osm-4642036737",
+    "to_node": "osm-4642036738",
+    "distance_m": 53.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-128",
+    "from_node": "osm-4632371519",
+    "to_node": "osm-4642036739",
+    "distance_m": 27.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-129",
+    "from_node": "osm-4642036739",
+    "to_node": "osm-4710085510",
+    "distance_m": 42.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-130",
+    "from_node": "osm-4710085510",
+    "to_node": "osm-4642036740",
+    "distance_m": 16.2,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-131",
+    "from_node": "osm-4632371519",
+    "to_node": "osm-4642036741",
+    "distance_m": 28.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-132",
+    "from_node": "osm-4642036741",
+    "to_node": "osm-4642036742",
+    "distance_m": 51.7,
+    "slope_pct": -27.1,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-133",
+    "from_node": "osm-4642036742",
+    "to_node": "osm-4642036743",
+    "distance_m": 33.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-134",
+    "from_node": "osm-4642036762",
+    "to_node": "osm-4642036763",
+    "distance_m": 45.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-135",
+    "from_node": "osm-4642036763",
+    "to_node": "osm-4642036764",
+    "distance_m": 56.1,
+    "slope_pct": -16.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-136",
+    "from_node": "osm-4642036764",
+    "to_node": "osm-4642036765",
+    "distance_m": 55.9,
+    "slope_pct": -16.1,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-137",
+    "from_node": "osm-4642036765",
+    "to_node": "osm-4642036766",
+    "distance_m": 63.2,
+    "slope_pct": 34.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-138",
+    "from_node": "osm-4642036766",
+    "to_node": "osm-4642036767",
+    "distance_m": 13.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-139",
+    "from_node": "osm-4642036767",
+    "to_node": "osm-4642036776",
+    "distance_m": 6.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-140",
+    "from_node": "osm-4642036776",
+    "to_node": "osm-4642036768",
+    "distance_m": 29.7,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-141",
+    "from_node": "osm-4642036768",
+    "to_node": "osm-4642036777",
+    "distance_m": 14.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-142",
+    "from_node": "osm-4642036777",
+    "to_node": "osm-4642036769",
+    "distance_m": 10.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-143",
+    "from_node": "osm-4642036769",
+    "to_node": "osm-4642036780",
+    "distance_m": 9.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-144",
+    "from_node": "osm-4642036780",
+    "to_node": "osm-4642036770",
+    "distance_m": 14.3,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-145",
+    "from_node": "osm-4642036770",
+    "to_node": "osm-4642036771",
+    "distance_m": 8.9,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-146",
+    "from_node": "osm-4642036771",
+    "to_node": "osm-4642036772",
+    "distance_m": 14.3,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-147",
+    "from_node": "osm-4642036768",
+    "to_node": "osm-4642036773",
+    "distance_m": 12.1,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-148",
+    "from_node": "osm-4642036773",
+    "to_node": "osm-4642036774",
+    "distance_m": 16.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-149",
+    "from_node": "osm-4642036774",
+    "to_node": "osm-4642036775",
+    "distance_m": 4.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-150",
+    "from_node": "osm-4642036775",
+    "to_node": "osm-4642036776",
+    "distance_m": 16.2,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-151",
+    "from_node": "osm-4642036777",
+    "to_node": "osm-4642036778",
+    "distance_m": 26.0,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-152",
+    "from_node": "osm-4642036778",
+    "to_node": "osm-4642036779",
+    "distance_m": 19.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-153",
+    "from_node": "osm-4642036779",
+    "to_node": "osm-4642036777",
+    "distance_m": 17.8,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-154",
+    "from_node": "osm-4642036779",
+    "to_node": "osm-4642036780",
+    "distance_m": 8.2,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-155",
+    "from_node": "osm-4642036779",
+    "to_node": "osm-4642036781",
+    "distance_m": 15.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-156",
+    "from_node": "osm-4642036787",
+    "to_node": "osm-4642036788",
+    "distance_m": 74.2,
+    "slope_pct": 27.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-157",
+    "from_node": "osm-6953410685",
+    "to_node": "osm-6953410686",
+    "distance_m": 83.3,
+    "slope_pct": -4.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-158",
+    "from_node": "osm-6953410686",
+    "to_node": "osm-4642036735",
+    "distance_m": 7.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-159",
+    "from_node": "osm-6968170522",
+    "to_node": "osm-6968170523",
+    "distance_m": 17.2,
+    "slope_pct": 0.0,
+    "is_step_free": false,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-160",
+    "from_node": "osm-6968170524",
+    "to_node": "osm-6968170525",
+    "distance_m": 13.2,
+    "slope_pct": 0.0,
+    "is_step_free": false,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-161",
+    "from_node": "osm-6968170563",
+    "to_node": "osm-6968170564",
+    "distance_m": 11.3,
+    "slope_pct": 0.0,
+    "is_step_free": false,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-162",
+    "from_node": "osm-6968170565",
+    "to_node": "osm-6968170566",
+    "distance_m": 10.6,
+    "slope_pct": 0.0,
+    "is_step_free": false,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-163",
+    "from_node": "osm-6974524313",
+    "to_node": "osm-7351322764",
+    "distance_m": 4.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-164",
+    "from_node": "osm-7351322764",
+    "to_node": "osm-6974524314",
+    "distance_m": 5.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-165",
+    "from_node": "osm-4632371519",
+    "to_node": "osm-436806147",
+    "distance_m": 44.3,
+    "slope_pct": -31.6,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-166",
+    "from_node": "osm-4632371512",
+    "to_node": "osm-4710085535",
+    "distance_m": 18.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-167",
+    "from_node": "osm-4710085535",
+    "to_node": "osm-4642036720",
+    "distance_m": 21.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-168",
+    "from_node": "osm-4642036720",
+    "to_node": "osm-4710085534",
+    "distance_m": 49.6,
+    "slope_pct": 26.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-169",
+    "from_node": "osm-4710085534",
+    "to_node": "osm-4632371513",
+    "distance_m": 25.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-170",
+    "from_node": "osm-11285265578",
+    "to_node": "osm-11285265579",
+    "distance_m": 10.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-171",
+    "from_node": "osm-11285265579",
+    "to_node": "osm-11285265580",
+    "distance_m": 13.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-172",
+    "from_node": "osm-11285287779",
+    "to_node": "osm-11285287778",
+    "distance_m": 21.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-173",
+    "from_node": "osm-11285287778",
+    "to_node": "osm-11285287777",
+    "distance_m": 29.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-174",
+    "from_node": "osm-11285287777",
+    "to_node": "osm-11285287776",
+    "distance_m": 24.2,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-175",
+    "from_node": "osm-11285287776",
+    "to_node": "osm-11285287775",
+    "distance_m": 36.6,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-176",
+    "from_node": "osm-11285287775",
+    "to_node": "osm-11285287774",
+    "distance_m": 17.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-177",
+    "from_node": "osm-11285287774",
+    "to_node": "osm-11285287773",
+    "distance_m": 19.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-178",
+    "from_node": "osm-11285287773",
+    "to_node": "osm-11285287772",
+    "distance_m": 17.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-179",
+    "from_node": "osm-11285287772",
+    "to_node": "osm-11285287771",
+    "distance_m": 8.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-180",
+    "from_node": "osm-11285287771",
+    "to_node": "osm-11285287770",
+    "distance_m": 11.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-181",
+    "from_node": "osm-11285287770",
+    "to_node": "osm-11285287769",
+    "distance_m": 9.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-182",
+    "from_node": "osm-11285287807",
+    "to_node": "osm-11285287806",
+    "distance_m": 13.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-183",
+    "from_node": "osm-11285287806",
+    "to_node": "osm-11285287805",
+    "distance_m": 9.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-184",
+    "from_node": "osm-11285287805",
+    "to_node": "osm-11285287804",
+    "distance_m": 5.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-185",
+    "from_node": "osm-11285287804",
+    "to_node": "osm-11285287803",
+    "distance_m": 6.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-186",
+    "from_node": "osm-11285287803",
+    "to_node": "osm-11285287802",
+    "distance_m": 9.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-187",
+    "from_node": "osm-11285287802",
+    "to_node": "osm-11285287801",
+    "distance_m": 7.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-188",
+    "from_node": "osm-11285287801",
+    "to_node": "osm-11285287800",
+    "distance_m": 9.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-189",
+    "from_node": "osm-11285287800",
+    "to_node": "osm-11285287799",
+    "distance_m": 7.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-190",
+    "from_node": "osm-11285287799",
+    "to_node": "osm-11285287798",
+    "distance_m": 3.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-191",
+    "from_node": "osm-11285287798",
+    "to_node": "osm-11285287797",
+    "distance_m": 9.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-192",
+    "from_node": "osm-11285287797",
+    "to_node": "osm-11285287796",
+    "distance_m": 5.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-193",
+    "from_node": "osm-11285287796",
+    "to_node": "osm-11285287795",
+    "distance_m": 7.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-194",
+    "from_node": "osm-11285287795",
+    "to_node": "osm-11285287794",
+    "distance_m": 4.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-195",
+    "from_node": "osm-11285287794",
+    "to_node": "osm-11285287793",
+    "distance_m": 4.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-196",
+    "from_node": "osm-11285287793",
+    "to_node": "osm-11285287792",
+    "distance_m": 17.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-197",
+    "from_node": "osm-11285287792",
+    "to_node": "osm-11285287791",
+    "distance_m": 4.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-198",
+    "from_node": "osm-11285287791",
+    "to_node": "osm-11285287790",
+    "distance_m": 12.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-199",
+    "from_node": "osm-11285287790",
+    "to_node": "osm-11285287789",
+    "distance_m": 11.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-200",
+    "from_node": "osm-11285287789",
+    "to_node": "osm-11285287788",
+    "distance_m": 6.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-201",
+    "from_node": "osm-11285287788",
+    "to_node": "osm-11285287787",
+    "distance_m": 20.7,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-202",
+    "from_node": "osm-11285287787",
+    "to_node": "osm-11285287786",
+    "distance_m": 7.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-203",
+    "from_node": "osm-11285287786",
+    "to_node": "osm-11285287785",
+    "distance_m": 4.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-204",
+    "from_node": "osm-11285287785",
+    "to_node": "osm-11285287784",
+    "distance_m": 7.9,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-205",
+    "from_node": "osm-11285287784",
+    "to_node": "osm-11285287783",
+    "distance_m": 10.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-206",
+    "from_node": "osm-11285287783",
+    "to_node": "osm-11285287782",
+    "distance_m": 6.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-207",
+    "from_node": "osm-11285287782",
+    "to_node": "osm-11285287781",
+    "distance_m": 4.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-208",
+    "from_node": "osm-4642036740",
+    "to_node": "osm-4642036788",
+    "distance_m": 9.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-209",
+    "from_node": "osm-4632371513",
+    "to_node": "osm-4642036731",
+    "distance_m": 9.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-210",
+    "from_node": "osm-4642036730",
+    "to_node": "osm-4642036762",
+    "distance_m": 16.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-211",
+    "from_node": "osm-4642036771",
+    "to_node": "osm-6968170563",
+    "distance_m": 4.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-213",
+    "from_node": "osm-6968170564",
+    "to_node": "osm-6968170565",
+    "distance_m": 7.6,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-215",
+    "from_node": "osm-4642036787",
+    "to_node": "osm-6968170524",
+    "distance_m": 25.8,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-216",
+    "from_node": "osm-6968170524",
+    "to_node": "osm-6968170522",
+    "distance_m": 10.1,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-219",
+    "from_node": "osm-4642036743",
+    "to_node": "osm-4642036745",
+    "distance_m": 67.9,
+    "slope_pct": -1.5,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-220",
+    "from_node": "osm-4642032068",
+    "to_node": "osm-11285265580",
+    "distance_m": 81.1,
+    "slope_pct": 16.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-221",
+    "from_node": "bldg-1",
+    "to_node": "osm-4642036764",
+    "distance_m": 27.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-222",
+    "from_node": "bldg-1",
+    "to_node": "osm-4642036768",
+    "distance_m": 28.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-223",
+    "from_node": "bldg-2",
+    "to_node": "osm-4642036732",
+    "distance_m": 21.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-224",
+    "from_node": "bldg-2",
+    "to_node": "osm-4642036765",
+    "distance_m": 31.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-225",
+    "from_node": "bldg-3",
+    "to_node": "osm-4642036775",
+    "distance_m": 12.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-226",
+    "from_node": "bldg-3",
+    "to_node": "osm-4642036774",
+    "distance_m": 13.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-227",
+    "from_node": "bldg-4",
+    "to_node": "osm-4710085534",
+    "distance_m": 37.7,
+    "slope_pct": 34.5,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-228",
+    "from_node": "bldg-4",
+    "to_node": "osm-4632371514",
+    "distance_m": 39.5,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-229",
+    "from_node": "bldg-5",
+    "to_node": "osm-4642036707",
+    "distance_m": 30.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-230",
+    "from_node": "bldg-5",
+    "to_node": "osm-6968170566",
+    "distance_m": 34.7,
+    "slope_pct": -25.9,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-231",
+    "from_node": "bldg-6",
+    "to_node": "osm-4642036710",
+    "distance_m": 20.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-232",
+    "from_node": "bldg-6",
+    "to_node": "osm-4642036711",
+    "distance_m": 24.2,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-233",
+    "from_node": "bldg-7",
+    "to_node": "osm-4642032081",
+    "distance_m": 29.7,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-234",
+    "from_node": "bldg-7",
+    "to_node": "osm-4642032082",
+    "distance_m": 31.0,
+    "slope_pct": 16.1,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-235",
+    "from_node": "bldg-8",
+    "to_node": "osm-4642032078",
+    "distance_m": 21.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-236",
+    "from_node": "bldg-8",
+    "to_node": "osm-4642032074",
+    "distance_m": 28.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-237",
+    "from_node": "bldg-9",
+    "to_node": "osm-4642032044",
+    "distance_m": 31.0,
+    "slope_pct": 3.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-238",
+    "from_node": "bldg-9",
+    "to_node": "osm-4642032045",
+    "distance_m": 39.6,
+    "slope_pct": 2.5,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-239",
+    "from_node": "bldg-10",
+    "to_node": "osm-4642036730",
+    "distance_m": 53.1,
+    "slope_pct": -15.1,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-240",
+    "from_node": "bldg-10",
+    "to_node": "osm-4632371515",
+    "distance_m": 54.0,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-241",
+    "from_node": "bldg-11",
+    "to_node": "osm-4710085536",
+    "distance_m": 28.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-242",
+    "from_node": "bldg-11",
+    "to_node": "osm-4710085531",
+    "distance_m": 32.2,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-243",
+    "from_node": "bldg-12",
+    "to_node": "osm-4642036740",
+    "distance_m": 52.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-244",
+    "from_node": "bldg-12",
+    "to_node": "osm-4642036788",
+    "distance_m": 60.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-245",
+    "from_node": "bldg-13",
+    "to_node": "osm-4642036717",
+    "distance_m": 48.3,
+    "slope_pct": -6.2,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-246",
+    "from_node": "bldg-13",
+    "to_node": "osm-4642036788",
+    "distance_m": 49.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-247",
+    "from_node": "bldg-14",
+    "to_node": "osm-4642036735",
+    "distance_m": 31.2,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-248",
+    "from_node": "bldg-14",
+    "to_node": "osm-4642036720",
+    "distance_m": 33.9,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-249",
+    "from_node": "bldg-15",
+    "to_node": "osm-4642036696",
+    "distance_m": 19.8,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-250",
+    "from_node": "bldg-15",
+    "to_node": "osm-4642032063",
+    "distance_m": 35.4,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-251",
+    "from_node": "bldg-16",
+    "to_node": "osm-4632371515",
+    "distance_m": 29.6,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-252",
+    "from_node": "bldg-16",
+    "to_node": "osm-4642036719",
+    "distance_m": 36.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-253",
+    "from_node": "bldg-17",
+    "to_node": "osm-7247047825",
+    "distance_m": 42.3,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-254",
+    "from_node": "bldg-17",
+    "to_node": "osm-4710085534",
+    "distance_m": 50.7,
+    "slope_pct": 25.6,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-255",
+    "from_node": "bldg-18",
+    "to_node": "osm-4642032056",
+    "distance_m": 19.5,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-256",
+    "from_node": "bldg-18",
+    "to_node": "osm-4642032055",
+    "distance_m": 24.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-257",
+    "from_node": "bldg-19",
+    "to_node": "osm-4642032052",
+    "distance_m": 38.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-258",
+    "from_node": "bldg-19",
+    "to_node": "osm-4642032051",
+    "distance_m": 41.5,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-259",
+    "from_node": "bldg-20",
+    "to_node": "osm-4642032060",
+    "distance_m": 32.0,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-260",
+    "from_node": "bldg-20",
+    "to_node": "osm-4642032059",
+    "distance_m": 34.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-261",
+    "from_node": "bldg-21",
+    "to_node": "osm-4642032053",
+    "distance_m": 37.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-262",
+    "from_node": "bldg-21",
+    "to_node": "osm-4642032054",
+    "distance_m": 46.1,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-263",
+    "from_node": "bldg-22",
+    "to_node": "osm-4632371515",
+    "distance_m": 22.4,
+    "slope_pct": 0.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-264",
+    "from_node": "bldg-22",
+    "to_node": "osm-4632371528",
+    "distance_m": 30.7,
+    "slope_pct": 22.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-23-1",
+    "from_node": "bldg-23",
+    "to_node": "osm-4642032086",
+    "distance_m": 1.5,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-23-2",
+    "from_node": "bldg-23",
+    "to_node": "osm-4642032085",
+    "distance_m": 8.5,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-24-1",
+    "from_node": "bldg-24",
+    "to_node": "osm-4642036691",
+    "distance_m": 12.0,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-24-2",
+    "from_node": "bldg-24",
+    "to_node": "osm-4642036692",
+    "distance_m": 22.8,
+    "slope_pct": -26.3,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-25-1",
+    "from_node": "bldg-25",
+    "to_node": "osm-4642032068",
+    "distance_m": 16.2,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-25-2",
+    "from_node": "bldg-25",
+    "to_node": "osm-4642032067",
+    "distance_m": 19.8,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-26-1",
+    "from_node": "bldg-26",
+    "to_node": "osm-4642032069",
+    "distance_m": 25.8,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-26-2",
+    "from_node": "bldg-26",
+    "to_node": "osm-4642032064",
+    "distance_m": 26.8,
+    "slope_pct": 35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-27-1",
+    "from_node": "bldg-27",
+    "to_node": "osm-4632371524",
+    "distance_m": 52.0,
+    "slope_pct": 5.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-27-2",
+    "from_node": "bldg-27",
+    "to_node": "osm-6974524314",
+    "distance_m": 52.7,
+    "slope_pct": 3.8,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-28-1",
+    "from_node": "bldg-28",
+    "to_node": "osm-4642032053",
+    "distance_m": 51.1,
+    "slope_pct": 13.7,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-28-2",
+    "from_node": "bldg-28",
+    "to_node": "osm-4642032054",
+    "distance_m": 51.2,
+    "slope_pct": 13.7,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-29-1",
+    "from_node": "bldg-29",
+    "to_node": "osm-1762118482",
+    "distance_m": 20.6,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-29-2",
+    "from_node": "bldg-29",
+    "to_node": "osm-4642036710",
+    "distance_m": 33.0,
+    "slope_pct": -35.0,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-30-1",
+    "from_node": "bldg-30",
+    "to_node": "osm-4642032053",
+    "distance_m": 69.0,
+    "slope_pct": 1.4,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-extra-30-2",
+    "from_node": "bldg-30",
+    "to_node": "osm-4642032054",
+    "distance_m": 76.9,
+    "slope_pct": 1.3,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  }
+]

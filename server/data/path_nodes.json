@@ -1,0 +1,2834 @@
+[
+  {
+    "id": "osm-1762118438",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00893,
+        35.144109
+      ]
+    },
+    "elevation": 152.0
+  },
+  {
+    "id": "osm-1762118482",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009388,
+        35.144319
+      ]
+    },
+    "elevation": 132.0
+  },
+  {
+    "id": "osm-1762118527",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.013062,
+        35.146428
+      ]
+    },
+    "elevation": 96.0
+  },
+  {
+    "id": "osm-4642036745",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.013041,
+        35.146833
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-1762118301",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007292,
+        35.144085
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642036701",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007545,
+        35.144126
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-1762118163",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007612,
+        35.144137
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-1762118518",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007871,
+        35.144189
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-1762118178",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008857,
+        35.14438
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642032058",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010591,
+        35.14444
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-4632371524",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011238,
+        35.144478
+      ]
+    },
+    "elevation": 138.0
+  },
+  {
+    "id": "osm-436806147",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01117,
+        35.146808
+      ]
+    },
+    "elevation": 85.0
+  },
+  {
+    "id": "osm-1762118283",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010568,
+        35.146762
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4710085538",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010204,
+        35.146735
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4710085537",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010032,
+        35.146721
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4710085531",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009709,
+        35.146697
+      ]
+    },
+    "elevation": 79.0
+  },
+  {
+    "id": "osm-1762118343",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009289,
+        35.146665
+      ]
+    },
+    "elevation": 79.0
+  },
+  {
+    "id": "osm-4710085532",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008545,
+        35.146608
+      ]
+    },
+    "elevation": 90.0
+  },
+  {
+    "id": "osm-7247047825",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008228,
+        35.146584
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-1762118434",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007883,
+        35.146558
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4632371512",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007583,
+        35.146535
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-1762118371",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006497,
+        35.146452
+      ]
+    },
+    "elevation": 57.0
+  },
+  {
+    "id": "osm-4632371513",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008147,
+        35.145639
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4632371514",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008514,
+        35.145764
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-4642036719",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008768,
+        35.145905
+      ]
+    },
+    "elevation": 90.0
+  },
+  {
+    "id": "osm-4632371515",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00903,
+        35.146051
+      ]
+    },
+    "elevation": 90.0
+  },
+  {
+    "id": "osm-4632371516",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010136,
+        35.146323
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4632371517",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010404,
+        35.146171
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642036717",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010357,
+        35.145326
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "osm-4632371518",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010349,
+        35.145223
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "osm-4632371519",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011144,
+        35.14641
+      ]
+    },
+    "elevation": 99.0
+  },
+  {
+    "id": "osm-4632371520",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01035,
+        35.145065
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "osm-4632371521",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010425,
+        35.14474
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-7351322764",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010454,
+        35.144732
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-4710085536",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010004,
+        35.146585
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4632371526",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010255,
+        35.146609
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4632371528",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009338,
+        35.146441
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642032041",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.013206,
+        35.143927
+      ]
+    },
+    "elevation": 162.0
+  },
+  {
+    "id": "osm-4642032042",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.013005,
+        35.143919
+      ]
+    },
+    "elevation": 162.0
+  },
+  {
+    "id": "osm-4642032043",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.013008,
+        35.143877
+      ]
+    },
+    "elevation": 162.0
+  },
+  {
+    "id": "osm-4642032044",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012357,
+        35.143859
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-4642032045",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012207,
+        35.143855
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-4642032046",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011979,
+        35.143899
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-4642032047",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011872,
+        35.143979
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-11285287769",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011806,
+        35.143988
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-4642032048",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011732,
+        35.143999
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-4642032049",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011622,
+        35.143974
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-4642032050",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011497,
+        35.143904
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-4642032051",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011287,
+        35.143825
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-4642032052",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011232,
+        35.143817
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-4642032053",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010142,
+        35.143822
+      ]
+    },
+    "elevation": 159.0
+  },
+  {
+    "id": "osm-4642032054",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01013,
+        35.143919
+      ]
+    },
+    "elevation": 159.0
+  },
+  {
+    "id": "osm-4642032055",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01017,
+        35.144058
+      ]
+    },
+    "elevation": 159.0
+  },
+  {
+    "id": "osm-4642032056",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010268,
+        35.144191
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-4642032057",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01042,
+        35.144308
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-11285287781",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01128,
+        35.143793
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-4642032059",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011263,
+        35.143715
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-4642032060",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011287,
+        35.143501
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-4642032085",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007178,
+        35.144082
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642032061",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006928,
+        35.144076
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642032062",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006708,
+        35.144061
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642032063",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006364,
+        35.143506
+      ]
+    },
+    "elevation": 119.0
+  },
+  {
+    "id": "osm-4642032064",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007549,
+        35.14293
+      ]
+    },
+    "elevation": 169.0
+  },
+  {
+    "id": "osm-4642032069",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007622,
+        35.142998
+      ]
+    },
+    "elevation": 169.0
+  },
+  {
+    "id": "osm-4642032065",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007747,
+        35.143112
+      ]
+    },
+    "elevation": 169.0
+  },
+  {
+    "id": "osm-4642032066",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007893,
+        35.143112
+      ]
+    },
+    "elevation": 169.0
+  },
+  {
+    "id": "osm-4642032067",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007985,
+        35.14314
+      ]
+    },
+    "elevation": 169.0
+  },
+  {
+    "id": "osm-4642032068",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008043,
+        35.143149
+      ]
+    },
+    "elevation": 169.0
+  },
+  {
+    "id": "osm-4642032070",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007507,
+        35.14303
+      ]
+    },
+    "elevation": 169.0
+  },
+  {
+    "id": "osm-4642032071",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007278,
+        35.143481
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642032072",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007232,
+        35.1436
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642032073",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007306,
+        35.14374
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642032074",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007525,
+        35.143884
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-4642032075",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007692,
+        35.144034
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-4642032076",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007717,
+        35.144081
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-4642032077",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007427,
+        35.143526
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642032078",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007912,
+        35.143578
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-4642032079",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007985,
+        35.143553
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-4642032080",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008125,
+        35.143571
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-4642032081",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008186,
+        35.143673
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-4642032082",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008484,
+        35.143765
+      ]
+    },
+    "elevation": 152.0
+  },
+  {
+    "id": "osm-4642032083",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008686,
+        35.143859
+      ]
+    },
+    "elevation": 152.0
+  },
+  {
+    "id": "osm-4642032084",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008716,
+        35.143964
+      ]
+    },
+    "elevation": 152.0
+  },
+  {
+    "id": "osm-4642032086",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007232,
+        35.144141
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642032087",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007552,
+        35.144275
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642032088",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007833,
+        35.144335
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036689",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007896,
+        35.144343
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036690",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00793,
+        35.144325
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036691",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008679,
+        35.144457
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036692",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008798,
+        35.14445
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036693",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00896,
+        35.144447
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036694",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006416,
+        35.143197
+      ]
+    },
+    "elevation": 149.0
+  },
+  {
+    "id": "osm-4642036695",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006815,
+        35.143204
+      ]
+    },
+    "elevation": 151.0
+  },
+  {
+    "id": "osm-4642036696",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006906,
+        35.143483
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642036697",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00715,
+        35.143907
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642036698",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007251,
+        35.143967
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "osm-4642036699",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007564,
+        35.144056
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "osm-4642036700",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008774,
+        35.144293
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036702",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008841,
+        35.144759
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036703",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008881,
+        35.144824
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036704",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00906,
+        35.144903
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036705",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009155,
+        35.144998
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "osm-4642036706",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009066,
+        35.145028
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-4642036707",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009008,
+        35.145309
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-4642036708",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009015,
+        35.144502
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036709",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009328,
+        35.144522
+      ]
+    },
+    "elevation": 132.0
+  },
+  {
+    "id": "osm-4642036710",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009572,
+        35.144517
+      ]
+    },
+    "elevation": 132.0
+  },
+  {
+    "id": "osm-4642036711",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009712,
+        35.144532
+      ]
+    },
+    "elevation": 132.0
+  },
+  {
+    "id": "osm-4642036712",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009871,
+        35.144597
+      ]
+    },
+    "elevation": 132.0
+  },
+  {
+    "id": "osm-4642036713",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010133,
+        35.144649
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-4642036714",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010306,
+        35.144674
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-4642036715",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009627,
+        35.145085
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "osm-4642036716",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00995,
+        35.145167
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "osm-4642036730",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008876,
+        35.145781
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-4642036718",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008868,
+        35.14581
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-1762118540",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012569,
+        35.14453
+      ]
+    },
+    "elevation": 130.0
+  },
+  {
+    "id": "osm-4642036738",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007755,
+        35.146025
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4642036731",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008043,
+        35.145654
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642036732",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007066,
+        35.145544
+      ]
+    },
+    "elevation": 88.0
+  },
+  {
+    "id": "osm-4642036733",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006779,
+        35.145533
+      ]
+    },
+    "elevation": 88.0
+  },
+  {
+    "id": "osm-6953410685",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006738,
+        35.145737
+      ]
+    },
+    "elevation": 88.0
+  },
+  {
+    "id": "osm-4642036734",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006714,
+        35.145849
+      ]
+    },
+    "elevation": 69.0
+  },
+  {
+    "id": "osm-4642036735",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007636,
+        35.145915
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4642036736",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006348,
+        35.146372
+      ]
+    },
+    "elevation": 57.0
+  },
+  {
+    "id": "osm-4642036737",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007487,
+        35.146449
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4642036739",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011381,
+        35.146262
+      ]
+    },
+    "elevation": 99.0
+  },
+  {
+    "id": "osm-4710085510",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01136,
+        35.145878
+      ]
+    },
+    "elevation": 99.0
+  },
+  {
+    "id": "osm-4642036740",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011353,
+        35.145732
+      ]
+    },
+    "elevation": 117.0
+  },
+  {
+    "id": "osm-4642036741",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011451,
+        35.14644
+      ]
+    },
+    "elevation": 99.0
+  },
+  {
+    "id": "osm-4642036742",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011947,
+        35.146668
+      ]
+    },
+    "elevation": 85.0
+  },
+  {
+    "id": "osm-4642036743",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.0123,
+        35.146757
+      ]
+    },
+    "elevation": 85.0
+  },
+  {
+    "id": "osm-4642036762",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008851,
+        35.145634
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-4642036763",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008362,
+        35.145544
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-4642036764",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007751,
+        35.145474
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642036765",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007144,
+        35.145395
+      ]
+    },
+    "elevation": 88.0
+  },
+  {
+    "id": "osm-4642036766",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007261,
+        35.144835
+      ]
+    },
+    "elevation": 110.0
+  },
+  {
+    "id": "osm-4642036767",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007405,
+        35.144852
+      ]
+    },
+    "elevation": 110.0
+  },
+  {
+    "id": "osm-4642036776",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007462,
+        35.14488
+      ]
+    },
+    "elevation": 110.0
+  },
+  {
+    "id": "osm-4642036768",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007741,
+        35.145019
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642036777",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007899,
+        35.145036
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642036769",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008012,
+        35.145048
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642036780",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008109,
+        35.145022
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642036770",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008259,
+        35.144983
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036771",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008356,
+        35.144991
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-4642036772",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008382,
+        35.144864
+      ]
+    },
+    "elevation": 128.0
+  },
+  {
+    "id": "osm-4642036773",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007677,
+        35.144924
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036774",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00763,
+        35.144778
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036775",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007585,
+        35.144775
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036778",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00795,
+        35.144806
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036779",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008068,
+        35.144956
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036781",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008218,
+        35.144896
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "osm-4642036787",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01046,
+        35.145855
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-4642036788",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011271,
+        35.145781
+      ]
+    },
+    "elevation": 117.0
+  },
+  {
+    "id": "osm-6953410686",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007644,
+        35.145846
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-6968170522",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010162,
+        35.145878
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-6968170523",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010117,
+        35.146028
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-6968170524",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010188,
+        35.14579
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "osm-6968170525",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010227,
+        35.145676
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "osm-6968170563",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008343,
+        35.145026
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-6968170564",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008324,
+        35.145126
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "osm-6968170565",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008309,
+        35.145193
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-6968170566",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00829,
+        35.145287
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-6974524313",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010415,
+        35.144707
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-6974524314",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010503,
+        35.144764
+      ]
+    },
+    "elevation": 137.0
+  },
+  {
+    "id": "osm-4710085535",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007608,
+        35.146372
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4642036720",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007684,
+        35.146193
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "osm-4710085534",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007978,
+        35.145817
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "osm-11285265578",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008879,
+        35.14281
+      ]
+    },
+    "elevation": 182.0
+  },
+  {
+    "id": "osm-11285265579",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008825,
+        35.142722
+      ]
+    },
+    "elevation": 182.0
+  },
+  {
+    "id": "osm-11285265580",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008704,
+        35.142659
+      ]
+    },
+    "elevation": 182.0
+  },
+  {
+    "id": "osm-11285287779",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.013063,
+        35.142794
+      ]
+    },
+    "elevation": 207.0
+  },
+  {
+    "id": "osm-11285287778",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012872,
+        35.142908
+      ]
+    },
+    "elevation": 207.0
+  },
+  {
+    "id": "osm-11285287777",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012599,
+        35.143053
+      ]
+    },
+    "elevation": 207.0
+  },
+  {
+    "id": "osm-11285287776",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012371,
+        35.143165
+      ]
+    },
+    "elevation": 191.0
+  },
+  {
+    "id": "osm-11285287775",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012068,
+        35.143382
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-11285287774",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011931,
+        35.143487
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-11285287773",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011797,
+        35.143628
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-11285287772",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011681,
+        35.143751
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-11285287771",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011673,
+        35.143828
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-11285287770",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011759,
+        35.143909
+      ]
+    },
+    "elevation": 163.0
+  },
+  {
+    "id": "osm-11285287807",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010576,
+        35.142632
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287806",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01058,
+        35.142752
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287805",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010611,
+        35.142835
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287804",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010662,
+        35.142863
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287803",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010729,
+        35.142874
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287802",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010835,
+        35.142881
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287801",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010918,
+        35.142867
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287800",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011008,
+        35.142834
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287799",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011082,
+        35.142805
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287798",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011122,
+        35.142797
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287797",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011229,
+        35.142815
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287796",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011284,
+        35.142814
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287795",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011363,
+        35.142803
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287794",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011408,
+        35.14281
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287793",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011433,
+        35.142847
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287792",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01147,
+        35.143
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287791",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01147,
+        35.143042
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287790",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011429,
+        35.143153
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287789",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011394,
+        35.143254
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287788",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.0114,
+        35.143312
+      ]
+    },
+    "elevation": 186.0
+  },
+  {
+    "id": "osm-11285287787",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011447,
+        35.143494
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-11285287786",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011453,
+        35.143559
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-11285287785",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011437,
+        35.143593
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-11285287784",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011357,
+        35.14362
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-11285287783",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011321,
+        35.143708
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "osm-11285287782",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011306,
+        35.143763
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "bldg-1",
+    "building_id": 1,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007613,
+        35.145252
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "bldg-2",
+    "building_id": 2,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007242,
+        35.145669
+      ]
+    },
+    "elevation": 88.0
+  },
+  {
+    "id": "bldg-3",
+    "building_id": 3,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007588,
+        35.144663
+      ]
+    },
+    "elevation": 123.0
+  },
+  {
+    "id": "bldg-4",
+    "building_id": 4,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00827,
+        35.146058
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "bldg-5",
+    "building_id": 5,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008671,
+        35.145307
+      ]
+    },
+    "elevation": 106.0
+  },
+  {
+    "id": "bldg-6",
+    "building_id": 6,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009538,
+        35.144697
+      ]
+    },
+    "elevation": 132.0
+  },
+  {
+    "id": "bldg-7",
+    "building_id": 7,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008217,
+        35.143939
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "bldg-8",
+    "building_id": 8,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007729,
+        35.143695
+      ]
+    },
+    "elevation": 147.0
+  },
+  {
+    "id": "bldg-9",
+    "building_id": 9,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012517,
+        35.144105
+      ]
+    },
+    "elevation": 162.0
+  },
+  {
+    "id": "bldg-10",
+    "building_id": 10,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009453,
+        35.14571
+      ]
+    },
+    "elevation": 114.0
+  },
+  {
+    "id": "bldg-11",
+    "building_id": 11,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009769,
+        35.146412
+      ]
+    },
+    "elevation": 97.0
+  },
+  {
+    "id": "bldg-12",
+    "building_id": 12,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011525,
+        35.14528
+      ]
+    },
+    "elevation": 117.0
+  },
+  {
+    "id": "bldg-13",
+    "building_id": 13,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010836,
+        35.145513
+      ]
+    },
+    "elevation": 117.0
+  },
+  {
+    "id": "bldg-14",
+    "building_id": 14,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007346,
+        35.146065
+      ]
+    },
+    "elevation": 69.0
+  },
+  {
+    "id": "bldg-15",
+    "building_id": 15,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006738,
+        35.143596
+      ]
+    },
+    "elevation": 133.0
+  },
+  {
+    "id": "bldg-16",
+    "building_id": 16,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008792,
+        35.146233
+      ]
+    },
+    "elevation": 90.0
+  },
+  {
+    "id": "bldg-17",
+    "building_id": 17,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008271,
+        35.146205
+      ]
+    },
+    "elevation": 84.0
+  },
+  {
+    "id": "bldg-18",
+    "building_id": 18,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010437,
+        35.144083
+      ]
+    },
+    "elevation": 159.0
+  },
+  {
+    "id": "bldg-19",
+    "building_id": 19,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010945,
+        35.144072
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "bldg-20",
+    "building_id": 20,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010942,
+        35.143556
+      ]
+    },
+    "elevation": 160.0
+  },
+  {
+    "id": "bldg-21",
+    "building_id": 21,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010428,
+        35.143584
+      ]
+    },
+    "elevation": 159.0
+  },
+  {
+    "id": "bldg-22",
+    "building_id": 22,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009102,
+        35.146244
+      ]
+    },
+    "elevation": 90.0
+  },
+  {
+    "id": "bldg-23",
+    "building_id": 23,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00722,
+        35.14415
+      ]
+    },
+    "elevation": 136.0
+  },
+  {
+    "id": "bldg-24",
+    "building_id": 24,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00855,
+        35.14448
+      ]
+    },
+    "elevation": 134.0
+  },
+  {
+    "id": "bldg-25",
+    "building_id": 25,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00812,
+        35.14328
+      ]
+    },
+    "elevation": 154.0
+  },
+  {
+    "id": "bldg-26",
+    "building_id": 26,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007817,
+        35.14283
+      ]
+    },
+    "elevation": 158.0
+  },
+  {
+    "id": "bldg-27",
+    "building_id": 27,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01105,
+        35.14492
+      ]
+    },
+    "elevation": 135.0
+  },
+  {
+    "id": "bldg-28",
+    "building_id": 28,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00958,
+        35.14382
+      ]
+    },
+    "elevation": 152.0
+  },
+  {
+    "id": "bldg-29",
+    "building_id": 29,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00958,
+        35.14422
+      ]
+    },
+    "elevation": 145.0
+  },
+  {
+    "id": "bldg-30",
+    "building_id": 30,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00965,
+        35.14335
+      ]
+    },
+    "elevation": 158.0
+  }
+]

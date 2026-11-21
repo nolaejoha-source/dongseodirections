@@ -1,0 +1,3499 @@
+[
+  {
+    "id": 18,
+    "name": "국제협력관",
+    "name_en": "International Cooperation Building",
+    "aliases": [
+      "1번",
+      "CO",
+      "CO101",
+      "CO104",
+      "CO201",
+      "CO205",
+      "CO301",
+      "CO304",
+      "CO401",
+      "CO406",
+      "CO501",
+      "CO505",
+      "CO601",
+      "CO604",
+      "CO701",
+      "CO801",
+      "CO901",
+      "국제협력관",
+      "민석교양대학",
+      "학생상담센터"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010437,
+        35.144083
+      ]
+    },
+    "elevation": 159.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[CO101] 학생상담센터 · 심리검사소 (1101호)",
+            "category": "행정·지원",
+            "note": "재학생 심리상담 및 진로적성 검사"
+          },
+          {
+            "name": "[CO104] 장애학생지원센터",
+            "category": "행정·지원",
+            "note": "이동 및 학습 보조기기 지원 센터"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[CO201] 민석교양대학 행정실 (1201호)",
+            "category": "학과사무실",
+            "note": "교양 필수·선택 교과목 학사 안내"
+          },
+          {
+            "name": "[CO205] 교양 글쓰기·토론 클리닉룸",
+            "category": "강의실",
+            "note": "의사소통 및 발표 클리닉 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[CO301] 일반대학원 통합교학팀",
+            "category": "대학원",
+            "note": "석·박사 학위과정 행정 지원실"
+          },
+          {
+            "name": "[CO304] 대학원 합동세미나실",
+            "category": "대학원",
+            "note": "학위논문 심사 및 세미나실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[CO401] 교양융합 강의실 401",
+            "category": "강의실",
+            "note": "인문·교양 중형 강의실"
+          },
+          {
+            "name": "[CO406] 교양대학 교수연구실 (CO405~412)",
+            "category": "교수연구실",
+            "note": "전임교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[CO501] 부총장실 · 대외협력실",
+            "category": "대학본부",
+            "note": "대외교류 및 국제협력 집무실"
+          },
+          {
+            "name": "[CO505] 교수연구실 (CO504~510)",
+            "category": "교수연구실",
+            "note": "전임교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F~7F",
+        "facilities": [
+          {
+            "name": "[CO601] 동아시아학과 사무실 · 캠퍼스아시아사업단",
+            "category": "학과사무실",
+            "note": "한·중·일 공동학위 프로그램 운영실"
+          },
+          {
+            "name": "[CO604] 국제지역학 강의실",
+            "category": "강의실",
+            "note": "동아시아 지역학 전공 강의실"
+          },
+          {
+            "name": "[CO701] 전임교원 교수연구실 (CO701~712)",
+            "category": "교수연구실",
+            "note": "7층 교수연구실 구역"
+          }
+        ]
+      },
+      {
+        "floor": 8,
+        "label": "8F~9F",
+        "facilities": [
+          {
+            "name": "[CO801] 일본연구센터 · 국제학술실",
+            "category": "연구소",
+            "note": "한일 관계 및 일본 문화·경제 연구소"
+          },
+          {
+            "name": "[CO901] 국제협력 세미나 강의실 (CO901~904)",
+            "category": "강의실",
+            "note": "9층 세미나 및 심화 강의실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "전자정보관",
+    "name_en": "Electronic Information Building",
+    "aliases": [
+      "2번",
+      "EL",
+      "EL101",
+      "EL104",
+      "EL201",
+      "EL205",
+      "EL301",
+      "EL304",
+      "EL306",
+      "EL401",
+      "EL405",
+      "EL410",
+      "EL501",
+      "EL504",
+      "EL510",
+      "EL601",
+      "EL606",
+      "이공대학",
+      "전자정보관",
+      "팹랩"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009538,
+        35.144697
+      ]
+    },
+    "elevation": 132.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[EL101] 이공대학 통합행정실 (2101호)",
+            "category": "학과사무실",
+            "note": "전자·건축·토목·공학계열 학사 행정실"
+          },
+          {
+            "name": "[EL104] 창의능력개발공간 · 라운지",
+            "category": "실습·연구",
+            "note": "공학도 창의 설계 및 스터디 라운지"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[EL201] 팹랩 부산 (Fab Lab · 메이커스페이스)",
+            "category": "실습·연구",
+            "note": "3D프린터·CNC·레이저커터 시제품 제작소"
+          },
+          {
+            "name": "[EL205] 창의공학설계 강의실",
+            "category": "강의실",
+            "note": "공학설계 입문 및 실습 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[EL301] 미래커리어대학 행정실",
+            "category": "학과사무실",
+            "note": "성인학습자 및 평생교육 단과대학 행정실"
+          },
+          {
+            "name": "[EL304] 전자회로·마이크로프로세서 실험실",
+            "category": "실습·연구",
+            "note": "오실로스코프 및 디지털 회로 실험실"
+          },
+          {
+            "name": "[EL306] 사회복지상담학과 사무실 (2306호)",
+            "category": "학과사무실",
+            "note": "미래커리어대학 학과 사무실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[EL401] 건축공학·구조역학 실습실",
+            "category": "실습·연구",
+            "note": "건축 구조 및 시공 시뮬레이션 실습실"
+          },
+          {
+            "name": "[EL405] 전자·통신시스템 실습실",
+            "category": "실습·연구",
+            "note": "통신공학 및 회로설계 실습실"
+          },
+          {
+            "name": "[EL410] 이공대학 교수연구실 (EL408~415)",
+            "category": "교수연구실",
+            "note": "전임교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[EL501] 전공이론 강의실 501",
+            "category": "강의실",
+            "note": "공학 수학 및 전공 이론 강의실"
+          },
+          {
+            "name": "[EL504] 전공이론 강의실 504",
+            "category": "강의실",
+            "note": "스마트공학 멀티미디어 강의실"
+          },
+          {
+            "name": "[EL510] 교수연구실 (EL508~516)",
+            "category": "교수연구실",
+            "note": "이공대학 교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[EL601] 창의설계스튜디오 (건축·토목)",
+            "category": "실습·연구",
+            "note": "졸업설계 및 캡스톤 제도 스튜디오"
+          },
+          {
+            "name": "[EL606] 공학연구실 · 교수연구실",
+            "category": "교수연구실",
+            "note": "전임교원 및 대학원 연구실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "보건의료관 I",
+    "name_en": "Healthcare Center I",
+    "aliases": [
+      "3번",
+      "HC",
+      "HC101",
+      "HC103",
+      "HC201",
+      "HC204",
+      "HC301",
+      "HC303",
+      "HC306",
+      "HC401",
+      "HC404",
+      "HC501",
+      "HC506",
+      "HC601",
+      "HC604",
+      "동서스포츠클리닉센터",
+      "보건의료관",
+      "보건의료관 1",
+      "보건의료관 I"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008217,
+        35.143939
+      ]
+    },
+    "elevation": 147.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[HC101] 바이오헬스융합대학 교학팀 (3101호)",
+            "category": "학과사무실",
+            "note": "간호·임상병리·보건의료 계열 행정실"
+          },
+          {
+            "name": "[HC103] 간호학과 전공강의실 1",
+            "category": "강의실",
+            "note": "기본간호학 및 성인간호학 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[HC201] 기본간호학 실습실",
+            "category": "실습·연구",
+            "note": "병동 환경 베드 및 간호술기 실습실"
+          },
+          {
+            "name": "[HC204] 간호시뮬레이션 센터 (BLS센터)",
+            "category": "실습·연구",
+            "note": "응급간호 및 고충실도 시뮬레이터 실습"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[HC301] 임상병리학과 학과사무실",
+            "category": "학과사무실",
+            "note": "임상병리학과 학사 및 국가고시 안내"
+          },
+          {
+            "name": "[HC303] 임상미생물·혈액학 실험실",
+            "category": "실습·연구",
+            "note": "진단검사 및 현미경 분석 실험실"
+          },
+          {
+            "name": "[HC306] 조직병리·분자진단 실험실",
+            "category": "실습·연구",
+            "note": "PCR 및 유전자 진단 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[HC401] 간호학과 계단식 강의실",
+            "category": "강의실",
+            "note": "간호학과 합동 이론 강의실"
+          },
+          {
+            "name": "[HC404] 국가고시 준비실 (나이팅게일실)",
+            "category": "도서관·열람",
+            "note": "간호사·임상병리사 국가고시 정독실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[HC501] 모성·아동간호 시뮬레이션실",
+            "category": "실습·연구",
+            "note": "분만·신생아 간호 임상 시뮬레이션"
+          },
+          {
+            "name": "[HC506] 보건의료 교수연구실 (HC505~512)",
+            "category": "교수연구실",
+            "note": "간호·임상병리 전임교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[HC601] 보건의료 세미나실 ·PBL룸",
+            "category": "강의실",
+            "note": "임상 케이스 스터디 및 토론 강의실"
+          },
+          {
+            "name": "[HC604] 정신·지역사회간호 강의실",
+            "category": "강의실",
+            "note": "전공 이론 및 실습 디브리핑룸"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "응용공학관",
+    "name_en": "Applied Engineering Building",
+    "aliases": [
+      "4번",
+      "AE",
+      "AE101",
+      "AE104",
+      "AE106",
+      "AE201",
+      "AE206",
+      "AE301",
+      "AE304",
+      "AE401",
+      "AE405",
+      "AE416",
+      "AE501",
+      "AE505",
+      "AE601",
+      "AE604",
+      "응용공학관"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007729,
+        35.143695
+      ]
+    },
+    "elevation": 147.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[AE101] 일반화학·생화학 실험실",
+            "category": "실습·연구",
+            "note": "기초 화학 합성 및 생화학 분석 실험실"
+          },
+          {
+            "name": "[AE104] 한-EU 국제협력센터",
+            "category": "연구소",
+            "note": "유럽 대학 공동연구 및 국제교류 센터"
+          },
+          {
+            "name": "[AE106] 식품영양학과 학과사무실 (4106호)",
+            "category": "학과사무실",
+            "note": "식품영양학 전공 학사 행정실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[AE201] 정밀기기 공동실험실",
+            "category": "실습·연구",
+            "note": "HPLC·GC·분광분석기 등 정밀 분석실"
+          },
+          {
+            "name": "[AE206] 응용공학 교수연구실 (AE205~212)",
+            "category": "교수연구실",
+            "note": "교원 연구 및 실험 지도실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[AE301] 식품가공·조리과학 실험실",
+            "category": "실습·연구",
+            "note": "단체급식 및 실험조리 실습실"
+          },
+          {
+            "name": "[AE304] 식품미생물·발효공학 실험실",
+            "category": "실습·연구",
+            "note": "식품 위생 및 미생물 배양 실험실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[AE401] 신소재·나노소재 실험실",
+            "category": "실습·연구",
+            "note": "이차전지 및 기능성 고분자 소재 실험실"
+          },
+          {
+            "name": "[AE405] 바이오제약 공정 실험실",
+            "category": "실습·연구",
+            "note": "의약품 제제 및 세포배양 실험실"
+          },
+          {
+            "name": "[AE416] 바이오제약공학과 사무실 (4416호)",
+            "category": "학과사무실",
+            "note": "바이오제약공학과 학사 행정실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[AE501] 에너지·환경공학 실험실",
+            "category": "실습·연구",
+            "note": "수질·대기 환경 분석 및 신재생에너지 랩"
+          },
+          {
+            "name": "[AE505] 스마트모빌리티 제어 실습실",
+            "category": "실습·연구",
+            "note": "자율주행 센서 및 전장 제어 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[AE601] 응용공학 합동강의실 1",
+            "category": "강의실",
+            "note": "공학계열 전공 이론 강의실"
+          },
+          {
+            "name": "[AE604] 응용공학 세미나실 2",
+            "category": "강의실",
+            "note": "캡스톤 발표 및 학술 세미나실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "산학협력관",
+    "name_en": "Industry-Academic Cooperation Hall",
+    "aliases": [
+      "5번",
+      "SH",
+      "SH101",
+      "SH104",
+      "SH201",
+      "SH205",
+      "SH301",
+      "SH304",
+      "SH401",
+      "SH403",
+      "SH406",
+      "SH501",
+      "SH503",
+      "산학협력관",
+      "창업보육센터"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008671,
+        35.145307
+      ]
+    },
+    "elevation": 106.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[SH101] I.C 융합강의실",
+            "category": "강의실",
+            "note": "산학연계 합동 강의실"
+          },
+          {
+            "name": "[SH104] 산학 미디어 스튜디오",
+            "category": "미디어·스튜디오",
+            "note": "기업 홍보 콘텐츠 및 라이브커머스 촬영실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[SH201] 산학 연구마을 (기업부설연구소)",
+            "category": "연구소",
+            "note": "산학협력 입주기업 공동 연구실"
+          },
+          {
+            "name": "[SH205] 대학원 융합강의실",
+            "category": "대학원",
+            "note": "산학대학원 야간·주말 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[SH301] 창업보육센터 행정실",
+            "category": "행정·산학",
+            "note": "입주 스타트업 경영·기술 지원 센터"
+          },
+          {
+            "name": "[SH304] 학생 창업공간 (Start-up Zone)",
+            "category": "실습·연구",
+            "note": "창업동아리 입주 오피스 구역"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[SH401] 경찰학과 전공강의실",
+            "category": "강의실",
+            "note": "형법·범죄학·경찰학 이론 강의실"
+          },
+          {
+            "name": "[SH403] 공무원·경찰 고시실 (청운실)",
+            "category": "도서관·열람",
+            "note": "경찰공무원 시험 준비 전용 열람실"
+          },
+          {
+            "name": "[SH406] 경호·무도 실습실",
+            "category": "실습·연구",
+            "note": "호신술 및 체포술 훈련 실습장"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[SH501] 산학협력관 대강당",
+            "category": "공연·문화",
+            "note": "채플 및 대규모 학술 특강 강당"
+          },
+          {
+            "name": "[SH503] 교목실 · 신앙상담실",
+            "category": "행정·지원",
+            "note": "교목 행정 및 학생 인성·신앙 상담"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "name": "어문관",
+    "name_en": "Language & Literature Hall",
+    "aliases": [
+      "6번",
+      "LL",
+      "LL101",
+      "LL103",
+      "LL107",
+      "LL201",
+      "LL205",
+      "LL301",
+      "LL306",
+      "LL401",
+      "LL406",
+      "LL502",
+      "LL601",
+      "LL701",
+      "LL801",
+      "LL901",
+      "LL902",
+      "솔루션데스크",
+      "어문관"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010945,
+        35.144072
+      ]
+    },
+    "elevation": 160.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[LL101] 메이크 스페이스 (Make Space)",
+            "category": "실습·연구",
+            "note": "외국어 스터디 및 글로벌 라운지"
+          },
+          {
+            "name": "[LL103] 학생원스톱 솔루션데스크",
+            "category": "행정·지원",
+            "note": "증명서 발급 및 학사 민원 통합 창구"
+          },
+          {
+            "name": "[LL107] 달란트개발센터 (6107호)",
+            "category": "행정·지원",
+            "note": "학생 역량 개발 및 비교과 코칭"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[LL201] 중국어학과 전공강의실",
+            "category": "강의실",
+            "note": "중국어 회화 및 통번역 강의실"
+          },
+          {
+            "name": "[LL205] 중국어학과 교수연구실 (LL205~212)",
+            "category": "교수연구실",
+            "note": "중국어전공 교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[LL301] 일본어학과 학과사무실 · 강의실",
+            "category": "학과사무실",
+            "note": "일본어학과 학사 안내 및 어학 실습"
+          },
+          {
+            "name": "[LL306] 일본어학과 교수연구실 (LL306~314)",
+            "category": "교수연구실",
+            "note": "일본어전공 교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F~5F",
+        "facilities": [
+          {
+            "name": "[LL401] 영어학과 학과사무실 · 멀티미디어어학실",
+            "category": "학과사무실",
+            "note": "영어학과 행정 및 어학 실습실"
+          },
+          {
+            "name": "[LL406] 영어학과 교수연구실 (6406호 외)",
+            "category": "교수연구실",
+            "note": "4~5층 영어학과 교수연구실"
+          },
+          {
+            "name": "[LL502] 비즈니스영어·통번역 실습실",
+            "category": "실습·연구",
+            "note": "동시통역 부스 및 어학 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F~8F",
+        "facilities": [
+          {
+            "name": "[LL601] 외국어 회화 소강의실 (LL601~608)",
+            "category": "강의실",
+            "note": "원어민 소그룹 회화 전용 강의실"
+          },
+          {
+            "name": "[LL701] 중국연구센터 (China Research Center)",
+            "category": "연구소",
+            "note": "중국 경제·문화 학술 연구소"
+          },
+          {
+            "name": "[LL801] 어문계열 합동강의실 (LL801~805)",
+            "category": "강의실",
+            "note": "8층 어학 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 9,
+        "label": "9F",
+        "facilities": [
+          {
+            "name": "[LL901] CBT 어학평가실 1 (Computer Based Test)",
+            "category": "실습·연구",
+            "note": "토익·모의어학시험 및 컴퓨터 시험장"
+          },
+          {
+            "name": "[LL902] CBT 어학평가실 2",
+            "category": "실습·연구",
+            "note": "온라인 외국어 능력 진단 평가실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "국제관",
+    "name_en": "International Studies Building",
+    "aliases": [
+      "7번",
+      "IS",
+      "IS101",
+      "IS104",
+      "IS201",
+      "IS301",
+      "IS401",
+      "IS501",
+      "국제관",
+      "차이니스카페"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010942,
+        35.143556
+      ]
+    },
+    "elevation": 160.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[IS101] 차이니스 카페 · 글로벌 문화라운지",
+            "category": "식당·카페",
+            "note": "외국어 교류 카페 및 휴게 공간"
+          },
+          {
+            "name": "[IS104] 국제학 교원 연구실 (IS104~108)",
+            "category": "교수연구실",
+            "note": "1층 교수연구실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F~3F",
+        "facilities": [
+          {
+            "name": "[IS201] 국제학·글로벌통상 강의실 A",
+            "category": "강의실",
+            "note": "국제통상 및 글로벌지역학 강의실"
+          },
+          {
+            "name": "[IS301] 국제학 세미나실 B",
+            "category": "강의실",
+            "note": "원어 토론 및 팀 발표 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F~5F",
+        "facilities": [
+          {
+            "name": "[IS401] 국제관 전공강의실 (IS401~405)",
+            "category": "강의실",
+            "note": "다국적 학생 합동 수업 강의실"
+          },
+          {
+            "name": "[IS501] 국제관 교수연구실 (IS501~508)",
+            "category": "교수연구실",
+            "note": "전임교원 연구실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "name": "경영관",
+    "name_en": "Business Administration Building",
+    "aliases": [
+      "8번",
+      "BA",
+      "BA101",
+      "BA103",
+      "BA201",
+      "BA204",
+      "BA301",
+      "BA304",
+      "BA401",
+      "BA406",
+      "BA501",
+      "BA504",
+      "BA508",
+      "BA601",
+      "BA604",
+      "경영관",
+      "경영관식당"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010428,
+        35.143584
+      ]
+    },
+    "elevation": 159.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[BA101] 글로벌비즈니스대학 통합행정실 (8101호)",
+            "category": "학과사무실",
+            "note": "경영·관광·물류·사회복지 학사 행정실"
+          },
+          {
+            "name": "[BA103] 경영관 학생식당 · 카페테리아",
+            "category": "식당·카페",
+            "note": "상단 캠퍼스(경영·어문·도서관) 학생식당"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[BA201] 계단식 케이스스터디 강의실 1",
+            "category": "강의실",
+            "note": "하버드 비즈니스 케이스 토론형 강의실"
+          },
+          {
+            "name": "[BA204] 계단식 합동강의실 2",
+            "category": "강의실",
+            "note": "경영학 원론 및 특강 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[BA301] 회계·세무 ERP 전산실습실",
+            "category": "실습·연구",
+            "note": "전산세무회계 및 경영정보시스템 실습"
+          },
+          {
+            "name": "[BA304] 국제물류·무역실무 강의실",
+            "category": "강의실",
+            "note": "물류 시뮬레이션 및 무역학 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[BA401] 글로벌비즈니스 전공강의실",
+            "category": "강의실",
+            "note": "마케팅·재무관리 이론 강의실"
+          },
+          {
+            "name": "[BA406] 외국인교수 및 전임교원 연구실",
+            "category": "교수연구실",
+            "note": "글로벌비즈니스 교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[BA501] 관광경영·컨벤션학과 사무실 (8501호)",
+            "category": "학과사무실",
+            "note": "호텔·관광·MICE 전공 학과사무실"
+          },
+          {
+            "name": "[BA504] 경영학부·사회복지학과 행정실 (8504호)",
+            "category": "학과사무실",
+            "note": "학부 행정 및 학생 상담실"
+          },
+          {
+            "name": "[BA508] 호텔·컨벤션 서비스 실습실",
+            "category": "실습·연구",
+            "note": "식음료 및 호텔 프런트 실무 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[BA601] 경영학부 고시실 (CPA·세무사반)",
+            "category": "도서관·열람",
+            "note": "공인회계사·세무사·관세사 준비 열람실"
+          },
+          {
+            "name": "[BA604] 경영관 자율열람실",
+            "category": "도서관·열람",
+            "note": "상단 캠퍼스 학생 전용 학습실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "디자인홀",
+    "name_en": "Design Hall",
+    "aliases": [
+      "9번",
+      "DH",
+      "DH101",
+      "DH102",
+      "DH105",
+      "DH108",
+      "DH201",
+      "DH203",
+      "DH204",
+      "DH301",
+      "DH304",
+      "DH307",
+      "DH309",
+      "DH401",
+      "DH405",
+      "DH409",
+      "DH501",
+      "DH504",
+      "DH510",
+      "디자인관",
+      "디자인홀"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007588,
+        35.144663
+      ]
+    },
+    "elevation": 123.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[DH101] 디자인대학 통합행정실 (9101호)",
+            "category": "학과사무실",
+            "note": "디자인학부·건축·광고홍보 학사 행정실"
+          },
+          {
+            "name": "[DH102] 디자인홀 갤러리 (D-Gallery)",
+            "category": "전시·문화",
+            "note": "학생 졸업작품 및 국제 초대전시관"
+          },
+          {
+            "name": "[DH105] IFS 국제디자인스튜디오",
+            "category": "실습·연구",
+            "note": "국제 워크숍 및 융합 디자인 스튜디오"
+          },
+          {
+            "name": "[DH108] 3D 프린팅·모형제작 워크숍",
+            "category": "실습·연구",
+            "note": "레이저커터 및 목공·조형 작업실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[DH201] 시각디자인 스튜디오 1",
+            "category": "실습·연구",
+            "note": "브랜드·편집·패키지 디자인 실습실"
+          },
+          {
+            "name": "[DH203] 멀티미디어디자인 Mac 실습실",
+            "category": "실습·연구",
+            "note": "iMac 기반 그래픽·모션디자인 실습실"
+          },
+          {
+            "name": "[DH204] 시각디자인 교수연구실 (DH204~210)",
+            "category": "교수연구실",
+            "note": "시각디자인전공 교수 연구 공간"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[DH301] 환경·실내건축디자인 제도실",
+            "category": "실습·연구",
+            "note": "공간설계 및 CAD/BIM 디자인 스튜디오"
+          },
+          {
+            "name": "[DH304] 제품·인터랙션 디자인 실습실",
+            "category": "실습·연구",
+            "note": "산업디자인 프로토타이핑 실습실"
+          },
+          {
+            "name": "[DH307] 디지털미디어디자인 연구실 (9307호)",
+            "category": "실습·연구",
+            "note": "UI/UX 및 인터랙티브 미디어 연구"
+          },
+          {
+            "name": "[DH309] 환경디자인 교수연구실 (9309호)",
+            "category": "교수연구실",
+            "note": "환경디자인전공 교수 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[DH401] 통합 디자인 스튜디오 A",
+            "category": "실습·연구",
+            "note": "캡스톤 디자인 및 산학 프로젝트실"
+          },
+          {
+            "name": "[DH405] 포토그래피·광고촬영 스튜디오",
+            "category": "미디어·스튜디오",
+            "note": "제품 및 인물 광고사진 촬영실"
+          },
+          {
+            "name": "[DH409] 디지털미디어 연구실 (9409호)",
+            "category": "교수연구실",
+            "note": "미디어디자인 교수 연구 및 지도실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[DH501] 디자인 크리틱 세미나실",
+            "category": "강의실",
+            "note": "디자인 품평회 및 프레젠테이션 홀"
+          },
+          {
+            "name": "[DH504] 공모전 준비실 (Red Dot / iF Lab)",
+            "category": "실습·연구",
+            "note": "국제 디자인 어워드 출품 프로젝트실"
+          },
+          {
+            "name": "[DH510] 디자인대학 교수연구실 (DH508~512)",
+            "category": "교수연구실",
+            "note": "전임교원 연구실 구역"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "name": "그린홀",
+    "name_en": "Green Hall",
+    "aliases": [
+      "그린홀",
+      "Green Hall",
+      "10번",
+      "GH",
+      "GH101",
+      "GH301",
+      "GH501",
+      "작업치료학과"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00722,
+        35.14415
+      ]
+    },
+    "elevation": 136.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[GH101] 토목공학 재료·토질 실험실",
+            "category": "실습·연구",
+            "note": "토목 구조 및 콘크리트·토질 시험실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[GH201] 수리·수문학 실험실 및 교수연구실",
+            "category": "실습·연구",
+            "note": "수리 실험 장치 및 전공 교수연구실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[GH301] 토목공학과 학과사무실 · 강의실",
+            "category": "학과사무실",
+            "note": "토목공학 전공 학사 행정실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[GH401] 작업치료학과 일상생활동작(ADL) 실습실",
+            "category": "실습·연구",
+            "note": "재활 및 감각통합 작업치료 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[GH501] 작업치료학과 학과사무실 · 임상실습실",
+            "category": "학과사무실",
+            "note": "작업치료학과 행정 및 국가고시 준비실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "드림e밸리",
+    "name_en": "Dream E. Valley",
+    "aliases": [
+      "드림e밸리",
+      "드림e벨리",
+      "Dream E Valley",
+      "11번",
+      "DV",
+      "DV001",
+      "DV101",
+      "큐칼리지"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00855,
+        35.14448
+      ]
+    },
+    "elevation": 134.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -1,
+        "label": "B1",
+        "facilities": [
+          {
+            "name": "[DV001] 학생 창업동아리실 (A101~A124)",
+            "category": "실습·연구",
+            "note": "학생 스타트업 및 창업동아리 전용 공간"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[DV101] Q College (큐칼리지) 프로젝트룸",
+            "category": "강의실",
+            "note": "혁신 교육과정 및 자기주도 프로젝트 공간"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": "국제생활관 1",
+    "name_en": "International House I",
+    "aliases": [
+      "12번",
+      "IH",
+      "IH001",
+      "IH002",
+      "IH101",
+      "IH103",
+      "IH201",
+      "IH801",
+      "국제생활관 1",
+      "국제생활관1",
+      "국제생활관Ⅰ"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.006738,
+        35.143596
+      ]
+    },
+    "elevation": 133.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -1,
+        "label": "B1",
+        "facilities": [
+          {
+            "name": "[IH001] 공동취사실 · 다이닝룸",
+            "category": "기숙사",
+            "note": "유학생 및 사생 자율 조리 공간"
+          },
+          {
+            "name": "[IH002] 무인세탁실 · 건조실",
+            "category": "기숙사",
+            "note": "코인 세탁기 및 다림질실"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[IH101] 국제생활관 1 사감실 · 경비실",
+            "category": "기숙사",
+            "note": "출입 보안 및 우편물·택배 수령처"
+          },
+          {
+            "name": "[IH103] 인터내셔널 소극장",
+            "category": "공연·문화",
+            "note": "기숙사 문화행사 및 영화 상영홀"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F~7F",
+        "facilities": [
+          {
+            "name": "[IH201] 생활관 사생실 (IH201~IH714)",
+            "category": "기숙사",
+            "note": "재학생 및 교환학생 기숙사 호실"
+          }
+        ]
+      },
+      {
+        "floor": 8,
+        "label": "8F",
+        "facilities": [
+          {
+            "name": "[IH801] 스카이라운지 · 정독실",
+            "category": "기숙사",
+            "note": "산자락 전망 휴게실 및 야간 스터디룸"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "name": "뉴밀레니엄관",
+    "name_en": "New Millennium Hall",
+    "aliases": [
+      "13번",
+      "NM",
+      "NM001",
+      "NM002",
+      "NM003",
+      "NM005",
+      "NM1001",
+      "NM1008",
+      "NM101",
+      "NM102",
+      "NM104",
+      "NM108",
+      "NM1101",
+      "NM1103",
+      "NM1201",
+      "NM1204",
+      "NM1301",
+      "NM1305",
+      "NM1401",
+      "NM1410",
+      "NM1501",
+      "NM1502",
+      "NM201",
+      "NM210",
+      "NM243",
+      "NM245",
+      "NM246",
+      "NM301",
+      "NM304",
+      "NM308",
+      "NM315",
+      "NM401",
+      "NM402",
+      "NM403",
+      "NM404",
+      "NM408",
+      "NM501",
+      "NM503",
+      "NM506",
+      "NM512",
+      "NM601",
+      "NM604",
+      "NM608",
+      "NM701",
+      "NM704",
+      "NM708",
+      "NM801",
+      "NM804",
+      "NM808",
+      "NM901",
+      "NM905",
+      "NM910",
+      "뉴밀레니엄관",
+      "대학본부",
+      "본관",
+      "소향아트홀"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007613,
+        35.145252
+      ]
+    },
+    "elevation": 97.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -1,
+        "label": "B1",
+        "facilities": [
+          {
+            "name": "[NM001] 종합영상스튜디오 A",
+            "category": "미디어·스튜디오",
+            "note": "대형 크로마키 및 방송 촬영 스튜디오"
+          },
+          {
+            "name": "[NM002] 종합음향녹음실 · 폴리룸",
+            "category": "미디어·스튜디오",
+            "note": "더빙 및 사운드 믹싱 실습실"
+          },
+          {
+            "name": "[NM003] 디지털색보정·종합편집실",
+            "category": "미디어·스튜디오",
+            "note": "4K 영상 편집 및 DI 실습실"
+          },
+          {
+            "name": "[NM005] 지하주차장 · 기계전기실",
+            "category": "편의·관리",
+            "note": "캠퍼스 순환로 직결 지하주차장"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[NM101] 다빈치 카페 · 베이커리 라운지",
+            "category": "편의시설",
+            "note": "학생 및 방문객 휴게 카페테리아"
+          },
+          {
+            "name": "[NM102] 방송영상장비대여실",
+            "category": "미디어·스튜디오",
+            "note": "카메라·조명·음향 촬영장비 대여 센터"
+          },
+          {
+            "name": "[NM104] 오픈 스튜디오 · 전시로비",
+            "category": "미디어·스튜디오",
+            "note": "1층 메인 로비 미디어 전시홀"
+          },
+          {
+            "name": "[NM108] 캠퍼스 통합안내데스크",
+            "category": "행정·지원",
+            "note": "방문객 안내 및 보안 데스크"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[NM201] 소향아트홀 대공연장",
+            "category": "공연·문화",
+            "note": "1,100석 규모 뮤지컬·콘서트 전문 공연장"
+          },
+          {
+            "name": "[NM210] 아시아미래디자인연구소",
+            "category": "연구소",
+            "note": "디자인 혁신 및 국제 산학 연구센터"
+          },
+          {
+            "name": "[NM243] 동서미디어센터 제작실",
+            "category": "미디어·스튜디오",
+            "note": "교내 방송국 및 콘텐츠 제작실"
+          },
+          {
+            "name": "[NM245] 뉴미디어 콘텐츠 실험실",
+            "category": "실습·연구",
+            "note": "실감미디어 및 VFX 연구실"
+          },
+          {
+            "name": "[NM246] 방송편집 아카이브실",
+            "category": "미디어·스튜디오",
+            "note": "영상 미디어 편집 및 서버실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[NM301] 미디어커뮤니케이션학부 사무실",
+            "category": "학과사무실",
+            "note": "미디어커뮤니케이션학부 학사 행정 안내"
+          },
+          {
+            "name": "[NM304] 저널리즘·방송화법 강의실",
+            "category": "강의실",
+            "note": "미디어커뮤니케이션 전공 이론 강의실"
+          },
+          {
+            "name": "[NM308] 디지털방송제작 실습실",
+            "category": "실습·연구",
+            "note": "1인 미디어 및 방송 제작 실습"
+          },
+          {
+            "name": "[NM315] 미디어학부 교수연구실 (315~324)",
+            "category": "교수연구실",
+            "note": "전임교원 연구실 구역"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[NM401] 교무처 · 학사지원팀",
+            "category": "대학본부",
+            "note": "수강신청·성적·졸업 등 학사 행정 본부"
+          },
+          {
+            "name": "[NM402] 사무처 · 총무인사팀",
+            "category": "대학본부",
+            "note": "대학 행정 및 시설 총괄 부서"
+          },
+          {
+            "name": "[NM403] 국제처 · 글로벌교류팀",
+            "category": "대학본부",
+            "note": "유학생 지원 및 해외 교환학생 행정"
+          },
+          {
+            "name": "[NM404] 첨단멀티미디어강의실 · 중형시사실",
+            "category": "강의실",
+            "note": "계단식 시청각 시사 및 합동 강의실"
+          },
+          {
+            "name": "[NM408] 교육혁신본부 · 교수학습개발센터",
+            "category": "행정·지원",
+            "note": "비교과 프로그램 및 학습 지원"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[NM501] 패션디자인학과 학과사무실",
+            "category": "학과사무실",
+            "note": "패션디자인학과 행정 및 상담"
+          },
+          {
+            "name": "[NM503] 의복구성·패턴메이킹 실습실",
+            "category": "실습·연구",
+            "note": "패션 봉제 및 패턴 제작 스튜디오"
+          },
+          {
+            "name": "[NM506] 텍스타일·패션CAD 실습실",
+            "category": "실습·연구",
+            "note": "3D 버추얼 패션 디자인 실습실"
+          },
+          {
+            "name": "[NM512] 패션디자인 교수연구실 (512~520)",
+            "category": "교수연구실",
+            "note": "패션디자인 전공 교수연구실"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[NM601] 한중뉴미디어대학 행정실",
+            "category": "학과사무실",
+            "note": "국제 합작 교육과정 행정지원실"
+          },
+          {
+            "name": "[NM604] 뉴미디어 기획 강의실 1",
+            "category": "강의실",
+            "note": "멀티미디어 프로젝션 강의실"
+          },
+          {
+            "name": "[NM608] 게임·애니메이션 융합실습실",
+            "category": "실습·연구",
+            "note": "디지털 콘텐츠 제작 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 7,
+        "label": "7F",
+        "facilities": [
+          {
+            "name": "[NM701] 디자인전문대학원 교학과",
+            "category": "대학원",
+            "note": "석·박사 과정 학사 행정실"
+          },
+          {
+            "name": "[NM704] 대학원 세미나실 A",
+            "category": "강의실",
+            "note": "대학원 심화 세미나 및 논문 발표실"
+          },
+          {
+            "name": "[NM708] 융합디자인 프로젝트실",
+            "category": "실습·연구",
+            "note": "대학원생 연구 프로젝트 공간"
+          }
+        ]
+      },
+      {
+        "floor": 8,
+        "label": "8F",
+        "facilities": [
+          {
+            "name": "[NM801] 산학협력단 본부",
+            "category": "행정·산학",
+            "note": "산학연구 과제 및 기술이전 전담 부서"
+          },
+          {
+            "name": "[NM804] LINC 3.0 사업단 운영실",
+            "category": "행정·산학",
+            "note": "산학연 협력 선도대학 사업단"
+          },
+          {
+            "name": "[NM808] 창업지원단 · 학생창업상담실",
+            "category": "행정·산학",
+            "note": "스타트업 인큐베이팅 및 창업 멘토링"
+          }
+        ]
+      },
+      {
+        "floor": 9,
+        "label": "9F",
+        "facilities": [
+          {
+            "name": "[NM901] 사상발전연구소 · 지역사회연구소",
+            "category": "연구소",
+            "note": "지역 현안 및 산학관 협력 연구소"
+          },
+          {
+            "name": "[NM905] 인문사회 학술연구실",
+            "category": "연구소",
+            "note": "국책 연구과제 수행 연구 공간"
+          },
+          {
+            "name": "[NM910] 교수연구실 (910~922)",
+            "category": "교수연구실",
+            "note": "전임교원 연구실 구역"
+          }
+        ]
+      },
+      {
+        "floor": 10,
+        "label": "10F",
+        "facilities": [
+          {
+            "name": "[NM1001] 전공심화 세미나실",
+            "category": "강의실",
+            "note": "소규모 토론 및 세미나 강의실"
+          },
+          {
+            "name": "[NM1008] 융합연구 교수연구실 (1004~1018)",
+            "category": "교수연구실",
+            "note": "교수 연구 및 학생 면담실"
+          }
+        ]
+      },
+      {
+        "floor": 11,
+        "label": "11F",
+        "facilities": [
+          {
+            "name": "[NM1101] 총장실 · 비서실",
+            "category": "대학본부",
+            "note": "동서대학교 총장 집무실"
+          },
+          {
+            "name": "[NM1103] 대회의실 · 글로벌화상회의실",
+            "category": "대학본부",
+            "note": "교무위원 회의 및 국제 협약식장"
+          }
+        ]
+      },
+      {
+        "floor": 12,
+        "label": "12F",
+        "facilities": [
+          {
+            "name": "[NM1201] 학교법인 동서학원 재단사무국",
+            "category": "대학본부",
+            "note": "법인 행정 사무국"
+          },
+          {
+            "name": "[NM1204] 법무감사실 · 기획회의실",
+            "category": "대학본부",
+            "note": "내부 감사 및 법무 지원실"
+          }
+        ]
+      },
+      {
+        "floor": 13,
+        "label": "13F",
+        "facilities": [
+          {
+            "name": "[NM1301] 기획연구처 · 대학혁신지원사업단",
+            "category": "대학본부",
+            "note": "대학 중장기 발전계획 및 예산 기획"
+          },
+          {
+            "name": "[NM1305] IR센터 · 데이터성과분석실",
+            "category": "대학본부",
+            "note": "교육 성과 및 통계 분석 센터"
+          }
+        ]
+      },
+      {
+        "floor": 14,
+        "label": "14F",
+        "facilities": [
+          {
+            "name": "[NM1401] 글로벌 VIP 게스트룸 (1401~1408)",
+            "category": "편의·영빈관",
+            "note": "해외 석학 및 초빙교수 숙소"
+          },
+          {
+            "name": "[NM1410] 스카이 리셉션 라운지",
+            "category": "편의·영빈관",
+            "note": "외빈 접견 라운지"
+          }
+        ]
+      },
+      {
+        "floor": 15,
+        "label": "15F",
+        "facilities": [
+          {
+            "name": "[NM1501] 스카이 교직원식당",
+            "category": "식당·카페",
+            "note": "파노라마 캠퍼스 전망 식당"
+          },
+          {
+            "name": "[NM1502] 스카이라운지 카페 · 전망대",
+            "category": "식당·카페",
+            "note": "15층 캠퍼스 조망 휴게 라운지"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "U-IT관",
+    "name_en": "U-IT Building",
+    "aliases": [
+      "14번",
+      "U",
+      "U-IT관",
+      "U001",
+      "U002",
+      "U003",
+      "U004",
+      "U101",
+      "U102",
+      "U107",
+      "U108",
+      "U110",
+      "U201",
+      "U202",
+      "U209",
+      "U212",
+      "U302",
+      "U303",
+      "U308",
+      "U310",
+      "U401",
+      "U403",
+      "U405",
+      "U408",
+      "U501",
+      "U504",
+      "U510",
+      "U601",
+      "U602",
+      "U605",
+      "U701",
+      "U705",
+      "U709",
+      "U801",
+      "U803",
+      "U805",
+      "UIT관",
+      "유아이티관"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007242,
+        35.145669
+      ]
+    },
+    "elevation": 88.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -1,
+        "label": "B1",
+        "facilities": [
+          {
+            "name": "[U001] 컴퓨터공학 이론강의실",
+            "category": "강의실",
+            "note": "컴퓨터공학 기초 및 전공 이론 강의실"
+          },
+          {
+            "name": "[U002] 멀티미디어 영상강의실",
+            "category": "강의실",
+            "note": "시청각 프로젝션 대형 강의실"
+          },
+          {
+            "name": "[U003] U-IT 대강의실 (계단식)",
+            "category": "강의실",
+            "note": "합동 특강 및 학부 세미나 대강의실"
+          },
+          {
+            "name": "[U004] SW 기초 일반강의실",
+            "category": "강의실",
+            "note": "프로그래밍 기초 이론 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[U101] U-IT 융합 스튜디오",
+            "category": "실습·연구",
+            "note": "XR/VR 및 인터랙티브 미디어 실습실"
+          },
+          {
+            "name": "[U102] ICT 프로젝트 실습실",
+            "category": "실습·연구",
+            "note": "팀 프로젝트 기반 코딩 및 서버 실습실"
+          },
+          {
+            "name": "[U107] 네트워크 설계 응용 실험실",
+            "category": "실습·연구",
+            "note": "라우터·스위치 및 클라우드 네트워크 실습"
+          },
+          {
+            "name": "[U108] U-임베디드 시스템 실습실",
+            "category": "실습·연구",
+            "note": "마이크로컨트롤러 및 펌웨어 실습실"
+          },
+          {
+            "name": "[U110] 정보통신 실험실",
+            "category": "실습·연구",
+            "note": "무선통신 및 신호처리 실험실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[U201] 창의능력개발실 · SW라운지",
+            "category": "실습·연구",
+            "note": "학생 자율 코딩 및 해커톤 스터디 공간"
+          },
+          {
+            "name": "[U202] 캡스톤 프로젝트실 1",
+            "category": "실습·연구",
+            "note": "산학연계 캡스톤디자인 팀 작업실"
+          },
+          {
+            "name": "[U209] 그래픽 프로그래밍 실습실",
+            "category": "실습·연구",
+            "note": "3D 컴퓨터 그래픽스 및 게임엔진 실습실"
+          },
+          {
+            "name": "[U212] 캡스톤 설계 실습실",
+            "category": "실습·연구",
+            "note": "하드웨어·소프트웨어 융합 설계실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[U302] 캡스톤 프로젝트실 2",
+            "category": "실습·연구",
+            "note": "졸업작품 및 산학 프로젝트 개발실"
+          },
+          {
+            "name": "[U303] 인터넷·웹 프로그래밍 실습실",
+            "category": "실습·연구",
+            "note": "풀스택 웹/모바일 앱 개발 실습실"
+          },
+          {
+            "name": "[U308] 임베디드 소프트웨어 실습실",
+            "category": "실습·연구",
+            "note": "IoT 센서 및 임베디드 리눅스 실습실"
+          },
+          {
+            "name": "[U310] 스마트 소프트웨어 실습실",
+            "category": "실습·연구",
+            "note": "모바일 및 클라우드 SW 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[U401] 소프트웨어융합대학 행정실",
+            "category": "학과사무실",
+            "note": "컴퓨터공학·AI·정보보안 학사 행정실"
+          },
+          {
+            "name": "[U403] 정보보안·사이버포렌식 실습실",
+            "category": "실습·연구",
+            "note": "네트워크 보안 및 모의해킹 실습실"
+          },
+          {
+            "name": "[U405] SW 컨셉디자인룸",
+            "category": "실습·연구",
+            "note": "UI/UX 및 소프트웨어 아키텍처 설계실"
+          },
+          {
+            "name": "[U408] 알고리즘·자료구조 강의실",
+            "category": "강의실",
+            "note": "전공 필수 이론 및 코딩 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[U501] SW 툴교육센터 (Tool Center)",
+            "category": "실습·연구",
+            "note": "최신 개발 툴 및 클라우드 플랫폼 실습"
+          },
+          {
+            "name": "[U504] 인공지능·머신러닝 실습실",
+            "category": "실습·연구",
+            "note": "GPU 워크스테이션 딥러닝 실습실"
+          },
+          {
+            "name": "[U510] 컴퓨터공학 교수연구실 (508~518)",
+            "category": "교수연구실",
+            "note": "전임교원 연구실 구역"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[U601] 첨단강의실 1 (스마트클래스)",
+            "category": "강의실",
+            "note": "전자칠판 및 원격강의 시스템 완비"
+          },
+          {
+            "name": "[U602] 국제세미나실 · 학술발표장",
+            "category": "강의실",
+            "note": "IT 국제 학술대회 및 초청 특강실"
+          },
+          {
+            "name": "[U605] 첨단강의실 2",
+            "category": "강의실",
+            "note": "PBL(문제해결형) 그룹 수업 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 7,
+        "label": "7F",
+        "facilities": [
+          {
+            "name": "[U701] AI+X 융합연구센터 (1A1 연구소)",
+            "category": "연구소",
+            "note": "인공지능 융합 국책과제 연구센터"
+          },
+          {
+            "name": "[U705] 빅데이터·클라우드 연구실",
+            "category": "연구소",
+            "note": "대학원 데이터사이언스 연구실"
+          },
+          {
+            "name": "[U709] 데이터베이스 실습실",
+            "category": "실습·연구",
+            "note": "DB 설계 및 대용량 데이터 처리 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 8,
+        "label": "8F",
+        "facilities": [
+          {
+            "name": "[U801] 상상 아뜰리에 · SW창작소",
+            "category": "실습·연구",
+            "note": "창의 아이디어 시제품 및 스타트업 랩"
+          },
+          {
+            "name": "[U803] BK21 인공지능 연구실",
+            "category": "연구소",
+            "note": "석·박사 고급 인재 양성 연구실"
+          },
+          {
+            "name": "[U805] 미래ICT 융합세미나실",
+            "category": "강의실",
+            "note": "대학원 연구 발표 및 세미나실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "바이오헬스관",
+    "name_en": "Bio Health Hall",
+    "aliases": [
+      "바이오헬스관",
+      "Bio Health Hall",
+      "15번",
+      "BH",
+      "BH101",
+      "BH201"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00812,
+        35.14328
+      ]
+    },
+    "elevation": 154.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[BH101] 바이오헬스 기초실험실",
+            "category": "실습·연구",
+            "note": "생명과학 및 바이오 분석 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[BH201] 스마트헬스케어 기기 실습실",
+            "category": "실습·연구",
+            "note": "웨어러블 및 디지털 헬스케어 실습"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[BH301] 바이오헬스 전공강의실",
+            "category": "강의실",
+            "note": "바이오헬스융합대학 이론 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[BH401] 바이오헬스 연구실",
+            "category": "연구소",
+            "note": "산학 공동 바이오 연구 공간"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "학생문화관 (문화센터)",
+    "name_en": "Student Culture Center",
+    "aliases": [
+      "16번",
+      "CC",
+      "CC001",
+      "CC003",
+      "CC1001",
+      "CC101",
+      "CC103",
+      "CC401",
+      "CC403",
+      "CC701",
+      "CC705",
+      "CC801",
+      "문화센터",
+      "콘서트홀",
+      "학생문화관"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009769,
+        35.146412
+      ]
+    },
+    "elevation": 97.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -1,
+        "label": "B1",
+        "facilities": [
+          {
+            "name": "[CC001] 문화센터 콘서트홀",
+            "category": "공연·문화",
+            "note": "음악회·연극·공연예술 무대 홀"
+          },
+          {
+            "name": "[CC003] 공연분장실 · 리허설룸",
+            "category": "공연·문화",
+            "note": "공연 준비 및 악기 연습실"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[CC101] 문화센터 안내로비 · 라운지",
+            "category": "편의시설",
+            "note": "정문 인접 방문객 맞이 로비"
+          },
+          {
+            "name": "[CC103] 평생교육원 상담실",
+            "category": "행정·지원",
+            "note": "지역주민 평생학습 강좌 안내"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[CC401] 정보통신센터 · 전산운영팀",
+            "category": "행정·지원",
+            "note": "캠퍼스 와이파이·포털·네트워크 기술지원"
+          },
+          {
+            "name": "[CC403] 통합 클라우드 서버실",
+            "category": "행정·지원",
+            "note": "대학 학사행정 메인 데이터센터"
+          }
+        ]
+      },
+      {
+        "floor": 7,
+        "label": "7F",
+        "facilities": [
+          {
+            "name": "[CC701] 부산디지털대학교 교학처",
+            "category": "행정·지원",
+            "note": "사이버대학 학사 행정 본부"
+          },
+          {
+            "name": "[CC705] 원격콘텐츠 제작 스튜디오",
+            "category": "미디어·스튜디오",
+            "note": "온라인 강의 촬영 및 편집실"
+          }
+        ]
+      },
+      {
+        "floor": 8,
+        "label": "8F",
+        "facilities": [
+          {
+            "name": "[CC801] 부산디지털대학교 교수연구실",
+            "category": "교수연구실",
+            "note": "전임교원 연구실 및 회의실"
+          }
+        ]
+      },
+      {
+        "floor": 10,
+        "label": "10F",
+        "facilities": [
+          {
+            "name": "[CC1001] 문화센터 교직원식당 · 연회장",
+            "category": "식당·카페",
+            "note": "10층 전망 식당 및 세미나 오찬장"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "민석스포츠센터",
+    "name_en": "Minseok Sports Center",
+    "aliases": [
+      "17번",
+      "MS",
+      "MS001",
+      "MS002",
+      "MS003",
+      "MS101",
+      "MS103",
+      "MS201",
+      "MS204",
+      "MS301",
+      "MS303",
+      "MS401",
+      "MS403",
+      "민석스포츠센터",
+      "스포츠센터",
+      "체육관"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.011525,
+        35.14528
+      ]
+    },
+    "elevation": 117.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -1,
+        "label": "B1",
+        "facilities": [
+          {
+            "name": "[MS001] 피트니스 헬스실",
+            "category": "체육·복지",
+            "note": "유산소·프리웨이트 트레이닝 센터"
+          },
+          {
+            "name": "[MS002] 건강클리닉센터 · 운동처방실",
+            "category": "체육·복지",
+            "note": "체성분 측정 및 스포츠 재활 클리닉"
+          },
+          {
+            "name": "[MS003] 공인 스쿼시코트",
+            "category": "체육·복지",
+            "note": "실내 스쿼시 경기 및 수업 코트"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[MS101] 제1실내체육관 (주경기장)",
+            "category": "체육·복지",
+            "note": "농구·배구·배드민턴 다목적 플로어"
+          },
+          {
+            "name": "[MS103] 스포츠센터 운영사무실",
+            "category": "행정·지원",
+            "note": "시설 대관 및 체육프로그램 안내"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[MS201] 제1체육관 관람석",
+            "category": "체육·복지",
+            "note": "경기 관람 스탠드"
+          },
+          {
+            "name": "[MS204] 체육계열 교수연구실 (MS204~208)",
+            "category": "교수연구실",
+            "note": "레포츠·체육 전임교원 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[MS301] 제2체육관 (무용·에어로빅·탁구)",
+            "category": "체육·복지",
+            "note": "다목적 실내 스포츠 실습장"
+          },
+          {
+            "name": "[MS303] 스포츠과학 영상강의실",
+            "category": "강의실",
+            "note": "운동역학 및 스포츠이론 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[MS401] 레포츠과학부 학부사무실",
+            "category": "학과사무실",
+            "note": "체육학·레포츠 전공 학사 행정실"
+          },
+          {
+            "name": "[MS403] 전문 웨이트트레이닝 실습실",
+            "category": "체육·복지",
+            "note": "선수 및 전공생 근력 트레이닝장"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "대학교회",
+    "name_en": "University Chapel",
+    "aliases": [
+      "18번",
+      "CH",
+      "CH101",
+      "CH103",
+      "CH201",
+      "CH301",
+      "CH302",
+      "대학교회",
+      "채플"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010836,
+        35.145513
+      ]
+    },
+    "elevation": 117.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[CH101] 소예배실 · 친교실",
+            "category": "종교·인성",
+            "note": "소규모 예배 및 학생 모임 라운지"
+          },
+          {
+            "name": "[CH103] 교목실 · 인성교육상담실",
+            "category": "행정·지원",
+            "note": "채플 학사 안내 및 목회 상담"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[CH201] 대학교회 대예배당 (본당)",
+            "category": "종교·인성",
+            "note": "교내 채플 및 파이프오르간 예배당"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[CH301] 대예배당 2층 발코니석",
+            "category": "종교·인성",
+            "note": "합창단 및 상부 관람석"
+          },
+          {
+            "name": "[CH302] 찬양대·교회음악 연습실",
+            "category": "실습·연구",
+            "note": "성가대 및 음악 리허설룸"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "name": "학생생활아파트",
+    "name_en": "Student Apartment",
+    "aliases": [
+      "19번",
+      "SA",
+      "SA101",
+      "SA102",
+      "SA201",
+      "기숙사아파트",
+      "학생생활아파트"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008271,
+        35.146205
+      ]
+    },
+    "elevation": 84.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[SA101] 학생생활아파트 관리실 · 사감실",
+            "category": "기숙사",
+            "note": "택배 보관함 및 출입 관리실"
+          },
+          {
+            "name": "[SA102] 1층 아파트 사생실 (SA102~SA110)",
+            "category": "기숙사",
+            "note": "다인실 아파트형 기숙사"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F~5F",
+        "facilities": [
+          {
+            "name": "[SA201] 아파트형 기숙사 호실 (SA201~SA510)",
+            "category": "기숙사",
+            "note": "거실·조리공간 포함 자치형 기숙사"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "국제생활관 2",
+    "name_en": "International House II",
+    "aliases": [
+      "20번",
+      "IH2",
+      "IH2-001",
+      "IH2-101",
+      "IH2-201",
+      "IH2-205",
+      "IH2-401",
+      "IH2-501",
+      "IH2001",
+      "IH2101",
+      "IH2201",
+      "IH2205",
+      "IH2401",
+      "IH2501",
+      "국제생활관 2",
+      "국제생활관2",
+      "국제생활관Ⅱ"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.008792,
+        35.146233
+      ]
+    },
+    "elevation": 90.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -1,
+        "label": "B1",
+        "facilities": [
+          {
+            "name": "[IH2-001] 공동취사실 · 세탁실 · 휴게실",
+            "category": "기숙사",
+            "note": "사생 공용 조리 및 세탁 시설"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[IH2-101] 국제생활관 2 사감실 · 안내실",
+            "category": "기숙사",
+            "note": "기숙사 입사 등록 및 생활 지도실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F~3F",
+        "facilities": [
+          {
+            "name": "[IH2-201] 동서어학당 강의실 (201~204 / 301~304)",
+            "category": "강의실",
+            "note": "한국어 및 외국어 회화 강의실"
+          },
+          {
+            "name": "[IH2-205] 기숙사 사생실 (205~320)",
+            "category": "기숙사",
+            "note": "생활관 숙소 구역"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[IH2-401] 농협은행 동서대지점 · ATM코너",
+            "category": "편의시설",
+            "note": "캠퍼스 금융 창구 및 자동화기기"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F~13F",
+        "facilities": [
+          {
+            "name": "[IH2-501] 국제생활관 2 기숙사 호실 (501~1315)",
+            "category": "기숙사",
+            "note": "국내외 재학생 기숙사 생활 공간"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "민석도서관",
+    "name_en": "Minseok Library",
+    "aliases": [
+      "21번",
+      "ML",
+      "ML001",
+      "ML002",
+      "ML011",
+      "ML015",
+      "ML101",
+      "ML102",
+      "ML103",
+      "ML105",
+      "ML201",
+      "ML204",
+      "ML208",
+      "ML301",
+      "ML304",
+      "ML401",
+      "ML403",
+      "ML405",
+      "ML501",
+      "ML503",
+      "ML601",
+      "ML604",
+      "도서관",
+      "민석도서관",
+      "중앙도서관"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.012517,
+        35.144105
+      ]
+    },
+    "elevation": 162.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -2,
+        "label": "B2",
+        "facilities": [
+          {
+            "name": "[ML001] e-Cafe 라운지 · 북카페",
+            "category": "식당·카페",
+            "note": "도서관 내 휴게 음료 및 스터디 카페"
+          },
+          {
+            "name": "[ML002] 보존서고 · 학위논문서고",
+            "category": "도서관·열람",
+            "note": "귀중 정기간행물 및 보존 도서 서고"
+          }
+        ]
+      },
+      {
+        "floor": -1,
+        "label": "B1",
+        "facilities": [
+          {
+            "name": "[ML011] 제2자유열람실 (24시간/집중열람)",
+            "category": "도서관·열람",
+            "note": "개인 좌석 예약제 집중 학습 열람실"
+          },
+          {
+            "name": "[ML015] 동서대학교 공자아카데미",
+            "category": "연구소",
+            "note": "중국어 교육 및 한중 문화교류원"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[ML101] 통합대출·반납 데스크 & IT-Zone",
+            "category": "도서관·열람",
+            "note": "PC 검색대·프린트·스캐너·노트북 열람석"
+          },
+          {
+            "name": "[ML102] U-Zone (멀티미디어·VR/UCC룸)",
+            "category": "도서관·열람",
+            "note": "DVD 감상 부스 및 영상 편집 스튜디오"
+          },
+          {
+            "name": "[ML103] 멀티플렉스 소극장 (Multiplex)",
+            "category": "공연·문화",
+            "note": "영화 상영 및 북콘서트·특강 홀"
+          },
+          {
+            "name": "[ML105] 제1자유열람실",
+            "category": "도서관·열람",
+            "note": "자연채광 개방형 학습 열람실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[ML201] 제1자료실 (인문·사회·문학)",
+            "category": "도서관·열람",
+            "note": "단행본 열람 및 도서 대출 자료실"
+          },
+          {
+            "name": "[ML204] 참고자료실 · 연속간행물실",
+            "category": "도서관·열람",
+            "note": "국내외 학술지·신문·잡지 열람"
+          },
+          {
+            "name": "[ML208] 그룹 스터디룸 (S201~S206)",
+            "category": "도서관·열람",
+            "note": "4~8인 팀 프로젝트 토론실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[ML301] 제2자료실 (자연과학·공학·예술)",
+            "category": "도서관·열람",
+            "note": "전공 도서 및 예술·디자인 화집 자료실"
+          },
+          {
+            "name": "[ML304] 과제도서실 · 지정도서 코너",
+            "category": "도서관·열람",
+            "note": "수업 교재 및 추천도서 비치실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[ML401] 학술정보교육실 (PC 교육장)",
+            "category": "실습·연구",
+            "note": "논문 검색 및 학술DB 활용 교육장"
+          },
+          {
+            "name": "[ML403] 귀중본자료실 · 기증문고실",
+            "category": "도서관·열람",
+            "note": "희귀 고서 및 명사 기증문고 전시"
+          },
+          {
+            "name": "[ML405] 도서관장실 · 학술정보지원팀",
+            "category": "행정·지원",
+            "note": "도서관 운영 행정 사무실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[ML501] 설립자 민석 기념자료관 · 박물관",
+            "category": "전시·문화",
+            "note": "동서학원 역사 및 설립자 기념 전시관"
+          },
+          {
+            "name": "[ML503] 기획전시홀",
+            "category": "전시·문화",
+            "note": "학술 및 문화 예술 기획 전시장"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[ML601] 국제세미나실 (동시통역 완비)",
+            "category": "강의실",
+            "note": "국제 심포지엄 및 학술 세미나 홀"
+          },
+          {
+            "name": "[ML604] 다목적 컨퍼런스홀",
+            "category": "강의실",
+            "note": "대형 학술행사 및 특강장"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "name": "한국어교육원",
+    "name_en": "Korean Language Institute",
+    "aliases": [
+      "22번",
+      "KL",
+      "KL001",
+      "KL008",
+      "KL101",
+      "KL201",
+      "KL301",
+      "KL304",
+      "외국어교육원",
+      "한국어교육원"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009102,
+        35.146244
+      ]
+    },
+    "elevation": 90.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": -1,
+        "label": "B1~B4",
+        "facilities": [
+          {
+            "name": "[KL001] 한국어 회화 집중강의실 (KL001~006)",
+            "category": "강의실",
+            "note": "급수별(1급~6급) 한국어 어학 강의실"
+          },
+          {
+            "name": "[KL008] 한국문화 체험실",
+            "category": "실습·연구",
+            "note": "전통문화 및 한국 생활 적응 실습실"
+          }
+        ]
+      },
+      {
+        "floor": 1,
+        "label": "1F~2F",
+        "facilities": [
+          {
+            "name": "[KL101] 유학생 라운지 · 글로벌 스터디존",
+            "category": "편의시설",
+            "note": "다국적 유학생 교류 및 휴게 공간"
+          },
+          {
+            "name": "[KL201] TOPIK(한국어능력시험) 대비 강의실",
+            "category": "강의실",
+            "note": "한국어능력시험 집중 특강실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[KL301] 한국어교육원 교학과 사무실",
+            "category": "학과사무실",
+            "note": "어학연수생 등록·비자·학사 행정실"
+          },
+          {
+            "name": "[KL304] 한국어강사 연구실 · 회의실",
+            "category": "교수연구실",
+            "note": "한국어 교원 연구 및 교재 개발실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "글로벌빌리지",
+    "name_en": "Global Village",
+    "aliases": [
+      "23번",
+      "GV",
+      "GV101",
+      "GV105",
+      "GV201",
+      "GV205",
+      "GV301",
+      "GV305",
+      "GV308",
+      "GV401",
+      "GV501",
+      "GV504",
+      "GV601",
+      "GV605",
+      "GV701",
+      "GV703",
+      "GV801",
+      "GV851",
+      "글로벌빌리지",
+      "글로벌하우스"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00705,
+        35.14605
+      ]
+    },
+    "elevation": 69.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[GV101] 글로벌빌리지 로비 · 편의점",
+            "category": "편의시설",
+            "note": "기숙사 및 강의동 메인 출입 로비"
+          },
+          {
+            "name": "[GV105] 실내주차장 · 셔틀정류장",
+            "category": "편의시설",
+            "note": "캠퍼스 하단 진입 주차 구역"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[GV201] 디지털콘텐츠학부 강의실",
+            "category": "강의실",
+            "note": "게임·애니메이션·VFX 전공 강의실"
+          },
+          {
+            "name": "[GV205] CG·모션캡처 실습실",
+            "category": "실습·연구",
+            "note": "3D 애니메이션 및 모션캡처 스튜디오"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[GV301] 보건의료관 II (방사선학과 실습실)",
+            "category": "실습·연구",
+            "note": "X선·CT·초음파 영상진단 실습실"
+          },
+          {
+            "name": "[GV305] 치위생학과 임상실습실",
+            "category": "실습·연구",
+            "note": "치과 유니트체어 구강보건 실습실"
+          },
+          {
+            "name": "[GV308] 방사선·치위생 학과사무실",
+            "category": "학과사무실",
+            "note": "보건의료관 II 학과 행정실"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[GV401] 글로벌빌리지 스포츠센터 · 수영장",
+            "category": "체육·복지",
+            "note": "실내 피트니스 및 체육 실습 시설"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[GV501] 사회복지관 · 보건행정학과 강의실",
+            "category": "강의실",
+            "note": "의무기록 및 보건의료정보 실습실"
+          },
+          {
+            "name": "[GV504] 보건행정학과 사무실",
+            "category": "학과사무실",
+            "note": "보건행정전공 학사 안내"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[GV601] 건축설계관 스튜디오",
+            "category": "실습·연구",
+            "note": "건축학 5년제 설계 제도 스튜디오"
+          },
+          {
+            "name": "[GV605] 건축모형 및 크리틱룸",
+            "category": "강의실",
+            "note": "건축 설계 도면 품평회실"
+          }
+        ]
+      },
+      {
+        "floor": 7,
+        "label": "7F",
+        "facilities": [
+          {
+            "name": "[GV701] 글로벌하우스 통합사감실",
+            "category": "기숙사",
+            "note": "동관·서관 기숙사 입퇴사 및 생활 안내"
+          },
+          {
+            "name": "[GV703] 기숙사 세탁실 · 공용라운지",
+            "category": "기숙사",
+            "note": "기숙사생 전용 편의 공간"
+          }
+        ]
+      },
+      {
+        "floor": 8,
+        "label": "8F~19F",
+        "facilities": [
+          {
+            "name": "[GV801] 글로벌하우스 동관 호실 (GV801~GV1922)",
+            "category": "기숙사",
+            "note": "2인 1실 생활관 및 층별 휴게실"
+          },
+          {
+            "name": "[GV851] 글로벌하우스 서관 호실 (GV851~GV1972)",
+            "category": "기숙사",
+            "note": "2인 1실 생활관 및 스터디룸"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "스튜던트 플라자",
+    "name_en": "Student Plaza & Sports Complex",
+    "aliases": [
+      "24번",
+      "SP",
+      "SP101",
+      "SP103",
+      "SP105",
+      "SP201",
+      "SP204",
+      "SP301",
+      "SP303",
+      "SP305",
+      "SP310",
+      "스튜던트 플라자",
+      "스튜던트플라자",
+      "종합운동장",
+      "푸드코트",
+      "학생식당"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.009453,
+        35.14571
+      ]
+    },
+    "elevation": 114.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[SP101] 스튜던트 푸드코트 (학생식당)",
+            "category": "식당·카페",
+            "note": "한식·양식·일품요리 학생 복지 식당"
+          },
+          {
+            "name": "[SP103] 편의점 · 캠퍼스 문구/서점",
+            "category": "편의시설",
+            "note": "교재·문구류 및 생활용품 스토어"
+          },
+          {
+            "name": "[SP105] 학생 휴게 라운지 & 카페",
+            "category": "식당·카페",
+            "note": "운동장 전망 오픈 휴게실"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[SP201] 종합운동장 본부석 · 스탠드",
+            "category": "체육·복지",
+            "note": "인조잔디 축구장 및 트랙 관람석"
+          },
+          {
+            "name": "[SP204] 체육부실 · 운동장비 보관실",
+            "category": "체육·복지",
+            "note": "교내 체육대회 및 동아리 체육 지원"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[SP301] 입학처 · 입학홍보팀",
+            "category": "대학본부",
+            "note": "신·편입학 입시 상담 및 전형 운영"
+          },
+          {
+            "name": "[SP303] 학생취업지원처 · 대학일자리플러스센터",
+            "category": "행정·지원",
+            "note": "진로·취업 컨설팅 및 장학/복지 지원"
+          },
+          {
+            "name": "[SP305] 총학생회실 · 단과대 학생회실",
+            "category": "학생자치",
+            "note": "학생 자치기구 운영 사무실"
+          },
+          {
+            "name": "[SP310] 중앙동아리방 (SP310~SP325)",
+            "category": "학생자치",
+            "note": "공연·학술·봉사·체육 중앙동아리실"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "name": "테니스장",
+    "name_en": "Tennis Court",
+    "aliases": [
+      "테니스장",
+      "Tennis Court",
+      "25번",
+      "TC"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.007817,
+        35.14283
+      ]
+    },
+    "elevation": 158.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "야외",
+        "facilities": [
+          {
+            "name": "[TC101] 동서대 테니스 코트 (1~4코트)",
+            "category": "체육·복지",
+            "note": "교양 체육 수업 및 동아리 테니스장"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "name": "민석동산",
+    "name_en": "Min-seok Hill",
+    "aliases": [
+      "민석동산",
+      "Min-seok Hill",
+      "26번",
+      "MH"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.01105,
+        35.14492
+      ]
+    },
+    "elevation": 135.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "공원",
+        "facilities": [
+          {
+            "name": "[MH101] 민석동산 전망 산책로 · 벤치",
+            "category": "편의시설",
+            "note": "대학교회와 어문관 사이 녹지 휴게 공원"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "name": "우정의집",
+    "name_en": "Friendship House",
+    "aliases": [
+      "우정의집",
+      "Friendship House",
+      "27번",
+      "FH"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00958,
+        35.14382
+      ]
+    },
+    "elevation": 152.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[FH101] 우정의집 학생 쉼터 · 카페테리아",
+            "category": "편의시설",
+            "note": "상단 캠퍼스 학생 휴게 및 모임 공간"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "name": "UNIVERSITY PARK",
+    "name_en": "University Park",
+    "aliases": [
+      "UNIVERSITY PARK",
+      "유니버시티 파크",
+      "29번",
+      "UP"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00958,
+        35.14422
+      ]
+    },
+    "elevation": 145.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "광장",
+        "facilities": [
+          {
+            "name": "[UP101] 유니버시티 파크 중앙광장 · 상징탑",
+            "category": "편의시설",
+            "note": "국제협력관과 전자정보관 사이 중앙 보행 광장"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "name": "야외공연장 (Muse Park)",
+    "name_en": "Muse Park Amphitheater",
+    "aliases": [
+      "야외공연장",
+      "Muse Park",
+      "뮤즈파크",
+      "30번",
+      "MP"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00965,
+        35.14335
+      ]
+    },
+    "elevation": 158.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "야외무대",
+        "facilities": [
+          {
+            "name": "[MP101] 뮤즈파크 반원형 야외공연장 · 스탠드",
+            "category": "공연·문화",
+            "note": "야외 문화공연 및 동아리 페스티벌 무대"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "International College",
+    "name_en": "International College",
+    "aliases": [
+      "31번",
+      "IC",
+      "IC101",
+      "IC103",
+      "IC201",
+      "IC204",
+      "IC301",
+      "IC303",
+      "IC305",
+      "IC401",
+      "IC404",
+      "IC501",
+      "IC504",
+      "IC601",
+      "IC605",
+      "IC701",
+      "IC704",
+      "IC빌딩",
+      "International College",
+      "디자인팩토리",
+      "인터내셔널 칼리지"
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.00827,
+        35.146058
+      ]
+    },
+    "elevation": 84.0,
+    "video_url": null,
+    "floor_details": [
+      {
+        "floor": 1,
+        "label": "1F",
+        "facilities": [
+          {
+            "name": "[IC101] 동서 디자인팩토리 (DFK 스튜디오)",
+            "category": "실습·연구",
+            "note": "글로벌 산학협동 시제품 제작 메이커스페이스"
+          },
+          {
+            "name": "[IC103] 아이디어 피칭 아레나",
+            "category": "강의실",
+            "note": "오픈형 글로벌 팀 프로젝트 발표장"
+          }
+        ]
+      },
+      {
+        "floor": 2,
+        "label": "2F",
+        "facilities": [
+          {
+            "name": "[IC201] 글로벌 액티브러닝 강의실 1",
+            "category": "강의실",
+            "note": "영어 전용 수업 및 토론형 강의실"
+          },
+          {
+            "name": "[IC204] 글로벌 액티브러닝 강의실 2",
+            "category": "강의실",
+            "note": "원격 국제 화상 합동 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 3,
+        "label": "3F",
+        "facilities": [
+          {
+            "name": "[IC301] 디자인 전문도서관 (Design Library)",
+            "category": "도서관·열람",
+            "note": "해외 디자인 서적 및 정기간행물 열람실"
+          },
+          {
+            "name": "[IC303] IC 크리에이티브 갤러리",
+            "category": "전시·문화",
+            "note": "글로벌 캡스톤 결과물 상설 전시관"
+          },
+          {
+            "name": "[IC305] 국제 세미나룸",
+            "category": "강의실",
+            "note": "소규모 학술 워크숍 공간"
+          }
+        ]
+      },
+      {
+        "floor": 4,
+        "label": "4F",
+        "facilities": [
+          {
+            "name": "[IC401] 글로벌 컴퓨터 실습실 1",
+            "category": "실습·연구",
+            "note": "다국어 OS 및 디자인/코딩 SW 실습실"
+          },
+          {
+            "name": "[IC404] 국제전공 강의실 A",
+            "category": "강의실",
+            "note": "유학생 및 글로벌학부 전공 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 5,
+        "label": "5F",
+        "facilities": [
+          {
+            "name": "[IC501] 글로벌 컴퓨터 실습실 2",
+            "category": "실습·연구",
+            "note": "디지털 콘텐츠 및 데이터 분석 실습실"
+          },
+          {
+            "name": "[IC504] 국제전공 강의실 B",
+            "category": "강의실",
+            "note": "멀티미디어 전공 강의실"
+          }
+        ]
+      },
+      {
+        "floor": 6,
+        "label": "6F",
+        "facilities": [
+          {
+            "name": "[IC601] 글로벌 프로젝트 세미나실",
+            "category": "강의실",
+            "note": "팀 프로젝트 및 발표 강의실"
+          },
+          {
+            "name": "[IC605] 외국인 교원 연구실 (IC604~610)",
+            "category": "교수연구실",
+            "note": "국제대학 전임교수 연구실"
+          }
+        ]
+      },
+      {
+        "floor": 7,
+        "label": "7F",
+        "facilities": [
+          {
+            "name": "[IC701] International College 행정실",
+            "category": "학과사무실",
+            "note": "국제대학 학사 지원 및 유학생 상담실"
+          },
+          {
+            "name": "[IC704] 글로벌 컨퍼런스룸",
+            "category": "강의실",
+            "note": "국제교류 회의 및 세미나실"
+          }
+        ]
+      }
+    ]
+  }
+]
