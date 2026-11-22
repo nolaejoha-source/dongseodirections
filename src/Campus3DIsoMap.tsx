@@ -230,7 +230,7 @@ export default function Campus3DIsoMap({
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
 
     loader.load(
-      '/campus_scene.glb?v=10',
+      '/campus_scene.glb?v=11',
       (gltf) => {
         const root = gltf.scene
         const bMeshes: THREE.Mesh[] = []

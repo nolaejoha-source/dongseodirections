@@ -85,6 +85,99 @@ type SearchRoomHit = {
   room: FloorRoomItem
 }
 
+type GoogleRouteElevationProfile = {
+  samples: Array<{ distance_m: number; elevation_m: number; resolution_m: number | null }>
+  total_uphill_m: number
+  total_downhill_m: number
+  request_budget: { used: number; limit: number }
+}
+
+const GOOGLE_ELEVATION_UI = {
+  ko: { title: '경로 고도 프로필', load: 'Google Maps 고도 조회', loading: '경로 고도를 조회하고 있어요…', ascent: '누적 오르막', descent: '누적 내리막', range: '고도 범위', attribution: '고도 데이터 제공: Google Maps', disclosure: '경로 좌표가 Google Maps에 전송됩니다. 조회 결과는 저장하지 않습니다.', done: '현재 경로 조회 완료', failed: 'Google Maps 경로 고도를 불러오지 못했습니다.' },
+  en: { title: 'Route elevation profile', load: 'Load Google Maps elevation', loading: 'Loading route elevation…', ascent: 'Total ascent', descent: 'Total descent', range: 'Elevation range', attribution: 'Elevation data by Google Maps', disclosure: 'Route coordinates are sent to Google Maps. Results are not saved.', done: 'Loaded for this route', failed: 'Could not load Google Maps route elevation.' },
+  zh: { title: '路线海拔曲线', load: '查询 Google Maps 海拔', loading: '正在查询路线海拔…', ascent: '累计上坡', descent: '累计下坡', range: '海拔范围', attribution: '海拔数据：Google Maps', disclosure: '路线坐标会发送至 Google Maps。查询结果不会保存。', done: '此路线已查询', failed: '无法加载 Google Maps 路线海拔。' },
+  vi: { title: 'Biểu đồ độ cao tuyến đường', load: 'Tải độ cao Google Maps', loading: 'Đang tải độ cao tuyến đường…', ascent: 'Tổng leo dốc', descent: 'Tổng xuống dốc', range: 'Khoảng độ cao', attribution: 'Dữ liệu độ cao: Google Maps', disclosure: 'Tọa độ tuyến đường sẽ được gửi đến Google Maps. Kết quả không được lưu.', done: 'Đã tải cho tuyến này', failed: 'Không thể tải độ cao tuyến đường Google Maps.' },
+  lt: { title: 'Maršruto aukščio profilis', load: 'Gauti Google Maps aukštį', loading: 'Gaunami maršruto aukščio duomenys…', ascent: 'Bendras pakilimas', descent: 'Bendras nusileidimas', range: 'Aukščio diapazonas', attribution: 'Aukščio duomenys: Google Maps', disclosure: 'Maršruto koordinatės siunčiamos į Google Maps. Rezultatai neišsaugomi.', done: 'Šis maršrutas įkeltas', failed: 'Nepavyko gauti Google Maps maršruto aukščio.' },
+  hi: { title: 'मार्ग ऊँचाई प्रोफ़ाइल', load: 'Google Maps ऊँचाई लोड करें', loading: 'मार्ग की ऊँचाई लोड हो रही है…', ascent: 'कुल चढ़ाई', descent: 'कुल उतराई', range: 'ऊँचाई सीमा', attribution: 'ऊँचाई डेटा: Google Maps', disclosure: 'मार्ग निर्देशांक Google Maps को भेजे जाते हैं। परिणाम सहेजे नहीं जाते।', done: 'इस मार्ग के लिए लोड किया गया', failed: 'Google Maps मार्ग की ऊँचाई लोड नहीं हो सकी।' },
+} as const
+
+const APK_INSTALL_URL = '/dongseo-campus-map.apk'
+
+const APK_INSTALL_UI = {
+  ko: {
+    button: 'APK',
+    aria: 'Android APK 및 앱 설치',
+    title: 'Android APK 다운로드 · 앱 설치',
+    desc: '안드로이드 스마트폰에서는 APK 파일을 내려받아 바로 앱으로 설치할 수 있습니다.',
+    downloadBtn: 'Android APK 다운로드 (.apk)',
+    hint: '다운로드 완료 후 파일 앱에서 dongseo-campus-map.apk를 열어 설치하세요. (최초 1회 "출처를 알 수 없는 앱" 허용 필요)',
+    pwaBtn: '웹 앱으로 바로 설치 (홈 화면 추가)',
+    iosTitle: 'iPhone · iPad (iOS) 홈 화면 추가',
+    iosDesc: 'Safari 하단 또는 상단의 공유 버튼을 누른 뒤 "홈 화면에 추가"를 선택하면 앱처럼 사용할 수 있습니다.',
+    close: '닫기',
+  },
+  en: {
+    button: 'APK',
+    aria: 'Download Android APK or install app',
+    title: 'Download Android APK · Install App',
+    desc: 'On Android phones, download the APK file directly to install DSU 3D Campus Map as an app.',
+    downloadBtn: 'Download Android APK (.apk)',
+    hint: 'Open the downloaded dongseo-campus-map.apk from your Files app or notification bar to install (allow "Unknown apps" once if prompted).',
+    pwaBtn: 'Install Web App (Add to Home Screen)',
+    iosTitle: 'iPhone · iPad (iOS) Install',
+    iosDesc: 'Tap Share in Safari and select "Add to Home Screen" to use it like a native app.',
+    close: 'Close',
+  },
+  zh: {
+    button: 'APK',
+    aria: '下载 Android APK 或安装应用',
+    title: '下载 Android APK · 安装应用',
+    desc: 'Android 手机可直接下载 APK 安装包，将东西大 3D 校园导览安装为手机应用。',
+    downloadBtn: '下载 Android APK (.apk)',
+    hint: '下载完成后，在文件管理或通知栏点击 dongseo-campus-map.apk 安装（如提示请允许安装未知来源应用）。',
+    pwaBtn: '直接安装网页应用（添加到主屏幕）',
+    iosTitle: 'iPhone · iPad (iOS) 添加到主屏幕',
+    iosDesc: '在 Safari 点击“分享”按钮，然后选择“添加到主屏幕”即可像应用一样使用。',
+    close: '关闭',
+  },
+  vi: {
+    button: 'APK',
+    aria: 'Tải APK Android hoặc cài ứng dụng',
+    title: 'Tải APK Android · Cài đặt ứng dụng',
+    desc: 'Trên điện thoại Android, hãy tải trực tiếp tệp APK để cài đặt Bản đồ ĐH Dongseo.',
+    downloadBtn: 'Tải xuống Android APK (.apk)',
+    hint: 'Mở tệp dongseo-campus-map.apk sau khi tải xong để cài đặt (bật cho phép nguồn không xác định nếu được hỏi).',
+    pwaBtn: 'Cài đặt ứng dụng Web (Thêm vào MH chính)',
+    iosTitle: 'iPhone · iPad (iOS)',
+    iosDesc: 'Nhấn nút Chia sẻ trong Safari rồi chọn "Thêm vào Màn hình chính".',
+    close: 'Đóng',
+  },
+  lt: {
+    button: 'APK',
+    aria: 'Atsisiųsti Android APK arba įdiegti programėlę',
+    title: 'Android APK atsisiuntimas · Programėlės diegimas',
+    desc: 'Android telefone atsisiųskite APK failą tiesiogiai ir įdiekite DSU 3D žemėlapį kaip programėlę.',
+    downloadBtn: 'Atsisiųsti Android APK (.apk)',
+    hint: 'Atidarykite atsisiųstą dongseo-campus-map.apk failą (jei prašoma, leiskite diegti iš nežinomų šaltinių).',
+    pwaBtn: 'Įdiegti žiniatinklio programėlę',
+    iosTitle: 'iPhone · iPad (iOS) diegimas',
+    iosDesc: 'Safari naršyklėje paspauskite Bendrinti ir pasirinkite „Pridėti prie pradžios ekrano“.',
+    close: 'Uždaryti',
+  },
+  hi: {
+    button: 'APK',
+    aria: 'Android APK डाउनलोड करें या ऐप इंस्टॉल करें',
+    title: 'Android APK डाउनलोड · ऐप इंस्टॉल',
+    desc: 'Android फ़ोन पर ऐप की तरह इस्तेमाल करने के लिए सीधे APK फ़ाइल डाउनलोड करें।',
+    downloadBtn: 'Android APK डाउनलोड करें (.apk)',
+    hint: 'डाउनलोड पूरा होने पर फ़ाइल्स ऐप से dongseo-campus-map.apk खोलकर इंस्टॉल करें।',
+    pwaBtn: 'वेब ऐप इंस्टॉल करें (होम स्क्रीन में जोड़ें)',
+    iosTitle: 'iPhone · iPad (iOS)',
+    iosDesc: 'Safari में Share बटन दबाएँ और "Add to Home Screen" चुनें।',
+    close: 'बंद करें',
+  },
+} as const
+
 function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number) {
   const toRad = (deg: number) => (deg * Math.PI) / 180
   const dLat = toRad(lat2 - lat1)
@@ -418,7 +511,7 @@ type BeforeInstallPromptEvent = Event & {
 export default function App() {
   const [language, setLanguage] = useState<Language>('ko')
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [isIosInstallHelp, setIsIosInstallHelp] = useState(false)
+  const [showInstallDialog, setShowInstallDialog] = useState(false)
   const [mobileSheetSnap, setMobileSheetSnap] = useState<'closed' | 'peek' | 'half' | 'full'>('peek')
   const sheetDragRef = useRef<{ pointerId: number; startY: number; dragged: boolean } | null>(null)
   const suppressSheetClickRef = useRef(false)
@@ -441,6 +534,9 @@ export default function App() {
   const [routeMessage, setRouteMessage] = useState('')
   const [searchMessage, setSearchMessage] = useState('')
   const [activeRoute, setActiveRoute] = useState<ActiveRouteData | null>(null)
+  const [googleElevationProfile, setGoogleElevationProfile] = useState<GoogleRouteElevationProfile | null>(null)
+  const [googleElevationLoading, setGoogleElevationLoading] = useState(false)
+  const [googleElevationMessage, setGoogleElevationMessage] = useState('')
 
   const [isFollowing2D, setIsFollowing2D] = useState(false)
   const [isPlaying2D, setIsPlaying2D] = useState(false)
@@ -469,17 +565,62 @@ export default function App() {
   }, [])
 
   const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
+  const isNativeApp = Capacitor.isNativePlatform()
 
-  async function installApp() {
-    if (isIosDevice) {
-      setIsIosInstallHelp(true)
-      return
-    }
+  function openInstallModal() {
+    setShowInstallDialog(true)
+  }
+
+  async function triggerPwaInstall() {
     if (!installPrompt) return
     await installPrompt.prompt()
     await installPrompt.userChoice
     setInstallPrompt(null)
+    setShowInstallDialog(false)
   }
+
+  async function loadGoogleElevationProfile() {
+    if (!activeRoute || googleElevationLoading || googleElevationProfile) return
+    setGoogleElevationLoading(true)
+    setGoogleElevationMessage('')
+    const coordinates: [number, number][] = []
+    activeRoute.segments.forEach((segment, index) => {
+      if (index === 0) coordinates.push(segment.from_coord)
+      coordinates.push(segment.to_coord)
+    })
+    try {
+      const response = await fetch(apiUrl('/api/elevation/route-profile'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          path: coordinates.map(([lat, lng]) => ({ type: 'Point', coordinates: [lng, lat] })),
+          samples: 96,
+        }),
+      })
+      const payload = (await response.json().catch(() => ({}))) as GoogleRouteElevationProfile & { detail?: string }
+      if (!response.ok) {
+        setGoogleElevationMessage(payload.detail || GOOGLE_ELEVATION_UI[language].failed)
+        return
+      }
+      if (!Array.isArray(payload.samples) || payload.samples.length < 2) {
+        setGoogleElevationMessage(GOOGLE_ELEVATION_UI[language].failed)
+        return
+      }
+      setGoogleElevationProfile(payload)
+    } catch {
+      setGoogleElevationMessage(GOOGLE_ELEVATION_UI[language].failed)
+    } finally {
+      setGoogleElevationLoading(false)
+    }
+  }
+
+  const googleProfileRouteKey = activeRoute
+    ? `${activeRoute.startName}|${activeRoute.destinationName}|${activeRoute.segments.map((segment) => segment.id).join(',')}`
+    : ''
+  useEffect(() => {
+    setGoogleElevationProfile(null)
+    setGoogleElevationMessage('')
+  }, [googleProfileRouteKey])
 
   function handleSheetPointerDown(event: ReactPointerEvent<HTMLButtonElement>) {
     suppressSheetClickRef.current = false
@@ -1052,10 +1193,16 @@ export default function App() {
             <LockKeyhole size={14} />
             <span>{tx.adminBtn}</span>
           </button>
-          {(installPrompt || isIosDevice) && (
-            <button type="button" className="app-install-button" onClick={() => void installApp()} aria-label="앱 설치" title="앱 설치">
+          {!isNativeApp && (
+            <button
+              type="button"
+              className="app-install-button"
+              onClick={openInstallModal}
+              aria-label={APK_INSTALL_UI[language].aria}
+              title={APK_INSTALL_UI[language].aria}
+            >
               <Download size={14} />
-              <span>설치</span>
+              <span>{APK_INSTALL_UI[language].button}</span>
             </button>
           )}
           <div className="language-picker" aria-label={t.language}>
@@ -1071,13 +1218,42 @@ export default function App() {
           </div>
         </header>
 
-        {isIosInstallHelp && (
-          <div className="install-help-backdrop" role="presentation" onClick={() => setIsIosInstallHelp(false)}>
+        {showInstallDialog && (
+          <div className="install-help-backdrop" role="presentation" onClick={() => setShowInstallDialog(false)}>
             <section className="install-help-dialog" role="dialog" aria-modal="true" aria-labelledby="install-help-title" onClick={(event) => event.stopPropagation()}>
-              <button type="button" className="install-help-close" onClick={() => setIsIosInstallHelp(false)} aria-label="닫기">×</button>
+              <button type="button" className="install-help-close" onClick={() => setShowInstallDialog(false)} aria-label={APK_INSTALL_UI[language].close}>×</button>
               <span className="install-help-kicker">DSU CAMPUS MAP</span>
-              <h2 id="install-help-title">홈 화면에 추가</h2>
-              <p>Safari 하단의 <strong>공유</strong> 버튼을 누른 뒤 <strong>홈 화면에 추가</strong>를 선택하세요.</p>
+              <h2 id="install-help-title">{APK_INSTALL_UI[language].title}</h2>
+              {isIosDevice ? (
+                <>
+                  <div className="install-ios-box">
+                    <strong>{APK_INSTALL_UI[language].iosTitle}</strong>
+                    <p>{APK_INSTALL_UI[language].iosDesc}</p>
+                  </div>
+                  <a className="install-pwa-btn install-apk-secondary" href={APK_INSTALL_URL} download="dongseo-campus-map.apk">
+                    <Download size={15} />
+                    <span>{APK_INSTALL_UI[language].downloadBtn}</span>
+                  </a>
+                </>
+              ) : (
+                <>
+                  <p>{APK_INSTALL_UI[language].desc}</p>
+                  <a className="install-apk-download" href={APK_INSTALL_URL} download="dongseo-campus-map.apk">
+                    <Download size={16} />
+                    <span>{APK_INSTALL_UI[language].downloadBtn}</span>
+                  </a>
+                  <p className="install-apk-hint">{APK_INSTALL_UI[language].hint}</p>
+                  {installPrompt && (
+                    <button type="button" className="install-pwa-btn" onClick={() => void triggerPwaInstall()}>
+                      {APK_INSTALL_UI[language].pwaBtn}
+                    </button>
+                  )}
+                  <div className="install-ios-box">
+                    <strong>{APK_INSTALL_UI[language].iosTitle}</strong>
+                    <p>{APK_INSTALL_UI[language].iosDesc}</p>
+                  </div>
+                </>
+              )}
             </section>
           </div>
         )}
@@ -1367,6 +1543,10 @@ export default function App() {
                   onStartFollow={() => void executeRoute(fromId || 'current', toId || 9, stepFree, true)}
                   isFollowing2D={isFollowing2D}
                   activeRoute={activeRoute}
+                  googleElevationProfile={googleElevationProfile}
+                  googleElevationLoading={googleElevationLoading}
+                  googleElevationMessage={googleElevationMessage}
+                  onLoadGoogleElevation={() => void loadGoogleElevationProfile()}
                   message={routeMessage}
                   language={language}
                   t={t}
@@ -1872,6 +2052,10 @@ function RoutePanel({
   onStartFollow,
   isFollowing2D,
   activeRoute,
+  googleElevationProfile,
+  googleElevationLoading,
+  googleElevationMessage,
+  onLoadGoogleElevation,
   message,
   language,
   t,
@@ -1890,6 +2074,10 @@ function RoutePanel({
   onStartFollow: () => void
   isFollowing2D: boolean
   activeRoute: ActiveRouteData | null
+  googleElevationProfile: GoogleRouteElevationProfile | null
+  googleElevationLoading: boolean
+  googleElevationMessage: string
+  onLoadGoogleElevation: () => void
   message: string
   language: Language
   t: UiCopy
@@ -2014,6 +2202,47 @@ function RoutePanel({
             })}
           </div>
         </div>
+      )}
+
+      {activeRoute && (
+        <section className="google-elevation-card" aria-label={GOOGLE_ELEVATION_UI[language].title}>
+          <div className="google-elevation-heading">
+            <div>
+              <strong><Mountain size={14} />{GOOGLE_ELEVATION_UI[language].title}</strong>
+              <small>{GOOGLE_ELEVATION_UI[language].attribution}</small>
+            </div>
+            <button type="button" onClick={onLoadGoogleElevation} disabled={googleElevationLoading || !!googleElevationProfile}>
+              {googleElevationLoading ? GOOGLE_ELEVATION_UI[language].loading : googleElevationProfile ? GOOGLE_ELEVATION_UI[language].done : GOOGLE_ELEVATION_UI[language].load}
+            </button>
+          </div>
+          <p className="google-elevation-disclosure">{GOOGLE_ELEVATION_UI[language].disclosure}</p>
+          {googleElevationProfile && (
+            <>
+              <div className="google-elevation-metrics">
+                <span><small>{GOOGLE_ELEVATION_UI[language].ascent}</small><b>+{googleElevationProfile.total_uphill_m.toFixed(1)} m</b></span>
+                <span><small>{GOOGLE_ELEVATION_UI[language].descent}</small><b>−{googleElevationProfile.total_downhill_m.toFixed(1)} m</b></span>
+                <span>
+                  <small>{GOOGLE_ELEVATION_UI[language].range}</small>
+                  <b>
+                    {Math.min(...googleElevationProfile.samples.map((sample) => sample.elevation_m)).toFixed(0)}–
+                    {Math.max(...googleElevationProfile.samples.map((sample) => sample.elevation_m)).toFixed(0)} m
+                  </b>
+                </span>
+              </div>
+              <svg className="google-elevation-chart" viewBox="0 0 320 76" role="img" aria-label={`${GOOGLE_ELEVATION_UI[language].title}, ${googleElevationProfile.samples.length} samples`}>
+                {(() => {
+                  const values = googleElevationProfile.samples.map((sample) => sample.elevation_m)
+                  const min = Math.min(...values)
+                  const max = Math.max(...values)
+                  const span = Math.max(4, max - min)
+                  const points = values.map((value, index) => `${8 + (index / (values.length - 1)) * 304},${66 - ((value - min) / span) * 54}`).join(' ')
+                  return <><polygon points={`8,68 ${points} 312,68`} /><polyline points={points} /></>
+                })()}
+              </svg>
+            </>
+          )}
+          {googleElevationMessage && <p className="google-elevation-message" role="status">{googleElevationMessage}</p>}
+        </section>
       )}
 
       <div className="route-note">
