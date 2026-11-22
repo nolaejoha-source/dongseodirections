@@ -1,6 +1,6 @@
 # 동서대학교 캠퍼스 가이드
 
-모바일 우선 캠퍼스 안내 MVP입니다. React, TypeScript, Vite, Leaflet/OpenStreetMap 프런트엔드와 FastAPI/MongoDB API를 포함합니다. Google Maps API나 Google API 키는 사용하지 않습니다.
+모바일 우선 캠퍼스 안내 MVP입니다. React, TypeScript, Vite, Leaflet/OpenStreetMap 프런트엔드와 FastAPI/MongoDB API를 포함합니다. 경로 고도 프로필은 선택적으로 Google Elevation API를 사용할 수 있습니다.
 
 ## 실행
 
@@ -43,6 +43,9 @@ APK에서 건물 검색·관리자 API를 사용하려면 `VITE_API_BASE_URL`을
 - 경로 탐색은 관리자가 실제 `path_nodes`와 `path_edges`를 등록한 연결 구간만 사용합니다. 연결된 보행 경로가 없으면 API와 화면 모두 경로를 안내하지 않습니다.
 - 현재 위치는 길찾기 요청 때만 전송합니다. 등록된 보행로 노드에서 5m 이내로 확인되지 않는 위치는 경로 시작점으로 사용하지 않으며, 건물을 출발지로 수동 선택할 수 있습니다.
 - 경로 노드 고도는 관리자 API `/api/admin/elevations/lookup`으로 Open-Elevation에서 조회할 수 있습니다. 조회 실패 시 노드·간선 경사 정보는 업데이트하지 않습니다.
+- Google 경로 고도는 사용자가 경로 패널의 **Google Maps 고도 조회**를 눌렀을 때만 요청합니다. 한 경로당 96개 표본을 한 API 요청으로 받아 프로필·누적 오르막·내리막을 표시합니다. 응답 고도는 화면 표시 중 메모리에만 두고 파일·DB에 저장하지 않습니다.
+- Google Elevation API 사용 시 서버 환경 변수 `GOOGLE_ELEVATION_API_KEY`와 `GOOGLE_ELEVATION_FREE_CALL_BUDGET`을 설정합니다. 키는 프런트엔드 번들이나 저장소에 넣지 말고, 비공개 서버 환경에만 둡니다. 예산 값은 Google Cloud에서 확인한 이번 달 남은 무료 호출 수보다 크게 설정하지 마세요. 기본 월 무료 한도는 5,000회이며, 연결된 결제 계정의 프로젝트들이 함께 사용량을 집계합니다. 이 앱은 설정한 값(최대 5,000)까지 요청 시도 횟수를 로컬에서 기록해 초과 호출을 막습니다.
+- Google 고도값을 저장·대량 수집하거나 Blender 지형 모델을 생성하는 데 사용하지 않습니다. Blender의 기존 지형은 별도 SRTM 자료를 사용합니다. Google Elevation 호출은 앱 안에서 요청한 보행 경로 프로필을 보여주는 데에만 사용하며, 화면에 `Google Maps` 출처를 표시합니다.
 - 지도 타일은 OpenStreetMap을 사용하며 지도에 저작자 표시를 유지합니다.
 - 건물 사진은 동서대학교 공식 캠퍼스맵의 1~31번 이미지에 연결합니다. 사진은 학교 서버에서 직접 불러오고, 상세 카드에 원본 출처 링크를 표시합니다. 사진 로딩에는 인터넷 연결이 필요합니다.
 

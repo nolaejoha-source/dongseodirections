@@ -165,12 +165,16 @@ export default function Campus3DIsoMap({
     scene.fog = new THREE.FogExp2('#1d232c', 0.00045)
     sceneRef.current = scene
 
-    const camera = new THREE.PerspectiveCamera(36, width / height, 2.0, 4500)
+    const camera = new THREE.PerspectiveCamera(36, width / height, 1.0, 2500)
     // Match Blender's isometric overview camera position (Blender: X=25, Y=-510, Z=360 -> Three: X=25, Y=360, Z=510)
     camera.position.set(25, 340, 490)
     cameraRef.current = camera
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      powerPreference: 'high-performance',
+      logarithmicDepthBuffer: true,
+    })
     renderer.setSize(width, height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     renderer.shadowMap.enabled = true
@@ -230,7 +234,7 @@ export default function Campus3DIsoMap({
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
 
     loader.load(
-      '/campus_scene.glb?v=18',
+      '/campus_scene.glb?v=20',
       (gltf) => {
         const root = gltf.scene
         const bMeshes: THREE.Mesh[] = []

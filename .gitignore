@@ -3,5 +3,10 @@ dist/
 .env
 server/.env
 server/.venv/
+server/data/google_elevation_usage.json
 __pycache__/
 *.py[cod]
+*.blend
+*.blend1
+*_preview.png
+campusmap_reference.jpg

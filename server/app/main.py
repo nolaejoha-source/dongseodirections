@@ -6,6 +6,8 @@ import logging
 import math
 import os
 import re
+import threading
+from datetime import date
 from pathlib import Path
 from typing import Any, Literal
 from urllib.parse import urlparse
@@ -157,6 +159,11 @@ class ElevationLookupInput(BaseModel):
     node_ids: list[str] = Field(min_length=1, max_length=100)
 
 
+class RouteElevationProfileInput(BaseModel):
+    path: list[PointGeometry] = Field(min_length=2, max_length=512)
+    samples: int = Field(default=96, ge=2, le=512)
+
+
 def seed_buildings() -> list[dict[str, Any]]:
     with DATA_FILE.open(encoding="utf-8") as file:
         return json.load(file)
@@ -267,6 +274,8 @@ class Store:
 
 store = Store()
 app = FastAPI(title="Dongseo University Campus Guide API", version="0.2.0")
+GOOGLE_ELEVATION_USAGE_FILE = DATA_DIR / "google_elevation_usage.json"
+GOOGLE_ELEVATION_USAGE_LOCK = threading.Lock()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
@@ -681,6 +690,106 @@ def build_route(request: RouteInput) -> dict[str, Any]:
 @app.post("/api/routes")
 def find_route(request: RouteInput) -> dict[str, Any]:
     return build_route(request)
+
+
+def reserve_google_elevation_call() -> tuple[int, int]:
+    """Reserve one request against the explicitly configured free-call budget.
+
+    Only this app's request count is recorded; no elevation response is persisted.
+    Set the budget no higher than the remaining monthly free events in Google Cloud.
+    """
+    raw_limit = os.getenv("GOOGLE_ELEVATION_FREE_CALL_BUDGET", "0")
+    try:
+        limit = max(0, min(5000, int(raw_limit)))
+    except ValueError:
+        limit = 0
+    month = date.today().strftime("%Y-%m")
+    with GOOGLE_ELEVATION_USAGE_LOCK:
+        try:
+            usage = json.loads(GOOGLE_ELEVATION_USAGE_FILE.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            usage = {}
+        used = int(usage.get("used", 0)) if usage.get("month") == month else 0
+        if limit <= 0:
+            raise HTTPException(status_code=503, detail="Google Elevation is disabled until a free-call budget is configured.")
+        if used >= limit:
+            raise HTTPException(status_code=429, detail="The configured monthly free-call budget has been reached.")
+        GOOGLE_ELEVATION_USAGE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        GOOGLE_ELEVATION_USAGE_FILE.write_text(
+            json.dumps({"month": month, "used": used + 1}, ensure_ascii=False), encoding="utf-8"
+        )
+        return used + 1, limit
+
+
+@app.post("/api/elevation/route-profile")
+def google_route_elevation_profile(request: RouteElevationProfileInput) -> dict[str, Any]:
+    """Fetch a requested in-app route profile; never cache or persist Google data."""
+    api_key = os.getenv("GOOGLE_ELEVATION_API_KEY", "").strip()
+    if not api_key:
+        raise HTTPException(status_code=503, detail="Google Elevation API is not configured on the server.")
+
+    nodes = store.nodes()
+    if not nodes:
+        raise HTTPException(status_code=503, detail="The campus path graph is not available.")
+    node_coords = [node["location"]["coordinates"] for node in nodes]
+    min_lng = min(coord[0] for coord in node_coords) - 0.006
+    max_lng = max(coord[0] for coord in node_coords) + 0.006
+    min_lat = min(coord[1] for coord in node_coords) - 0.006
+    max_lat = max(coord[1] for coord in node_coords) + 0.006
+    coordinates = [point.coordinates for point in request.path]
+    if any(not (min_lng <= lng <= max_lng and min_lat <= lat <= max_lat) for lng, lat in coordinates):
+        raise HTTPException(status_code=400, detail="Route profile coordinates must stay within the campus area.")
+
+    used, limit = reserve_google_elevation_call()
+    # A failed attempt still consumes this app's local safety budget conservatively.
+    # Google bills successful requests; no automatic retry is made here.
+    params = {
+        "path": "|".join(f"{lat:.7f},{lng:.7f}" for lng, lat in coordinates),
+        "samples": request.samples,
+        "key": api_key,
+    }
+    try:
+        response = httpx.get("https://maps.googleapis.com/maps/api/elevation/json", params=params, timeout=10.0)
+        response.raise_for_status()
+        payload = response.json()
+        if payload.get("status") != "OK":
+            raise ValueError("Google Elevation did not return OK.")
+        results = payload.get("results", [])
+        if len(results) != request.samples:
+            raise ValueError("Google Elevation returned an incomplete profile.")
+        elevations = [float(item["elevation"]) for item in results]
+    except (httpx.HTTPError, ValueError, TypeError, KeyError):
+        raise HTTPException(status_code=502, detail="Google Elevation could not return this route profile.")
+
+    path_distances = [0.0]
+    for (lng_a, lat_a), (lng_b, lat_b) in zip(coordinates, coordinates[1:]):
+        path_distances.append(path_distances[-1] + haversine_meters(lat_a, lng_a, lat_b, lng_b))
+    route_length = path_distances[-1]
+    profile = []
+    total_uphill = 0.0
+    total_downhill = 0.0
+    for index, result in enumerate(results):
+        elevation = elevations[index]
+        if index:
+            delta = elevation - elevations[index - 1]
+            if delta > 0:
+                total_uphill += delta
+            else:
+                total_downhill -= delta
+        resolution = result.get("resolution")
+        profile.append({
+            "distance_m": round(route_length * index / max(1, len(results) - 1), 1),
+            "elevation_m": round(elevation, 1),
+            "resolution_m": round(float(resolution), 1) if resolution is not None else None,
+        })
+    return {
+        "source": "Google Maps",
+        "samples": profile,
+        "total_uphill_m": round(total_uphill, 1),
+        "total_downhill_m": round(total_downhill, 1),
+        "request_budget": {"used": used, "limit": limit},
+        "cached": False,
+    }
 
 
 @app.post("/api/admin/elevations/lookup", dependencies=[Depends(require_admin)])
