@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { Compass, CornerUpLeft, CornerUpRight, FastForward, Flag, MapPin, Mountain, Navigation, Pause, Play, RotateCcw, SkipBack, SkipForward, Sparkles, X } from 'lucide-react'
+import { Compass, CornerUpLeft, CornerUpRight, EyeOff, FastForward, Flag, MapPin, Mountain, Navigation, Pause, Play, RotateCcw, SkipBack, SkipForward, X } from 'lucide-react'
 import { CAMPUS_CENTER } from './campusData'
 import type { Building, Language, RouteSegment, RouteWaypoint } from './data'
 import { EXT_UI_COPY, getLocalizedBuildingName } from './i18nCatalog'
@@ -191,6 +191,8 @@ export default function Naver2DRouteFollower({
   setHeadingUpMode,
   mapViewMode,
   onToggleMapViewMode,
+  navHudEnabled,
+  onToggleNavHud,
   onCloseFollow,
   language = 'ko',
 }: {
@@ -208,6 +210,8 @@ export default function Naver2DRouteFollower({
   setHeadingUpMode: React.Dispatch<React.SetStateAction<boolean>>
   mapViewMode?: '2d' | '3d'
   onToggleMapViewMode?: () => void
+  navHudEnabled: boolean
+  onToggleNavHud: () => void
   onCloseFollow: () => void
   language?: Language
 }) {
@@ -281,193 +285,189 @@ export default function Naver2DRouteFollower({
     }
   }, [currentSample, samples, remainingDist, totalDistance, route.destinationName, tx])
 
-  return (
-    <>
-      {/* Naver Map Style Top Turn-by-Turn Guidance HUD */}
-      <div className="naver2d-top-hud" role="region" aria-label={tx.followMyViewBtn}>
-        <div className="naver2d-turn-card">
-          <div className="naver2d-turn-icon">
-            {turnGuidance.type === 'arrived' ? (
-              <Flag size={24} />
-            ) : turnGuidance.type === 'left' ? (
-              <CornerUpLeft size={26} />
-            ) : turnGuidance.type === 'right' ? (
-              <CornerUpRight size={26} />
-            ) : (
-              <Navigation size={24} />
-            )}
-          </div>
-          <div className="naver2d-turn-body">
-            <div className="naver2d-route-meta">
-              <span>{route.startName} → {route.destinationName}</span>
-              <span className="naver2d-remain-pill">{tx.remainMeta(remainingDist, remainingMin, progressPct)}</span>
-            </div>
-            <strong>{turnGuidance.title}</strong>
-            <p>{turnGuidance.subtitle}</p>
-            <div className="naver2d-badges">
-              <span className="naver2d-badge"><MapPin size={12} />{tx.currentPosBadge(currentSample.nearBuildingName)}</span>
-              <span className="naver2d-badge"><Mountain size={12} />{tx.elevValue(Number(currentSample.elevation.toFixed(1)))}</span>
-              <span className="naver2d-badge" style={{ background: currentSlopeInfo.color, color: '#fff' }}>
-                {currentSlopeInfo.label}
-              </span>
-            </div>
-          </div>
-          <div className="naver2d-top-controls">
-            {onToggleMapViewMode && (
-              <button
-                className="naver2d-compass-btn active"
-                style={{ background: mapViewMode === '3d' ? '#dc2626' : '#1d573f' }}
-                onClick={onToggleMapViewMode}
-              >
-                <span>{mapViewMode === '3d' ? tx.switchTo2DBtn : tx.switchTo3DBtn}</span>
-              </button>
-            )}
-            <button
-              className={headingUpMode ? 'naver2d-compass-btn active' : 'naver2d-compass-btn'}
-              onClick={() => setHeadingUpMode(!headingUpMode)}
-            >
-              <Compass size={15} />
-              <span>{headingUpMode ? tx.cameraLockOn : tx.cameraLockOff}</span>
-            </button>
-            <button className="naver2d-exit-btn" onClick={onCloseFollow}>
-              <X size={15} />
-              <span>{tx.exitFollowBtn}</span>
-            </button>
-          </div>
-        </div>
-      </div>
+  const togglePlayback = () => {
+    if (progressDist >= totalDistance - 1) setProgressDist(0)
+    setIsPlaying(!isPlaying)
+  }
 
-      {/* Bottom Path-Following & Slope Profile Bar */}
-      <div className="naver2d-bottom-dock" role="region" aria-label={tx.slopeProfileTitle}>
-        <div className="naver2d-slope-header">
-          <span className="naver2d-slope-title">
-            <Sparkles size={13} />{tx.slopeProfileTitle}
-          </span>
-          <span className="naver2d-slope-legend">
-            <i><b style={{ background: '#22c55e' }} />{tx.legendFlat}</i>
-            <i><b style={{ background: '#f59e0b' }} />{tx.legendGentle}</i>
-            <i><b style={{ background: '#ef4444' }} />{tx.legendSteepUp}</i>
-            <i><b style={{ background: '#38bdf8' }} />{tx.legendDown}</i>
-          </span>
-        </div>
-
-        <svg
-          className="naver2d-elevation-svg"
-          viewBox="0 0 600 54"
-          preserveAspectRatio="none"
-          onClick={(e) => {
-            const box = e.currentTarget.getBoundingClientRect()
-            const ratio = Math.max(0, Math.min(1, (e.clientX - box.left) / box.width))
-            setIsPlaying(false)
-            setProgressDist(ratio * totalDistance)
-          }}
+  if (!navHudEnabled) {
+    return (
+      <div className="naver2d-collapsed-bar" role="region" aria-label={tx.followMyViewBtn}>
+        <button
+          type="button"
+          className="naver2d-collapsed-on-btn"
+          onClick={onToggleNavHud}
+          aria-pressed={false}
         >
-          {(() => {
-            const minE = Math.min(...samples.map((s) => s.elevation)) - 4
-            const maxE = Math.max(...samples.map((s) => s.elevation)) + 4
-            const spanE = Math.max(10, maxE - minE)
-            const toX = (d: number) => (d / totalDistance) * 580 + 10
-            const toY = (el: number) => 46 - ((el - minE) / spanE) * 36
-
-            return (
-              <>
-                {samples.slice(0, -1).map((s, idx) => {
-                  const nxt = samples[idx + 1]
-                  const x1 = toX(s.distFromStart)
-                  const x2 = toX(nxt.distFromStart)
-                  const y1 = toY(s.elevation)
-                  const y2 = toY(nxt.elevation)
-                  const info = classifySlope(s.slope_pct, s.is_step_free, language)
-                  return (
-                    <g key={idx}>
-                      <polygon
-                        points={`${x1},48 ${x1},${y1} ${x2},${y2} ${x2},48`}
-                        fill={info.roadColor}
-                        fillOpacity={0.3}
-                      />
-                      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={info.roadColor} strokeWidth={2.6} />
-                    </g>
-                  )
-                })}
-                {(() => {
-                  const cx = toX(currentSample.distFromStart)
-                  const cy = toY(currentSample.elevation)
-                  return (
-                    <g>
-                      <line x1={cx} y1={3} x2={cx} y2={50} stroke="#1d4ed8" strokeWidth={1.8} strokeDasharray="3 2" />
-                      <circle cx={cx} cy={cy} r={5} fill="#2563eb" stroke="#ffffff" strokeWidth={2} />
-                    </g>
-                  )
-                })()}
-              </>
-            )
-          })()}
-        </svg>
-
-        <div className="naver2d-controls-row">
+          <Navigation size={15} />
+          <span>{tx.navToggleOn}</span>
+        </button>
+        <button
+          type="button"
+          className="naver2d-collapsed-icon-btn"
+          onClick={togglePlayback}
+          aria-label={isPlaying ? tx.pauseBtn : tx.playBtn}
+          title={isPlaying ? tx.pauseBtn : progressDist >= totalDistance - 1 ? tx.replayBtn : tx.playBtn}
+        >
+          {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+        </button>
+        {onToggleMapViewMode && (
           <button
-            className="naver2d-play-btn"
-            onClick={() => {
-              if (progressDist >= totalDistance - 1) setProgressDist(0)
-              setIsPlaying(!isPlaying)
-            }}
+            type="button"
+            className="naver2d-collapsed-icon-btn"
+            onClick={onToggleMapViewMode}
+            title={mapViewMode === '3d' ? tx.switchTo2DBtn : tx.switchTo3DBtn}
           >
-            {isPlaying ? <Pause size={15} /> : <Play size={15} />}
-            <span>{isPlaying ? tx.pauseBtn : progressDist >= totalDistance - 1 ? tx.replayBtn : tx.playBtn}</span>
+            <span>{mapViewMode === '3d' ? '2D' : '3D'}</span>
           </button>
+        )}
+        <button
+          type="button"
+          className={headingUpMode ? 'naver2d-collapsed-icon-btn active' : 'naver2d-collapsed-icon-btn'}
+          onClick={() => setHeadingUpMode(!headingUpMode)}
+          title={headingUpMode ? tx.cameraLockOn : tx.cameraLockOff}
+          aria-label={headingUpMode ? tx.cameraLockOn : tx.cameraLockOff}
+        >
+          <Compass size={14} />
+        </button>
+        <button
+          type="button"
+          className="naver2d-collapsed-icon-btn exit"
+          onClick={onCloseFollow}
+          aria-label={tx.exitFollowBtn}
+          title={tx.exitFollowBtn}
+        >
+          <X size={15} />
+        </button>
+      </div>
+    )
+  }
 
+  return (
+    <div className="naver2d-top-hud" role="region" aria-label={tx.followMyViewBtn}>
+      <div className="naver2d-turn-card">
+        <div className="naver2d-turn-icon">
+          {turnGuidance.type === 'arrived' ? (
+            <Flag size={24} />
+          ) : turnGuidance.type === 'left' ? (
+            <CornerUpLeft size={26} />
+          ) : turnGuidance.type === 'right' ? (
+            <CornerUpRight size={26} />
+          ) : (
+            <Navigation size={24} />
+          )}
+        </div>
+        <div className="naver2d-turn-body">
+          <div className="naver2d-route-meta">
+            <span>{route.startName} → {route.destinationName}</span>
+            <span className="naver2d-remain-pill">{tx.remainMeta(remainingDist, remainingMin, progressPct)}</span>
+          </div>
+          <strong>{turnGuidance.title}</strong>
+          <p>{turnGuidance.subtitle}</p>
+          <div className="naver2d-badges">
+            <span className="naver2d-badge"><MapPin size={12} />{tx.currentPosBadge(currentSample.nearBuildingName)}</span>
+            <span className="naver2d-badge"><Mountain size={12} />{tx.elevValue(Number(currentSample.elevation.toFixed(1)))}</span>
+            <span className="naver2d-badge" style={{ background: currentSlopeInfo.color, color: '#fff' }}>
+              {currentSlopeInfo.label}
+            </span>
+          </div>
+          <div className="naver2d-inline-controls">
+            <button type="button" className="naver2d-inline-play" onClick={togglePlayback}>
+              {isPlaying ? <Pause size={13} /> : <Play size={13} />}
+              <span>{isPlaying ? tx.pauseBtn : progressDist >= totalDistance - 1 ? tx.replayBtn : tx.playBtn}</span>
+            </button>
+            <button
+              type="button"
+              className="naver2d-inline-step"
+              onClick={() => {
+                setIsPlaying(false)
+                setProgressDist((d) => Math.max(0, d - 20))
+              }}
+              aria-label={tx.prevSegBtn}
+              title={tx.prevSegBtn}
+            >
+              <SkipBack size={13} />
+            </button>
+            <input
+              type="range"
+              className="naver2d-inline-scrubber"
+              min={0}
+              max={Math.round(totalDistance)}
+              value={Math.round(currentSample.distFromStart)}
+              onChange={(e) => {
+                setIsPlaying(false)
+                setProgressDist(Number(e.target.value))
+              }}
+              aria-label={tx.playBtn}
+            />
+            <button
+              type="button"
+              className="naver2d-inline-step"
+              onClick={() => {
+                setIsPlaying(false)
+                setProgressDist((d) => Math.min(totalDistance, d + 20))
+              }}
+              aria-label={tx.nextSegBtn}
+              title={tx.nextSegBtn}
+            >
+              <SkipForward size={13} />
+            </button>
+            <button
+              type="button"
+              className="naver2d-inline-step"
+              onClick={() => setSpeedMultiplier((s) => (s === 1 ? 2 : s === 2 ? 4 : 1))}
+            >
+              <FastForward size={12} />
+              <span>{tx.speedBtn(speedMultiplier)}</span>
+            </button>
+            <button
+              type="button"
+              className="naver2d-inline-step"
+              onClick={() => {
+                setIsPlaying(false)
+                setProgressDist(0)
+              }}
+              title={tx.originResetBtn}
+              aria-label={tx.originResetBtn}
+            >
+              <RotateCcw size={12} />
+            </button>
+          </div>
+        </div>
+        <div className="naver2d-top-controls">
+          {onToggleMapViewMode && (
+            <button
+              type="button"
+              className="naver2d-compass-btn active"
+              style={{ background: mapViewMode === '3d' ? '#dc2626' : '#1d573f' }}
+              onClick={onToggleMapViewMode}
+            >
+              <span>{mapViewMode === '3d' ? tx.switchTo2DBtn : tx.switchTo3DBtn}</span>
+            </button>
+          )}
           <button
-            className="naver2d-step-btn"
-            onClick={() => {
-              setIsPlaying(false)
-              setProgressDist((d) => Math.max(0, d - 20))
-            }}
+            type="button"
+            className={headingUpMode ? 'naver2d-compass-btn active' : 'naver2d-compass-btn'}
+            onClick={() => setHeadingUpMode(!headingUpMode)}
           >
-            <SkipBack size={14} />{tx.prevSegBtn}
+            <Compass size={15} />
+            <span>{headingUpMode ? tx.cameraLockOn : tx.cameraLockOff}</span>
           </button>
-
-          <input
-            type="range"
-            className="naver2d-scrubber"
-            min={0}
-            max={Math.round(totalDistance)}
-            value={Math.round(currentSample.distFromStart)}
-            onChange={(e) => {
-              setIsPlaying(false)
-              setProgressDist(Number(e.target.value))
-            }}
-            aria-label={tx.playBtn}
-          />
-
           <button
-            className="naver2d-step-btn"
-            onClick={() => {
-              setIsPlaying(false)
-              setProgressDist((d) => Math.min(totalDistance, d + 20))
-            }}
+            type="button"
+            className="naver2d-nav-toggle-btn"
+            onClick={onToggleNavHud}
+            aria-pressed={true}
           >
-            {tx.nextSegBtn}<SkipForward size={14} />
+            <EyeOff size={14} />
+            <span>{tx.navToggleOff}</span>
           </button>
-
-          <button
-            className="naver2d-step-btn"
-            onClick={() => setSpeedMultiplier((s) => (s === 1 ? 2 : s === 2 ? 4 : 1))}
-          >
-            <FastForward size={13} />{tx.speedBtn(speedMultiplier)}
-          </button>
-
-          <button
-            className="naver2d-step-btn"
-            onClick={() => {
-              setIsPlaying(false)
-              setProgressDist(0)
-            }}
-            title={tx.originResetBtn}
-          >
-            <RotateCcw size={13} />{tx.originResetBtn}
+          <button type="button" className="naver2d-exit-btn" onClick={onCloseFollow}>
+            <X size={15} />
+            <span>{tx.exitFollowBtn}</span>
           </button>
         </div>
       </div>
-    </>
+    </div>
   )
 }

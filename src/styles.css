@@ -49,6 +49,8 @@
 .route-cta-stack{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .route-submit.fp3d-cta{background:linear-gradient(135deg,#1e40af,#1d4ed8)}
 .route-submit.fp3d-cta:hover{background:#1e3a8a}
+.route-submit.fp3d-cta.active,.my-loc-btn.highlight.active{background:#b91c1c;border-color:#991b1b;color:#fff}
+.route-submit.fp3d-cta.active:hover,.my-loc-btn.highlight.active:hover{background:#991b1b}
 .slope-segment-card{margin-top:14px;padding:11px;border:1px solid #dfe8e1;border-radius:10px;background:#f9fbf9}
 .slope-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:10.5px;color:#234834}
 .slope-card-head strong{display:flex;align-items:center;gap:5px}
@@ -215,25 +217,28 @@
 .naver2d-turn-body p{margin:0;font-size:10.5px;color:#d1fae5}
 .naver2d-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
 .naver2d-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,0.14);font-size:9.5px;font-weight:700}
-.naver2d-top-controls{display:flex;flex-direction:column;gap:6px;flex:none}
-.naver2d-compass-btn,.naver2d-exit-btn{height:31px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 11px;border-radius:8px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,0.22)}
+.naver2d-top-controls{display:flex;flex-direction:column;gap:5px;flex:none}
+.naver2d-compass-btn,.naver2d-nav-toggle-btn,.naver2d-exit-btn{height:30px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 11px;border-radius:8px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,0.22);white-space:nowrap}
 .naver2d-compass-btn{background:rgba(255,255,255,0.12);color:#fff}
 .naver2d-compass-btn.active{background:#2563eb;border-color:#93c5fd;color:#fff}
+.naver2d-nav-toggle-btn{background:rgba(245,158,11,0.2);border-color:rgba(252,211,77,0.48);color:#fef3c7}
+.naver2d-nav-toggle-btn:hover{background:rgba(245,158,11,0.34);color:#fff}
 .naver2d-exit-btn{background:#ffffffeb;color:#143826;border:0}
 
-.naver2d-bottom-dock{position:absolute;left:18px;right:18px;bottom:16px;z-index:440;max-width:760px;margin:0 auto;padding:12px 15px;border-radius:15px;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border:1px solid #d5e3d8;box-shadow:0 10px 34px rgba(18,45,30,0.22)}
-.naver2d-slope-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:10px;flex-wrap:wrap;gap:6px}
-.naver2d-slope-title{display:flex;align-items:center;gap:5px;font-weight:800;color:#1d573f}
-.naver2d-slope-legend{display:flex;gap:9px;font-size:9px;color:#52665a}
-.naver2d-slope-legend i{display:flex;align-items:center;gap:4px;font-style:normal}
-.naver2d-slope-legend b{width:8px;height:8px;border-radius:2px;display:inline-block}
-.naver2d-elevation-svg{width:100%;height:46px;border-radius:8px;background:#f2f6f3;border:1px solid #e1eae3;cursor:pointer;display:block;margin-bottom:8px}
-.naver2d-controls-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.naver2d-play-btn{height:34px;display:flex;align-items:center;gap:6px;padding:0 14px;border:0;border-radius:8px;background:#1d573f;color:#fff;font-size:11px;font-weight:800}
-.naver2d-play-btn:hover{background:#143e2c}
-.naver2d-step-btn{height:34px;display:flex;align-items:center;gap:4px;padding:0 10px;border:1px solid #d5e1d8;border-radius:8px;background:#fff;color:#274736;font-size:10px;font-weight:700}
-.naver2d-step-btn:hover{background:#f2f7f3}
-.naver2d-scrubber{flex:1;min-width:110px;accent-color:#1d573f;cursor:pointer}
+.naver2d-inline-controls{display:flex;align-items:center;gap:6px;margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.14);flex-wrap:wrap}
+.naver2d-inline-play{height:28px;display:flex;align-items:center;gap:5px;padding:0 10px;border:0;border-radius:7px;background:#22c55e;color:#052412;font-size:10px;font-weight:800;white-space:nowrap}
+.naver2d-inline-play:hover{background:#4ade80}
+.naver2d-inline-step{height:28px;display:flex;align-items:center;gap:4px;padding:0 8px;border:1px solid rgba(255,255,255,0.22);border-radius:7px;background:rgba(255,255,255,0.1);color:#fff;font-size:9.5px;font-weight:700;white-space:nowrap}
+.naver2d-inline-step:hover{background:rgba(255,255,255,0.2)}
+.naver2d-inline-scrubber{flex:1;min-width:90px;accent-color:#22c55e;cursor:pointer}
+
+.naver2d-collapsed-bar{position:absolute;top:16px;right:18px;z-index:440;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:13px;background:rgba(15,56,38,0.92);backdrop-filter:blur(10px);border:1px solid rgba(134,239,172,0.35);box-shadow:0 8px 24px rgba(10,33,22,0.35)}
+.naver2d-collapsed-on-btn{height:30px;display:flex;align-items:center;gap:5px;padding:0 11px;border:0;border-radius:8px;background:#22c55e;color:#052412;font-size:10.5px;font-weight:800;white-space:nowrap}
+.naver2d-collapsed-on-btn:hover{background:#4ade80}
+.naver2d-collapsed-icon-btn{min-width:30px;height:30px;display:grid;place-items:center;padding:0 7px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.12);color:#fff;font-size:10px;font-weight:800}
+.naver2d-collapsed-icon-btn:hover{background:rgba(255,255,255,0.22)}
+.naver2d-collapsed-icon-btn.active{background:#2563eb;border-color:#93c5fd}
+.naver2d-collapsed-icon-btn.exit{background:#ffffffeb;color:#143826;border:0}
 
 
 /* Zoom Controls (+ / - / Full Campus) */
@@ -339,6 +344,13 @@
   .sheet-action-grid{gap:6px}
   .sheet-directions,.sheet-directions.fp3d-btn{height:34px;padding:0 7px;gap:4px;font-size:clamp(8px,2.2vw,9.5px);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sheet-directions svg{width:12px;height:12px;flex:none;margin:0}
+  .naver2d-top-hud{top:10px;left:10px;right:10px}
+  .naver2d-turn-card{flex-wrap:wrap;gap:9px;padding:10px 11px}
+  .naver2d-turn-icon{width:38px;height:38px}
+  .naver2d-turn-body strong{font-size:14px}
+  .naver2d-top-controls{width:100%;flex-direction:row;flex-wrap:wrap}
+  .naver2d-top-controls button{flex:1 1 auto;min-width:0;padding:0 8px;font-size:9.5px}
+  .naver2d-collapsed-bar{top:10px;right:10px;left:auto;max-width:calc(100vw - 20px)}
 }
 
 /* 2D Map Clean Building Visual Pins, Sidebar Mini Thumbnails & Building Appearance Card */

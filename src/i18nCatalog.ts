@@ -1065,6 +1065,9 @@ export const EXT_UI_COPY: Record<
     nextSegBtn: string
     speedBtn: (mult: number) => string
     originResetBtn: string
+    navToggleOff: string
+    navToggleOn: string
+    followStopBtn: string
   }
 > = {
   ko: {
@@ -1172,6 +1175,9 @@ export const EXT_UI_COPY: Record<
     nextSegBtn: '다음 구간',
     speedBtn: (mult) => `${mult}x 속도`,
     originResetBtn: '출발지',
+    navToggleOff: '네비게이션 끄기',
+    navToggleOn: '네비게이션 켜기',
+    followStopBtn: '내 시점 따라가기 끄기',
   },
   en: {
     adminBtn: 'Admin',
@@ -1278,6 +1284,9 @@ export const EXT_UI_COPY: Record<
     nextSegBtn: 'Next',
     speedBtn: (mult) => `${mult}x Speed`,
     originResetBtn: 'Start',
+    navToggleOff: 'Navigation Off',
+    navToggleOn: 'Navigation On',
+    followStopBtn: 'Stop Following',
   },
   zh: {
     adminBtn: '管理員',
@@ -1384,6 +1393,9 @@ export const EXT_UI_COPY: Record<
     nextSegBtn: '下一段',
     speedBtn: (mult) => `${mult}x 速度`,
     originResetBtn: '起點',
+    navToggleOff: '關閉導航',
+    navToggleOn: '開啟導航',
+    followStopBtn: '關閉視角跟隨',
   },
   vi: {
     adminBtn: 'Quản trị',
@@ -1490,6 +1502,9 @@ export const EXT_UI_COPY: Record<
     nextSegBtn: 'Tiếp',
     speedBtn: (mult) => `Tốc độ ${mult}x`,
     originResetBtn: 'Điểm đi',
+    navToggleOff: 'Tắt dẫn đường',
+    navToggleOn: 'Bật dẫn đường',
+    followStopBtn: 'Tắt theo dõi',
   },
   lt: {
     adminBtn: 'Admin.',
@@ -1596,6 +1611,9 @@ export const EXT_UI_COPY: Record<
     nextSegBtn: 'Pirmyn',
     speedBtn: (mult) => `${mult}x greitis`,
     originResetBtn: 'Pradžia',
+    navToggleOff: 'Išjungti navigaciją',
+    navToggleOn: 'Įjungti navigaciją',
+    followStopBtn: 'Baigti sekimą',
   },
   hi: {
     adminBtn: 'एडमिन',
@@ -1702,5 +1720,8 @@ export const EXT_UI_COPY: Record<
     nextSegBtn: 'अगला',
     speedBtn: (mult) => `${mult}x गति`,
     originResetBtn: 'प्रारंभ',
+    navToggleOff: 'नेविगेशन बंद करें',
+    navToggleOn: 'नेविगेशन चालू करें',
+    followStopBtn: 'अनुसरण बंद करें',
   },
 }

@@ -543,6 +543,7 @@ export default function App() {
   const [cameraLock2D, setCameraLock2D] = useState(true)
   const [progressDist2D, setProgressDist2D] = useState(0)
   const [speedMultiplier2D, setSpeedMultiplier2D] = useState<1 | 2 | 4>(1)
+  const [navHudEnabled, setNavHudEnabled] = useState(true)
   const [mapViewMode, setMapViewMode] = useState<'2d' | '3d'>('3d')
 
   const [pathNodeCount, setPathNodeCount] = useState(SEEDED_PATH_NODES.length)
@@ -1071,6 +1072,7 @@ export default function App() {
           if (startFollowAfter) {
             setSelected(null)
             setCameraLock2D(true)
+            setNavHudEnabled(true)
             setIsFollowing2D(true)
             setIsPlaying2D(true)
           } else {
@@ -1096,6 +1098,7 @@ export default function App() {
       if (startFollowAfter) {
         setSelected(null)
         setCameraLock2D(true)
+        setNavHudEnabled(true)
         setIsFollowing2D(true)
         setIsPlaying2D(true)
       } else {
@@ -1119,10 +1122,16 @@ export default function App() {
     void executeRoute(nextFrom, building.id, stepFree, autoFollow)
   }
 
+  function stop2DFollowMode() {
+    setIsFollowing2D(false)
+    setIsPlaying2D(false)
+  }
+
   function launch2DFollowMode() {
     if (activeRoute) {
       setSelected(null)
       setCameraLock2D(true)
+      setNavHudEnabled(true)
       setIsFollowing2D(true)
       setIsPlaying2D(true)
       return
@@ -1132,6 +1141,22 @@ export default function App() {
     setFromId(targetOrigin)
     setToId(targetDest)
     void executeRoute(targetOrigin, targetDest, stepFree, true)
+  }
+
+  function toggle2DFollowMode() {
+    if (isFollowing2D) {
+      stop2DFollowMode()
+      return
+    }
+    launch2DFollowMode()
+  }
+
+  function toggleNavHud() {
+    setNavHudEnabled((prev) => {
+      const next = !prev
+      if (!next) setIsPlaying2D(false)
+      return next
+    })
   }
 
   const routePositions = useMemo<[number, number][]>(() => {
@@ -1306,8 +1331,12 @@ export default function App() {
                     <Crosshair size={13} />
                     {pickingLocation ? tx.clickMapPrompt : tx.changeLocOnMapBtn}
                   </button>
-                  <button className="my-loc-btn highlight" onClick={launch2DFollowMode}>
-                    <Navigation size={13} />{tx.followMyViewBtn}
+                  <button
+                    className={isFollowing2D ? 'my-loc-btn highlight active' : 'my-loc-btn highlight'}
+                    onClick={toggle2DFollowMode}
+                    aria-pressed={isFollowing2D}
+                  >
+                    <Navigation size={13} />{isFollowing2D ? tx.followStopBtn : tx.followMyViewBtn}
                   </button>
                 </div>
                 <div className="my-loc-presets">
@@ -1540,7 +1569,10 @@ export default function App() {
                   stepFree={stepFree}
                   setStepFree={setStepFree}
                   onCheck={() => void executeRoute(fromId, toId, stepFree, false)}
-                  onStartFollow={() => void executeRoute(fromId || 'current', toId || 9, stepFree, true)}
+                  onStartFollow={() => {
+                    if (isFollowing2D) stop2DFollowMode()
+                    else void executeRoute(fromId || 'current', toId || 9, stepFree, true)
+                  }}
                   isFollowing2D={isFollowing2D}
                   activeRoute={activeRoute}
                   googleElevationProfile={googleElevationProfile}
@@ -1789,10 +1821,9 @@ export default function App() {
             setHeadingUpMode={setCameraLock2D}
             mapViewMode={mapViewMode}
             onToggleMapViewMode={() => setMapViewMode((m) => (m === '2d' ? '3d' : '2d'))}
-            onCloseFollow={() => {
-              setIsFollowing2D(false)
-              setIsPlaying2D(false)
-            }}
+            navHudEnabled={navHudEnabled}
+            onToggleNavHud={toggleNavHud}
+            onCloseFollow={stop2DFollowMode}
             language={language}
           />
         )}
@@ -2164,9 +2195,13 @@ function RoutePanel({
           {tx.showFullRouteBtn}
           <ArrowRight size={16} />
         </button>
-        <button className="route-submit fp3d-cta" onClick={onStartFollow}>
+        <button
+          className={isFollowing2D ? 'route-submit fp3d-cta active' : 'route-submit fp3d-cta'}
+          onClick={onStartFollow}
+          aria-pressed={isFollowing2D}
+        >
           <Navigation size={16} />
-          {isFollowing2D ? tx.followActiveBtn : tx.followStartBtn}
+          {isFollowing2D ? tx.followStopBtn : tx.followStartBtn}
           <ArrowRight size={16} />
         </button>
       </div>
