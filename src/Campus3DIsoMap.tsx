@@ -74,6 +74,7 @@ export default function Campus3DIsoMap({
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [activePreset, setActivePreset] = useState<'ortho' | 'iso' | 'flat'>('iso')
   const [modelLoaded, setModelLoaded] = useState(false)
+  const [modelLoadError, setModelLoadError] = useState(false)
   const [meshStats, setMeshStats] = useState({ faces: 0, verts: 0 })
 
   // Three.js core refs
@@ -119,9 +120,12 @@ export default function Campus3DIsoMap({
   // Convert GPS (lat, lng) -> Three.js Vector3 (tx = bx, ty = elev, tz = -by)
   const toThreeVec3 = useCallback(
     (lat: number, lng: number, heightOffset = 0): THREE.Vector3 => {
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return new THREE.Vector3(0, 12, 0)
+      }
       const [bx, by] = toBlenderXY(lat, lng)
       const bz = getGroundY(bx, by) + heightOffset
-      return new THREE.Vector3(bx, bz, -by)
+      return new THREE.Vector3(bx, Number.isFinite(bz) ? bz : 12, -by)
     },
     [getGroundY],
   )
@@ -312,12 +316,14 @@ export default function Campus3DIsoMap({
         bldgMeshByNumRef.current = byNum
         bldgTopCentersRef.current = topCenters
         setMeshStats({ faces: Math.round(totalFaces), verts: totalVerts })
+        setModelLoadError(false)
         setModelLoaded(true)
         scene.add(root)
       },
       undefined,
       (err) => {
         console.error('Failed to load /campus_scene.glb:', err)
+        setModelLoadError(true)
       },
     )
 
@@ -604,6 +610,21 @@ export default function Campus3DIsoMap({
     return () => {
       cancelAnimationFrame(rafIdRef.current)
       ro.disconnect()
+      scene.traverse((obj) => {
+        if ((obj as THREE.Mesh).isMesh) {
+          const mesh = obj as THREE.Mesh
+          mesh.geometry?.dispose()
+          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+          for (const m of mats) {
+            if (!m) continue
+            const std = m as THREE.MeshStandardMaterial
+            std.map?.dispose()
+            std.roughnessMap?.dispose()
+            std.normalMap?.dispose()
+            m.dispose()
+          }
+        }
+      })
       controls.dispose()
       renderer.dispose()
     }
@@ -647,6 +668,10 @@ export default function Campus3DIsoMap({
     while (group.children.length > 0) {
       const child = group.children[0] as THREE.Mesh
       if (child.geometry) child.geometry.dispose()
+      if (child.material) {
+        const mats = Array.isArray(child.material) ? child.material : [child.material]
+        mats.forEach((m) => m.dispose())
+      }
       group.remove(child)
     }
 
@@ -959,6 +984,12 @@ export default function Campus3DIsoMap({
           <LocateFixed size={19} />
         </button>
       </div>
+
+      {(!modelLoaded || modelLoadError) && (
+        <div className={modelLoadError ? 'iso3d-status-badge error' : 'iso3d-status-badge'} role="status">
+          {modelLoadError ? '3D 모델 로드 실패 — 새로고침 해주세요' : '3D 캠퍼스 모델 불러오는 중…'}
+        </div>
+      )}
 
       {!isFollowing && (
         <div className="iso3d-guide-badge touch-guide">

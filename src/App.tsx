@@ -9,7 +9,7 @@ import { getBuildingAppearanceSvgDataUri } from './buildingAppearance'
 import { CAMPUS_BOUNDARY, CAMPUS_BOUNDS, CAMPUS_CENTER, CAMPUS_MASK_POLYGON, SEEDED_PATH_EDGES, SEEDED_PATH_NODES } from './campusData'
 import Campus3DIsoMap from './Campus3DIsoMap'
 import { buildings, copy, languageLabels, officialCampusMapUrl, type Building, type FloorRoomItem, type Language, type RouteSegment, type RouteWaypoint, type UiCopy } from './data'
-import { apiUrl } from './api'
+import { apiUrl, hasApiBackend } from './api'
 import Naver2DRouteFollower, { buildRouteSamples, classifySlope, interpolateSampleAtDistance, type ActiveRouteData } from './FirstPerson3DNavigator'
 import {
   EXT_UI_COPY,
@@ -364,13 +364,34 @@ function computeClientRoute(
 
 const WIDE_SVG_RENDERER = L.svg({ padding: 1.5 })
 
-function MapFocus({ selected, focusPos, isFollowingRoute }: { selected: Building | null; focusPos: [number, number] | null; isFollowingRoute: boolean }) {
+function MapFocus({
+  selected,
+  focusPos,
+  userPosition,
+  focusUserSignal,
+  isFollowingRoute,
+}: {
+  selected: Building | null
+  focusPos: [number, number] | null
+  userPosition: [number, number]
+  focusUserSignal: number
+  isFollowingRoute: boolean
+}) {
   const map = useMap()
+  const userPosRef = useRef(userPosition)
+  userPosRef.current = userPosition
+
   useEffect(() => {
     if (isFollowingRoute) return
     if (selected) map.flyTo([selected.lat, selected.lng], Math.max(map.getZoom(), 17), { duration: 0.35 })
     else if (focusPos) map.flyTo(focusPos, Math.max(map.getZoom(), 17), { duration: 0.35 })
   }, [map, selected, focusPos, isFollowingRoute])
+
+  useEffect(() => {
+    if (focusUserSignal <= 0) return
+    map.flyTo(userPosRef.current, Math.max(map.getZoom(), 18), { duration: 0.35 })
+  }, [map, focusUserSignal])
+
   return null
 }
 
@@ -438,13 +459,9 @@ function MapResize() {
 function MapZoomButtons({
   onResetCampus,
   onSwitchTo3D,
-  onTryGpsLocation,
-  gpsActive,
 }: {
   onResetCampus: () => void
   onSwitchTo3D: () => void
-  onTryGpsLocation: () => void
-  gpsActive: boolean
 }) {
   const map = useMap()
   return (
@@ -474,15 +491,6 @@ function MapZoomButtons({
         aria-label="캠퍼스 전체 보기"
       >
         <Maximize2 size={16} />
-      </button>
-      <button
-        type="button"
-        className={gpsActive ? 'gps-live' : ''}
-        onClick={onTryGpsLocation}
-        title="실시간 GPS 내 위치"
-        aria-label="실시간 GPS 내 위치"
-      >
-        <LocateFixed size={18} />
       </button>
     </div>
   )
@@ -531,7 +539,9 @@ export default function App() {
   const [focusPos, setFocusPos] = useState<[number, number] | null>(null)
 
   const gpsWatchIdRef = useRef<number | string | null>(null)
+  const gpsStartingRef = useRef(false)
   const lastGpsCoordRef = useRef<{ lat: number; lng: number } | null>(null)
+  const lastRawGpsCoordRef = useRef<{ lat: number; lng: number } | null>(null)
   const pendingFocusOnGpsRef = useRef(false)
   const manualPinOverrideRef = useRef(false)
   const shownOutsideNoticeRef = useRef(false)
@@ -580,7 +590,7 @@ export default function App() {
   }
 
   async function loadGoogleElevationProfile() {
-    if (!activeRoute || googleElevationLoading || googleElevationProfile) return
+    if (!hasApiBackend || !activeRoute || googleElevationLoading || googleElevationProfile) return
     setGoogleElevationLoading(true)
     setGoogleElevationMessage('')
     const coordinates: [number, number][] = []
@@ -684,6 +694,9 @@ export default function App() {
     return buildRouteSamples(activeRoute, campusBuildings, language)
   }, [activeRoute, campusBuildings, language])
 
+  const routeSamplesRef = useRef(routeSamples)
+  routeSamplesRef.current = routeSamples
+
   const currentFollowSample = useMemo(() => {
     if (!routeSamples.length) return null
     return interpolateSampleAtDistance(routeSamples, routeTotalDist, progressDist2D)
@@ -691,11 +704,12 @@ export default function App() {
 
   useEffect(() => {
     if (!isFollowing2D || !currentFollowSample) return
+    if (!isPlaying2D && gpsActive && locationSource === 'gps') return
     setUserPosition([currentFollowSample.lat, currentFollowSample.lng])
     setUserElevation(currentFollowSample.elevation)
     setUserHeadingDeg(currentFollowSample.headingDeg)
     setLocationSource('2d-follow')
-  }, [isFollowing2D, currentFollowSample])
+  }, [isFollowing2D, isPlaying2D, gpsActive, locationSource, currentFollowSample])
 
   useEffect(() => {
     if (!isFollowing2D || !isPlaying2D) return
@@ -742,6 +756,7 @@ export default function App() {
   }, [userPosition, campusBuildings, language, tx])
 
   useEffect(() => {
+    if (!hasApiBackend) return
     const loadBuildings = () =>
       fetch(apiUrl('/api/buildings'))
         .then((response) => (response.ok ? response.json() : Promise.reject()))
@@ -904,44 +919,46 @@ export default function App() {
       })
       return
     }
-    try {
-      const response = await fetch(apiUrl('/api/search'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, context_building_id: selected?.id ?? null }),
-      })
-      if (response.ok) {
-        const result = (await response.json()) as {
-          status: string
-          reply?: string
-          intent?: string
-          building?: { id: number } | null
-          facility?: FacilityMatch
-        }
-        if (result.status === 'matched' && result.building) {
-          const building = campusBuildings.find((item) => item.id === result.building?.id)
-          if (building && result.intent === 'directions') {
-            setMatchedFacility(null)
-            setToId(building.id)
+    if (hasApiBackend) {
+      try {
+        const response = await fetch(apiUrl('/api/search'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, context_building_id: selected?.id ?? null }),
+        })
+        if (response.ok) {
+          const result = (await response.json()) as {
+            status: string
+            reply?: string
+            intent?: string
+            building?: { id: number } | null
+            facility?: FacilityMatch
+          }
+          if (result.status === 'matched' && result.building) {
+            const building = campusBuildings.find((item) => item.id === result.building?.id)
+            if (building && result.intent === 'directions') {
+              setMatchedFacility(null)
+              setToId(building.id)
+              setSelected(null)
+              setActiveTab('route')
+              void executeRoute(fromId || 'current', building.id, stepFree, true)
+              setQuery('')
+              return
+            }
+            if (building) {
+              chooseBuilding(building, result.facility ?? null)
+              return
+            }
+          }
+          if (result.status === 'campus_only') {
             setSelected(null)
-            setActiveTab('route')
-            void executeRoute(fromId || 'current', building.id, stepFree, true)
-            setQuery('')
-            return
-          }
-          if (building) {
-            chooseBuilding(building, result.facility ?? null)
+            setSearchMessage(t.campusOnly)
             return
           }
         }
-        if (result.status === 'campus_only') {
-          setSelected(null)
-          setSearchMessage(t.campusOnly)
-          return
-        }
+      } catch {
+        // Local matcher fallback
       }
-    } catch {
-      // Local matcher fallback
     }
     if (roomResults.length > 0) {
       const hit = roomResults[0]
@@ -968,7 +985,10 @@ export default function App() {
     speed?: number | null
   }) {
     const { latitude, longitude, heading, speed } = coords
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return
+
     setGpsActive(true)
+    lastRawGpsCoordRef.current = { lat: latitude, lng: longitude }
 
     if (!isInsideCampusBounds(latitude, longitude)) {
       if (pendingFocusOnGpsRef.current && !shownOutsideNoticeRef.current) {
@@ -1011,6 +1031,7 @@ export default function App() {
     if (shouldFocus) {
       pendingFocusOnGpsRef.current = false
       manualPinOverrideRef.current = false
+      setSelected(null)
       setIsFollowing2D(false)
       setIsPlaying2D(false)
       setUserPosition([latitude, longitude])
@@ -1030,10 +1051,27 @@ export default function App() {
       setUserElevation(nearestElev)
       setLocationSource('gps')
       setPickingLocation(false)
+
+      // Update paused turn-by-turn route progress when walking live along an active route
+      if (isFollowing2DRef.current && routeSamplesRef.current.length > 0) {
+        let bestDist = Infinity
+        let bestProgress: number | null = null
+        for (const s of routeSamplesRef.current) {
+          const d = haversineMeters(latitude, longitude, s.lat, s.lng)
+          if (d < bestDist) {
+            bestDist = d
+            bestProgress = s.distFromStart
+          }
+        }
+        if (bestProgress !== null && bestDist <= 45) {
+          setProgressDist2D(bestProgress)
+        }
+      }
     }
   }
 
   async function stopLiveGpsWatch() {
+    gpsStartingRef.current = false
     const watchId = gpsWatchIdRef.current
     gpsWatchIdRef.current = null
     if (watchId === null) return
@@ -1059,16 +1097,25 @@ export default function App() {
       shownOutsideNoticeRef.current = false
     }
 
-    if (gpsWatchIdRef.current !== null) {
-      if (focusOnFix && lastGpsCoordRef.current) {
-        const { lat, lng } = lastGpsCoordRef.current
+    if (gpsWatchIdRef.current !== null || gpsStartingRef.current) {
+      if (focusOnFix && lastRawGpsCoordRef.current) {
+        const { lat, lng } = lastRawGpsCoordRef.current
         if (isInsideCampusBounds(lat, lng)) {
           pendingFocusOnGpsRef.current = false
+          setSelected(null)
           setCampusUserLocation(lat, lng, 'gps')
           setFocusUserSignal((n) => n + 1)
           setRouteMessage('')
           setSearchMessage('')
           if (activeTabRef.current === 'route') setFromId('current')
+        } else {
+          pendingFocusOnGpsRef.current = false
+          shownOutsideNoticeRef.current = true
+          setFocusPos(userPositionRef.current)
+          setPickingLocation(true)
+          const msg = txRef.current.gpsOutsideMsg
+          if (activeTabRef.current === 'route') setRouteMessage(msg)
+          else setSearchMessage(msg)
         }
       }
       return
@@ -1092,6 +1139,7 @@ export default function App() {
     const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 2000 }
 
     if (Capacitor.isNativePlatform()) {
+      gpsStartingRef.current = true
       try {
         let perm = await Geolocation.checkPermissions()
         let granted = perm.location === 'granted' || perm.coarseLocation === 'granted'
@@ -1115,6 +1163,8 @@ export default function App() {
         gpsWatchIdRef.current = id
       } catch (err) {
         handleGpsError(err as { code?: number; message?: string })
+      } finally {
+        gpsStartingRef.current = false
       }
       return
     }
@@ -1217,56 +1267,58 @@ export default function App() {
           }
         : { start_building_id: origin, end_building_id: destination, step_free: preferStepFree }
 
-    try {
-      const response = await fetch(apiUrl('/api/routes'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(routeRequest),
-      })
-      if (response.ok) {
-        const route = (await response.json()) as {
-          distance_m: number
-          estimated_minutes: number
-          max_slope_pct?: number
-          uphill_distance_m?: number
-          downhill_distance_m?: number
-          step_free: boolean
-          waypoints?: RouteWaypoint[]
-          segments?: RouteSegment[]
-        }
-        if (route.segments && route.segments.length > 0) {
-          const built: ActiveRouteData = {
-            startName,
-            destinationName: destName,
-            distance_m: route.distance_m,
-            estimated_minutes: route.estimated_minutes,
-            max_slope_pct: route.max_slope_pct ?? 0,
-            uphill_distance_m: route.uphill_distance_m ?? 0,
-            downhill_distance_m: route.downhill_distance_m ?? 0,
-            step_free: route.step_free,
-            waypoints: route.waypoints ?? [],
-            segments: route.segments,
+    if (hasApiBackend) {
+      try {
+        const response = await fetch(apiUrl('/api/routes'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(routeRequest),
+        })
+        if (response.ok) {
+          const route = (await response.json()) as {
+            distance_m: number
+            estimated_minutes: number
+            max_slope_pct?: number
+            uphill_distance_m?: number
+            downhill_distance_m?: number
+            step_free: boolean
+            waypoints?: RouteWaypoint[]
+            segments?: RouteSegment[]
           }
-          setActiveRoute(built)
-          setProgressDist2D(0)
-          setRouteMessage(
-            tx.routeSummaryMsg(built.distance_m, built.estimated_minutes, built.uphill_distance_m, built.max_slope_pct),
-          )
-          if (startFollowAfter) {
-            setSelected(null)
-            setCameraLock2D(true)
-            setNavHudEnabled(true)
-            setIsFollowing2D(true)
-            setIsPlaying2D(true)
-          } else {
-            setIsFollowing2D(false)
-            setIsPlaying2D(false)
+          if (route.segments && route.segments.length > 0) {
+            const built: ActiveRouteData = {
+              startName,
+              destinationName: destName,
+              distance_m: route.distance_m,
+              estimated_minutes: route.estimated_minutes,
+              max_slope_pct: route.max_slope_pct ?? 0,
+              uphill_distance_m: route.uphill_distance_m ?? 0,
+              downhill_distance_m: route.downhill_distance_m ?? 0,
+              step_free: route.step_free,
+              waypoints: route.waypoints ?? [],
+              segments: route.segments,
+            }
+            setActiveRoute(built)
+            setProgressDist2D(0)
+            setRouteMessage(
+              tx.routeSummaryMsg(built.distance_m, built.estimated_minutes, built.uphill_distance_m, built.max_slope_pct),
+            )
+            if (startFollowAfter) {
+              setSelected(null)
+              setCameraLock2D(true)
+              setNavHudEnabled(true)
+              setIsFollowing2D(true)
+              setIsPlaying2D(true)
+            } else {
+              setIsFollowing2D(false)
+              setIsPlaying2D(false)
+            }
+            return
           }
-          return
         }
+      } catch {
+        // Fallback to client graph
       }
-    } catch {
-      // Fallback to client graph
     }
 
     const fallback = computeClientRoute(origin, destination, userPosition, preferStepFree, campusBuildings)
@@ -1830,7 +1882,13 @@ export default function App() {
             className={pickingLocation ? 'campus-map picking-cursor' : 'campus-map'}
           >
             <MapResize />
-            <MapFocus selected={selected} focusPos={focusPos} isFollowingRoute={isFollowing2D} />
+            <MapFocus
+              selected={selected}
+              focusPos={focusPos}
+              userPosition={userPosition}
+              focusUserSignal={focusUserSignal}
+              isFollowingRoute={isFollowing2D}
+            />
             <MapFollowUser active={isFollowing2D} cameraLock={cameraLock2D} userPosition={userPosition} />
             <FitRoute routeId={routeKey} positions={routePositions} isFollowingRoute={isFollowing2D} />
             <MapZoomButtons
@@ -1840,8 +1898,6 @@ export default function App() {
                 setIsPlaying2D(false)
               }}
               onSwitchTo3D={() => setMapViewMode('3d')}
-              onTryGpsLocation={tryLocation}
-              gpsActive={gpsActive && locationSource === 'gps'}
             />
             <MapClickPickLocation
               pickingMode={pickingLocation}
@@ -2030,7 +2086,12 @@ export default function App() {
         )}
 
         {mapViewMode === '2d' && (
-          <button className="locate-button" onClick={tryLocation} aria-label={t.locate} title={t.locate}>
+          <button
+            className={gpsActive && locationSource === 'gps' ? 'locate-button gps-live' : 'locate-button'}
+            onClick={tryLocation}
+            aria-label={t.locate}
+            title={t.locate}
+          >
             <LocateFixed size={18} />
           </button>
         )}
@@ -2432,7 +2493,7 @@ function RoutePanel({
         </div>
       )}
 
-      {activeRoute && (
+      {hasApiBackend && activeRoute && (
         <section className="google-elevation-card" aria-label={GOOGLE_ELEVATION_UI[language].title}>
           <div className="google-elevation-heading">
             <div>
