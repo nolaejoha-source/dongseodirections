@@ -169,6 +169,16 @@ function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number)
   return 6_371_000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
+function bearingDegrees(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const toRad = (deg: number) => (deg * Math.PI) / 180
+  const phi1 = toRad(lat1)
+  const phi2 = toRad(lat2)
+  const dLng = toRad(lng2 - lng1)
+  const y = Math.sin(dLng) * Math.cos(phi2)
+  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLng)
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360
+}
+
 function isInsideCampusBounds(lat: number, lng: number) {
   return (
     lat >= CAMPUS_BOUNDS[0][0] &&
@@ -428,9 +438,13 @@ function MapResize() {
 function MapZoomButtons({
   onResetCampus,
   onSwitchTo3D,
+  onTryGpsLocation,
+  gpsActive,
 }: {
   onResetCampus: () => void
   onSwitchTo3D: () => void
+  onTryGpsLocation: () => void
+  gpsActive: boolean
 }) {
   const map = useMap()
   return (
@@ -460,6 +474,15 @@ function MapZoomButtons({
         aria-label="캠퍼스 전체 보기"
       >
         <Maximize2 size={16} />
+      </button>
+      <button
+        type="button"
+        className={gpsActive ? 'gps-live' : ''}
+        onClick={onTryGpsLocation}
+        title="실시간 GPS 내 위치"
+        aria-label="실시간 GPS 내 위치"
+      >
+        <LocateFixed size={18} />
       </button>
     </div>
   )
@@ -502,8 +525,16 @@ export default function App() {
   const [userElevation, setUserElevation] = useState<number>(96.0)
   const [userHeadingDeg, setUserHeadingDeg] = useState<number>(115)
   const [locationSource, setLocationSource] = useState<'campus-pin' | 'gps' | '2d-follow'>('campus-pin')
+  const [gpsActive, setGpsActive] = useState(false)
+  const [focusUserSignal, setFocusUserSignal] = useState(0)
   const [pickingLocation, setPickingLocation] = useState(false)
   const [focusPos, setFocusPos] = useState<[number, number] | null>(null)
+
+  const gpsWatchIdRef = useRef<number | string | null>(null)
+  const lastGpsCoordRef = useRef<{ lat: number; lng: number } | null>(null)
+  const pendingFocusOnGpsRef = useRef(false)
+  const manualPinOverrideRef = useRef(false)
+  const shownOutsideNoticeRef = useRef(false)
 
   const [fromId, setFromId] = useState<number | 'current' | ''>('current')
   const [toId, setToId] = useState<number | ''>(9)
@@ -527,6 +558,19 @@ export default function App() {
   const [pathEdgeCount, setPathEdgeCount] = useState(SEEDED_PATH_EDGES.length)
   const t = copy[language]
   const tx = EXT_UI_COPY[language]
+
+  const isFollowing2DRef = useRef(isFollowing2D)
+  isFollowing2DRef.current = isFollowing2D
+  const isPlaying2DRef = useRef(isPlaying2D)
+  isPlaying2DRef.current = isPlaying2D
+  const activeTabRef = useRef(activeTab)
+  activeTabRef.current = activeTab
+  const userPositionRef = useRef(userPosition)
+  userPositionRef.current = userPosition
+  const txRef = useRef(tx)
+  txRef.current = tx
+  const tRef = useRef(t)
+  tRef.current = t
 
   const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
   const isNativeApp = Capacitor.isNativePlatform()
@@ -830,6 +874,11 @@ export default function App() {
         nearestElev = n.elevation
       }
     }
+    if (source === 'campus-pin') {
+      manualPinOverrideRef.current = true
+    } else {
+      manualPinOverrideRef.current = false
+    }
     setIsFollowing2D(false)
     setIsPlaying2D(false)
     setUserPosition([lat, lng])
@@ -912,46 +961,225 @@ export default function App() {
     }
   }
 
-  function tryLocation() {
-    const handlePosition = (latitude: number, longitude: number) => {
-      if (isInsideCampusBounds(latitude, longitude)) {
-        setCampusUserLocation(latitude, longitude, 'gps')
-        setRouteMessage('')
-        setSearchMessage('')
-        if (activeTab === 'route') setFromId('current')
-      } else {
-        setFocusPos(userPosition)
+  function applyLiveGpsPosition(coords: {
+    latitude: number
+    longitude: number
+    heading?: number | null
+    speed?: number | null
+  }) {
+    const { latitude, longitude, heading, speed } = coords
+    setGpsActive(true)
+
+    if (!isInsideCampusBounds(latitude, longitude)) {
+      if (pendingFocusOnGpsRef.current && !shownOutsideNoticeRef.current) {
+        pendingFocusOnGpsRef.current = false
+        shownOutsideNoticeRef.current = true
+        setFocusPos(userPositionRef.current)
         setPickingLocation(true)
-        const msg = tx.gpsOutsideMsg
-        if (activeTab === 'route') setRouteMessage(msg)
+        const msg = txRef.current.gpsOutsideMsg
+        if (activeTabRef.current === 'route') setRouteMessage(msg)
         else setSearchMessage(msg)
       }
+      return
     }
-    const handleLocationError = () => {
-      setFocusPos(userPosition)
-      setPickingLocation(true)
-      if (activeTab === 'route') setRouteMessage(t.noLocation)
-      else setSearchMessage(t.noLocation)
+
+    let nearestElev = 98
+    let minD = Infinity
+    for (const n of SEEDED_PATH_NODES) {
+      const d = haversineMeters(latitude, longitude, n.location.coordinates[1], n.location.coordinates[0])
+      if (d < minD) {
+        minD = d
+        nearestElev = n.elevation
+      }
     }
-    const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 15000 }
+
+    const prevCoord = lastGpsCoordRef.current
+    if (typeof heading === 'number' && Number.isFinite(heading) && heading >= 0 && (speed ?? 0) >= 0.4) {
+      setUserHeadingDeg(heading)
+    } else if (prevCoord) {
+      const movedM = haversineMeters(prevCoord.lat, prevCoord.lng, latitude, longitude)
+      if (movedM >= 1.8) {
+        setUserHeadingDeg(bearingDegrees(prevCoord.lat, prevCoord.lng, latitude, longitude))
+      }
+    }
+    lastGpsCoordRef.current = { lat: latitude, lng: longitude }
+    shownOutsideNoticeRef.current = false
+
+    const isSimulating = isFollowing2DRef.current && isPlaying2DRef.current
+    const shouldFocus = pendingFocusOnGpsRef.current
+
+    if (shouldFocus) {
+      pendingFocusOnGpsRef.current = false
+      manualPinOverrideRef.current = false
+      setIsFollowing2D(false)
+      setIsPlaying2D(false)
+      setUserPosition([latitude, longitude])
+      setUserElevation(nearestElev)
+      setLocationSource('gps')
+      setPickingLocation(false)
+      setFocusPos([latitude, longitude])
+      setFocusUserSignal((n) => n + 1)
+      setRouteMessage('')
+      setSearchMessage('')
+      if (activeTabRef.current === 'route') setFromId('current')
+      return
+    }
+
+    if (!manualPinOverrideRef.current && !isSimulating) {
+      setUserPosition([latitude, longitude])
+      setUserElevation(nearestElev)
+      setLocationSource('gps')
+      setPickingLocation(false)
+    }
+  }
+
+  async function stopLiveGpsWatch() {
+    const watchId = gpsWatchIdRef.current
+    gpsWatchIdRef.current = null
+    if (watchId === null) return
+    if (typeof watchId === 'string') {
+      await Geolocation.clearWatch({ id: watchId }).catch(() => undefined)
+    } else if (navigator.geolocation) {
+      navigator.geolocation.clearWatch(watchId)
+    }
+  }
+
+  async function startLiveGpsWatch({
+    focusOnFix,
+    requestNativePerm,
+    showErrors,
+  }: {
+    focusOnFix: boolean
+    requestNativePerm: boolean
+    showErrors: boolean
+  }) {
+    if (focusOnFix) {
+      manualPinOverrideRef.current = false
+      pendingFocusOnGpsRef.current = true
+      shownOutsideNoticeRef.current = false
+    }
+
+    if (gpsWatchIdRef.current !== null) {
+      if (focusOnFix && lastGpsCoordRef.current) {
+        const { lat, lng } = lastGpsCoordRef.current
+        if (isInsideCampusBounds(lat, lng)) {
+          pendingFocusOnGpsRef.current = false
+          setCampusUserLocation(lat, lng, 'gps')
+          setFocusUserSignal((n) => n + 1)
+          setRouteMessage('')
+          setSearchMessage('')
+          if (activeTabRef.current === 'route') setFromId('current')
+        }
+      }
+      return
+    }
+
+    const handleGpsError = (err?: { code?: number; message?: string }) => {
+      const denied = err?.code === 1 || /denied|permission/i.test(err?.message ?? '')
+      if (denied) {
+        setGpsActive(false)
+        void stopLiveGpsWatch()
+      }
+      if (showErrors && pendingFocusOnGpsRef.current) {
+        pendingFocusOnGpsRef.current = false
+        setFocusPos(userPositionRef.current)
+        setPickingLocation(true)
+        if (activeTabRef.current === 'route') setRouteMessage(tRef.current.noLocation)
+        else setSearchMessage(tRef.current.noLocation)
+      }
+    }
+
+    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 2000 }
 
     if (Capacitor.isNativePlatform()) {
-      void Geolocation.getCurrentPosition(options)
-        .then(({ coords }) => handlePosition(coords.latitude, coords.longitude))
-        .catch(handleLocationError)
+      try {
+        let perm = await Geolocation.checkPermissions()
+        let granted = perm.location === 'granted' || perm.coarseLocation === 'granted'
+        if (!granted && requestNativePerm) {
+          perm = await Geolocation.requestPermissions()
+          granted = perm.location === 'granted' || perm.coarseLocation === 'granted'
+        }
+        if (!granted) {
+          handleGpsError({ code: 1, message: 'Location permission not granted' })
+          return
+        }
+        const id = await Geolocation.watchPosition(options, (pos, err) => {
+          if (err) {
+            handleGpsError(err as { code?: number; message?: string })
+            return
+          }
+          if (pos?.coords) {
+            applyLiveGpsPosition(pos.coords)
+          }
+        })
+        gpsWatchIdRef.current = id
+      } catch (err) {
+        handleGpsError(err as { code?: number; message?: string })
+      }
       return
     }
 
     if (!navigator.geolocation) {
-      handleLocationError()
+      handleGpsError({ code: 2, message: 'Geolocation unavailable' })
       return
     }
 
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => handlePosition(coords.latitude, coords.longitude),
-      handleLocationError,
+    const watchId = navigator.geolocation.watchPosition(
+      ({ coords }) => applyLiveGpsPosition(coords),
+      (err) => handleGpsError(err),
       options,
     )
+    gpsWatchIdRef.current = watchId
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    let permStatus: PermissionStatus | null = null
+    let onPermChange: (() => void) | null = null
+
+    if (Capacitor.isNativePlatform()) {
+      void Geolocation.checkPermissions()
+        .then((perm) => {
+          if (cancelled) return
+          if (perm.location === 'granted' || perm.coarseLocation === 'granted') {
+            void startLiveGpsWatch({ focusOnFix: false, requestNativePerm: false, showErrors: false })
+          }
+        })
+        .catch(() => undefined)
+    } else if (navigator.permissions?.query) {
+      void navigator.permissions
+        .query({ name: 'geolocation' as PermissionName })
+        .then((status) => {
+          if (cancelled) return
+          permStatus = status
+          if (status.state === 'granted') {
+            void startLiveGpsWatch({ focusOnFix: false, requestNativePerm: false, showErrors: false })
+          }
+          onPermChange = () => {
+            if (!cancelled && status.state === 'granted') {
+              void startLiveGpsWatch({ focusOnFix: false, requestNativePerm: false, showErrors: false })
+            } else if (!cancelled && status.state === 'denied') {
+              setGpsActive(false)
+              void stopLiveGpsWatch()
+            }
+          }
+          status.addEventListener('change', onPermChange)
+        })
+        .catch(() => undefined)
+    }
+
+    return () => {
+      cancelled = true
+      if (permStatus && onPermChange) {
+        permStatus.removeEventListener('change', onPermChange)
+      }
+      void stopLiveGpsWatch()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function tryLocation() {
+    void startLiveGpsWatch({ focusOnFix: true, requestNativePerm: true, showErrors: true })
   }
 
   async function executeRoute(
@@ -1080,6 +1308,13 @@ export default function App() {
   function stop2DFollowMode() {
     setIsFollowing2D(false)
     setIsPlaying2D(false)
+    if (gpsActive && !manualPinOverrideRef.current && lastGpsCoordRef.current) {
+      const { lat, lng } = lastGpsCoordRef.current
+      if (isInsideCampusBounds(lat, lng)) {
+        setUserPosition([lat, lng])
+        setLocationSource('gps')
+      }
+    }
   }
 
   function launch2DFollowMode() {
@@ -1271,7 +1506,10 @@ export default function App() {
                   </div>
                 </div>
                 <div className="my-loc-actions">
-                  <button className="my-loc-btn" onClick={tryLocation}>
+                  <button
+                    className={gpsActive && locationSource === 'gps' ? 'my-loc-btn gps-live' : 'my-loc-btn'}
+                    onClick={tryLocation}
+                  >
                     <LocateFixed size={13} />{tx.gpsMyLocBtn}
                   </button>
                   <button
@@ -1564,6 +1802,9 @@ export default function App() {
             selected={selected}
             userPosition={userPosition}
             userLocationLabel={userLocationSummary.shortText}
+            userHeadingDeg={userHeadingDeg}
+            gpsActive={gpsActive && locationSource === 'gps'}
+            focusUserSignal={focusUserSignal}
             activeRoute={activeRoute}
             passedPositions={passedPositions}
             isFollowing={isFollowing2D}
@@ -1599,6 +1840,8 @@ export default function App() {
                 setIsPlaying2D(false)
               }}
               onSwitchTo3D={() => setMapViewMode('3d')}
+              onTryGpsLocation={tryLocation}
+              gpsActive={gpsActive && locationSource === 'gps'}
             />
             <MapClickPickLocation
               pickingMode={pickingLocation}

@@ -33,6 +33,9 @@ export default function Campus3DIsoMap({
   selected,
   userPosition,
   userLocationLabel,
+  userHeadingDeg = 115,
+  gpsActive = false,
+  focusUserSignal = 0,
   activeRoute,
   passedPositions,
   isFollowing,
@@ -48,6 +51,9 @@ export default function Campus3DIsoMap({
   selected: Building | null
   userPosition: [number, number]
   userLocationLabel: string
+  userHeadingDeg?: number
+  gpsActive?: boolean
+  focusUserSignal?: number
   activeRoute: ActiveRouteData | null
   passedPositions: [number, number][]
   isFollowing: boolean
@@ -128,6 +134,8 @@ export default function Campus3DIsoMap({
     showLabels,
     userPosition,
     userLocationLabel,
+    userHeadingDeg,
+    gpsActive,
     activeRoute,
     passedPositions,
     isFollowing,
@@ -143,6 +151,8 @@ export default function Campus3DIsoMap({
     showLabels,
     userPosition,
     userLocationLabel,
+    userHeadingDeg,
+    gpsActive,
     activeRoute,
     passedPositions,
     isFollowing,
@@ -482,39 +492,68 @@ export default function Campus3DIsoMap({
       }
       hitBoxesRef.current = nextHits
 
-      // 3. Live User Location 3D Beacon
+      // 3. Live User Location 3D Beacon (animated pulse + directional heading cone)
       const uPos3D = toThreeVec3(st.userPosition[0], st.userPosition[1], 3.0)
       const uSp = projectToScreen(uPos3D)
       if (uSp.z > -1 && uSp.z < 1) {
+        const azimuth = controls.getAzimuthalAngle()
+        const pulsePhase = (performance.now() % 1800) / 1800
+        const pulseRadius = st.gpsActive ? 11 + pulsePhase * 22 : 18
+        const pulseAlpha = st.gpsActive ? (1 - pulsePhase) * 0.55 : 0.35
+
+        // Directional heading cone synced with camera azimuth
+        const screenHeadingRad = (st.userHeadingDeg * Math.PI) / 180 + azimuth - Math.PI / 2
+        ctx.save()
         ctx.beginPath()
-        ctx.arc(uSp.sx, uSp.sy, 18, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(37, 99, 235, 0.35)'
+        ctx.moveTo(uSp.sx, uSp.sy)
+        ctx.arc(uSp.sx, uSp.sy, 32, screenHeadingRad - 0.42, screenHeadingRad + 0.42)
+        ctx.closePath()
+        ctx.fillStyle = st.gpsActive ? 'rgba(59, 130, 246, 0.36)' : 'rgba(59, 130, 246, 0.22)'
         ctx.fill()
-        ctx.strokeStyle = '#60a5fa'
-        ctx.lineWidth = 1.8
+        ctx.restore()
+
+        // Expanding live radar ring
+        ctx.beginPath()
+        ctx.arc(uSp.sx, uSp.sy, pulseRadius, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(37, 99, 235, ${pulseAlpha * 0.6})`
+        ctx.fill()
+        ctx.strokeStyle = `rgba(96, 165, 250, ${Math.max(0.25, pulseAlpha)})`
+        ctx.lineWidth = 2
         ctx.stroke()
 
+        // Core blue beacon dot
         ctx.beginPath()
         ctx.arc(uSp.sx, uSp.sy, 8.5, 0, Math.PI * 2)
-        ctx.fillStyle = '#2563eb'
+        ctx.fillStyle = st.gpsActive ? '#2563eb' : '#1d4ed8'
         ctx.fill()
         ctx.strokeStyle = '#ffffff'
-        ctx.lineWidth = 2.5
+        ctx.lineWidth = 2.6
         ctx.stroke()
 
         const uTxt = `${st.tx.myLocPillPrefix} · ${st.userLocationLabel}`
         ctx.font = '800 10px "Noto Sans KR", sans-serif'
-        const uw = ctx.measureText(uTxt).width + 15
-        ctx.fillStyle = '#1d4ed8'
+        const liveDotPad = st.gpsActive ? 11 : 0
+        const uw = ctx.measureText(uTxt).width + 15 + liveDotPad
+        const pillX = uSp.sx - uw / 2
+        const pillY = uSp.sy - 33
+        ctx.fillStyle = st.gpsActive ? '#1d4ed8' : '#1e3a8a'
         ctx.beginPath()
-        ctx.roundRect(uSp.sx - uw / 2, uSp.sy - 30, uw, 19, 9)
+        ctx.roundRect(pillX, pillY, uw, 19, 9)
         ctx.fill()
         ctx.strokeStyle = '#ffffff'
         ctx.lineWidth = 1.5
         ctx.stroke()
+
+        if (st.gpsActive) {
+          ctx.beginPath()
+          ctx.arc(pillX + 10, pillY + 9.5, 3.2, 0, Math.PI * 2)
+          ctx.fillStyle = '#4ade80'
+          ctx.fill()
+        }
+
         ctx.fillStyle = '#ffffff'
         ctx.textAlign = 'center'
-        ctx.fillText(uTxt, uSp.sx, uSp.sy - 17)
+        ctx.fillText(uTxt, uSp.sx + liveDotPad / 2, pillY + 13)
       }
 
       // 4. Top-Left 3D Compass Rose (Top-Right is reserved cleanly for the 2D / 3D Switcher Box)
@@ -668,6 +707,23 @@ export default function Campus3DIsoMap({
     camera.position.copy(uPos).add(offset)
     controls.update()
   }, [isFollowing, cameraLock, userPosition, toThreeVec3])
+
+  // Focus 3D camera onto user position when user taps GPS Locate button
+  useEffect(() => {
+    if (focusUserSignal <= 0) return
+    const controls = controlsRef.current
+    const camera = cameraRef.current
+    if (!controls || !camera) return
+
+    const [lat, lng] = stateRef.current.userPosition
+    const uPos = toThreeVec3(lat, lng, 4)
+    const offset = camera.position.clone().sub(controls.target)
+    const desiredDist = Math.min(Math.max(offset.length(), 150), 210)
+    offset.normalize().multiplyScalar(desiredDist)
+    controls.target.copy(uPos)
+    camera.position.copy(uPos).add(offset)
+    controls.update()
+  }, [focusUserSignal, toThreeVec3])
 
   // Raycasting for 3D Building Click / Hover & Badge Click
   const pointerDownPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
@@ -896,7 +952,7 @@ export default function Campus3DIsoMap({
         </button>
         <button
           type="button"
-          className="iso3d-ctrl-btn touch-btn"
+          className={gpsActive ? 'iso3d-ctrl-btn touch-btn gps-live' : 'iso3d-ctrl-btn touch-btn'}
           onClick={onTryGpsLocation}
           title={tx.gpsMyLocBtn}
         >
