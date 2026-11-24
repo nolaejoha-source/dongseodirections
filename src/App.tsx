@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { Capacitor } from '@capacitor/core'
 import { Geolocation } from '@capacitor/geolocation'
 import L from 'leaflet'
@@ -106,74 +107,56 @@ const APK_INSTALL_URL = '/dongseo-campus-map.apk'
 const APK_INSTALL_UI = {
   ko: {
     button: 'APK',
-    aria: 'Android APK 및 앱 설치',
-    title: 'Android APK 다운로드 · 앱 설치',
-    desc: '안드로이드 스마트폰에서는 APK 파일을 내려받아 바로 앱으로 설치할 수 있습니다.',
-    downloadBtn: 'Android APK 다운로드 (.apk)',
-    hint: '다운로드 완료 후 파일 앱에서 dongseo-campus-map.apk를 열어 설치하세요. (최초 1회 "출처를 알 수 없는 앱" 허용 필요)',
-    pwaBtn: '웹 앱으로 바로 설치 (홈 화면 추가)',
-    iosTitle: 'iPhone · iPad (iOS) 홈 화면 추가',
-    iosDesc: 'Safari 하단 또는 상단의 공유 버튼을 누른 뒤 "홈 화면에 추가"를 선택하면 앱처럼 사용할 수 있습니다.',
+    aria: 'Android APK 설치 안내',
+    title: 'APK 설치 안내',
+    downloadBtn: 'APK 다운로드 (.apk)',
+    hint: 'APK 다운로드 후 파일 앱에서 dongseo-campus-map.apk를 열어 설치하세요. (최초 1회 "출처를 알 수 없는 앱" 허용)',
+    iosDesc: 'iPhone/iPad는 Safari 공유 버튼 → "홈 화면에 추가"로 앱처럼 사용할 수 있습니다.',
     close: '닫기',
   },
   en: {
     button: 'APK',
-    aria: 'Download Android APK or install app',
-    title: 'Download Android APK · Install App',
-    desc: 'On Android phones, download the APK file directly to install DSU 3D Campus Map as an app.',
-    downloadBtn: 'Download Android APK (.apk)',
-    hint: 'Open the downloaded dongseo-campus-map.apk from your Files app or notification bar to install (allow "Unknown apps" once if prompted).',
-    pwaBtn: 'Install Web App (Add to Home Screen)',
-    iosTitle: 'iPhone · iPad (iOS) Install',
-    iosDesc: 'Tap Share in Safari and select "Add to Home Screen" to use it like a native app.',
+    aria: 'Android APK install guide',
+    title: 'APK Install Guide',
+    downloadBtn: 'Download APK (.apk)',
+    hint: 'Download and open dongseo-campus-map.apk in Files to install (allow "Unknown apps" once if prompted).',
+    iosDesc: 'On iPhone/iPad, tap Share in Safari → "Add to Home Screen".',
     close: 'Close',
   },
   zh: {
     button: 'APK',
-    aria: '下载 Android APK 或安装应用',
-    title: '下载 Android APK · 安装应用',
-    desc: 'Android 手机可直接下载 APK 安装包，将东西大 3D 校园导览安装为手机应用。',
-    downloadBtn: '下载 Android APK (.apk)',
-    hint: '下载完成后，在文件管理或通知栏点击 dongseo-campus-map.apk 安装（如提示请允许安装未知来源应用）。',
-    pwaBtn: '直接安装网页应用（添加到主屏幕）',
-    iosTitle: 'iPhone · iPad (iOS) 添加到主屏幕',
-    iosDesc: '在 Safari 点击“分享”按钮，然后选择“添加到主屏幕”即可像应用一样使用。',
+    aria: 'Android APK 安装说明',
+    title: 'APK 安装说明',
+    downloadBtn: '下载 APK (.apk)',
+    hint: '下载后在文件管理中打开 dongseo-campus-map.apk 安装（如提示请允许未知来源应用）。',
+    iosDesc: 'iPhone/iPad 请在 Safari 点击分享 → “添加到主屏幕”。',
     close: '关闭',
   },
   vi: {
     button: 'APK',
-    aria: 'Tải APK Android hoặc cài ứng dụng',
-    title: 'Tải APK Android · Cài đặt ứng dụng',
-    desc: 'Trên điện thoại Android, hãy tải trực tiếp tệp APK để cài đặt Bản đồ ĐH Dongseo.',
-    downloadBtn: 'Tải xuống Android APK (.apk)',
-    hint: 'Mở tệp dongseo-campus-map.apk sau khi tải xong để cài đặt (bật cho phép nguồn không xác định nếu được hỏi).',
-    pwaBtn: 'Cài đặt ứng dụng Web (Thêm vào MH chính)',
-    iosTitle: 'iPhone · iPad (iOS)',
-    iosDesc: 'Nhấn nút Chia sẻ trong Safari rồi chọn "Thêm vào Màn hình chính".',
+    aria: 'Hướng dẫn cài đặt APK',
+    title: 'Hướng dẫn cài APK',
+    downloadBtn: 'Tải APK (.apk)',
+    hint: 'Tải xong hãy mở dongseo-campus-map.apk để cài đặt (bật cho phép nguồn không xác định nếu được hỏi).',
+    iosDesc: 'Trên iPhone/iPad, nhấn Chia sẻ trong Safari → "Thêm vào Màn hình chính".',
     close: 'Đóng',
   },
   lt: {
     button: 'APK',
-    aria: 'Atsisiųsti Android APK arba įdiegti programėlę',
-    title: 'Android APK atsisiuntimas · Programėlės diegimas',
-    desc: 'Android telefone atsisiųskite APK failą tiesiogiai ir įdiekite DSU 3D žemėlapį kaip programėlę.',
-    downloadBtn: 'Atsisiųsti Android APK (.apk)',
-    hint: 'Atidarykite atsisiųstą dongseo-campus-map.apk failą (jei prašoma, leiskite diegti iš nežinomų šaltinių).',
-    pwaBtn: 'Įdiegti žiniatinklio programėlę',
-    iosTitle: 'iPhone · iPad (iOS) diegimas',
-    iosDesc: 'Safari naršyklėje paspauskite Bendrinti ir pasirinkite „Pridėti prie pradžios ekrano“.',
+    aria: 'Android APK diegimo instrukcija',
+    title: 'APK diegimo instrukcija',
+    downloadBtn: 'Atsisiųsti APK (.apk)',
+    hint: 'Atsisiuntę atidarykite dongseo-campus-map.apk (jei prašoma, leiskite diegti iš nežinomų šaltinių).',
+    iosDesc: 'iPhone/iPad: Safari naršyklėje spauskite Bendrinti → „Pridėti prie pradžios ekrano“.',
     close: 'Uždaryti',
   },
   hi: {
     button: 'APK',
-    aria: 'Android APK डाउनलोड करें या ऐप इंस्टॉल करें',
-    title: 'Android APK डाउनलोड · ऐप इंस्टॉल',
-    desc: 'Android फ़ोन पर ऐप की तरह इस्तेमाल करने के लिए सीधे APK फ़ाइल डाउनलोड करें।',
-    downloadBtn: 'Android APK डाउनलोड करें (.apk)',
-    hint: 'डाउनलोड पूरा होने पर फ़ाइल्स ऐप से dongseo-campus-map.apk खोलकर इंस्टॉल करें।',
-    pwaBtn: 'वेब ऐप इंस्टॉल करें (होम स्क्रीन में जोड़ें)',
-    iosTitle: 'iPhone · iPad (iOS)',
-    iosDesc: 'Safari में Share बटन दबाएँ और "Add to Home Screen" चुनें।',
+    aria: 'Android APK इंस्टॉल गाइड',
+    title: 'APK इंस्टॉल गाइड',
+    downloadBtn: 'APK डाउनलोड (.apk)',
+    hint: 'डाउनलोड के बाद dongseo-campus-map.apk खोलकर इंस्टॉल करें।',
+    iosDesc: 'iPhone/iPad पर Safari में Share → "Add to Home Screen" चुनें।',
     close: 'बंद करें',
   },
 } as const
@@ -503,14 +486,8 @@ function normalize(value: string) {
   return value.toLocaleLowerCase().replace(/[\s\-_.\[\]#번]/g, '')
 }
 
-type BeforeInstallPromptEvent = Event & {
-  prompt: () => Promise<void>
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
-}
-
 export default function App() {
   const [language, setLanguage] = useState<Language>('ko')
-  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showInstallDialog, setShowInstallDialog] = useState(false)
   const [mobileSheetSnap, setMobileSheetSnap] = useState<'closed' | 'peek' | 'half' | 'full'>('peek')
   const sheetDragRef = useRef<{ pointerId: number; startY: number; dragged: boolean } | null>(null)
@@ -551,33 +528,11 @@ export default function App() {
   const t = copy[language]
   const tx = EXT_UI_COPY[language]
 
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (event: Event) => {
-      event.preventDefault()
-      setInstallPrompt(event as BeforeInstallPromptEvent)
-    }
-    const handleAppInstalled = () => setInstallPrompt(null)
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    window.addEventListener('appinstalled', handleAppInstalled)
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-      window.removeEventListener('appinstalled', handleAppInstalled)
-    }
-  }, [])
-
   const isIosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
   const isNativeApp = Capacitor.isNativePlatform()
 
   function openInstallModal() {
     setShowInstallDialog(true)
-  }
-
-  async function triggerPwaInstall() {
-    if (!installPrompt) return
-    await installPrompt.prompt()
-    await installPrompt.userChoice
-    setInstallPrompt(null)
-    setShowInstallDialog(false)
   }
 
   async function loadGoogleElevationProfile() {
@@ -1243,45 +1198,40 @@ export default function App() {
           </div>
         </header>
 
-        {showInstallDialog && (
-          <div className="install-help-backdrop" role="presentation" onClick={() => setShowInstallDialog(false)}>
-            <section className="install-help-dialog" role="dialog" aria-modal="true" aria-labelledby="install-help-title" onClick={(event) => event.stopPropagation()}>
-              <button type="button" className="install-help-close" onClick={() => setShowInstallDialog(false)} aria-label={APK_INSTALL_UI[language].close}>×</button>
-              <span className="install-help-kicker">DSU CAMPUS MAP</span>
-              <h2 id="install-help-title">{APK_INSTALL_UI[language].title}</h2>
-              {isIosDevice ? (
-                <>
-                  <div className="install-ios-box">
-                    <strong>{APK_INSTALL_UI[language].iosTitle}</strong>
-                    <p>{APK_INSTALL_UI[language].iosDesc}</p>
-                  </div>
-                  <a className="install-pwa-btn install-apk-secondary" href={APK_INSTALL_URL} download="dongseo-campus-map.apk">
-                    <Download size={15} />
-                    <span>{APK_INSTALL_UI[language].downloadBtn}</span>
-                  </a>
-                </>
-              ) : (
-                <>
-                  <p>{APK_INSTALL_UI[language].desc}</p>
+        {showInstallDialog &&
+          createPortal(
+            <div className="install-help-backdrop" role="presentation" onClick={() => setShowInstallDialog(false)}>
+              <section
+                className="install-help-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="install-help-title"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="install-help-head">
+                  <h2 id="install-help-title">{APK_INSTALL_UI[language].title}</h2>
+                  <button
+                    type="button"
+                    className="install-help-close"
+                    onClick={() => setShowInstallDialog(false)}
+                    aria-label={APK_INSTALL_UI[language].close}
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+                <p className="install-help-msg">
+                  {isIosDevice ? APK_INSTALL_UI[language].iosDesc : APK_INSTALL_UI[language].hint}
+                </p>
+                {!isIosDevice && (
                   <a className="install-apk-download" href={APK_INSTALL_URL} download="dongseo-campus-map.apk">
-                    <Download size={16} />
+                    <Download size={14} />
                     <span>{APK_INSTALL_UI[language].downloadBtn}</span>
                   </a>
-                  <p className="install-apk-hint">{APK_INSTALL_UI[language].hint}</p>
-                  {installPrompt && (
-                    <button type="button" className="install-pwa-btn" onClick={() => void triggerPwaInstall()}>
-                      {APK_INSTALL_UI[language].pwaBtn}
-                    </button>
-                  )}
-                  <div className="install-ios-box">
-                    <strong>{APK_INSTALL_UI[language].iosTitle}</strong>
-                    <p>{APK_INSTALL_UI[language].iosDesc}</p>
-                  </div>
-                </>
-              )}
-            </section>
-          </div>
-        )}
+                )}
+              </section>
+            </div>,
+            document.body,
+          )}
 
         <div className="sidebar-scroll">
           {showAdmin ? (
