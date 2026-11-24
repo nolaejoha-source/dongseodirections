@@ -530,6 +530,7 @@ export default function App() {
   const [selected, setSelected] = useState<Building | null>(null)
   const [matchedFacility, setMatchedFacility] = useState<FacilityMatch | null>(null)
   const [userPosition, setUserPosition] = useState<[number, number]>([35.14548, 129.00782])
+  const [rawGpsCoord, setRawGpsCoord] = useState<[number, number] | null>(null)
   const [userElevation, setUserElevation] = useState<number>(96.0)
   const [userHeadingDeg, setUserHeadingDeg] = useState<number>(115)
   const [locationSource, setLocationSource] = useState<'campus-pin' | 'gps' | '2d-follow'>('campus-pin')
@@ -988,42 +989,42 @@ export default function App() {
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return
 
     setGpsActive(true)
+    setRawGpsCoord([latitude, longitude])
     lastRawGpsCoordRef.current = { lat: latitude, lng: longitude }
 
-    if (!isInsideCampusBounds(latitude, longitude)) {
-      if (pendingFocusOnGpsRef.current && !shownOutsideNoticeRef.current) {
-        pendingFocusOnGpsRef.current = false
-        shownOutsideNoticeRef.current = true
-        setFocusPos(userPositionRef.current)
-        setPickingLocation(true)
-        const msg = txRef.current.gpsOutsideMsg
-        if (activeTabRef.current === 'route') setRouteMessage(msg)
-        else setSearchMessage(msg)
-      }
-      return
-    }
-
+    const insideCampus = isInsideCampusBounds(latitude, longitude)
     let nearestElev = 98
+    let nearestNodeLat = CAMPUS_CENTER[0]
+    let nearestNodeLng = CAMPUS_CENTER[1]
     let minD = Infinity
     for (const n of SEEDED_PATH_NODES) {
-      const d = haversineMeters(latitude, longitude, n.location.coordinates[1], n.location.coordinates[0])
+      const nLat = n.location.coordinates[1]
+      const nLng = n.location.coordinates[0]
+      const d = haversineMeters(latitude, longitude, nLat, nLng)
       if (d < minD) {
         minD = d
         nearestElev = n.elevation
+        nearestNodeLat = nLat
+        nearestNodeLng = nLng
       }
     }
+
+    const effectiveLat = insideCampus ? latitude : nearestNodeLat
+    const effectiveLng = insideCampus ? longitude : nearestNodeLng
 
     const prevCoord = lastGpsCoordRef.current
     if (typeof heading === 'number' && Number.isFinite(heading) && heading >= 0 && (speed ?? 0) >= 0.4) {
       setUserHeadingDeg(heading)
     } else if (prevCoord) {
       const movedM = haversineMeters(prevCoord.lat, prevCoord.lng, latitude, longitude)
-      if (movedM >= 1.8) {
+      if (movedM >= 1.5) {
         setUserHeadingDeg(bearingDegrees(prevCoord.lat, prevCoord.lng, latitude, longitude))
       }
     }
     lastGpsCoordRef.current = { lat: latitude, lng: longitude }
-    shownOutsideNoticeRef.current = false
+    if (insideCampus) {
+      shownOutsideNoticeRef.current = false
+    }
 
     const isSimulating = isFollowing2DRef.current && isPlaying2DRef.current
     const shouldFocus = pendingFocusOnGpsRef.current
@@ -1034,30 +1035,37 @@ export default function App() {
       setSelected(null)
       setIsFollowing2D(false)
       setIsPlaying2D(false)
-      setUserPosition([latitude, longitude])
+      setUserPosition([effectiveLat, effectiveLng])
       setUserElevation(nearestElev)
       setLocationSource('gps')
       setPickingLocation(false)
-      setFocusPos([latitude, longitude])
+      setFocusPos([effectiveLat, effectiveLng])
       setFocusUserSignal((n) => n + 1)
-      setRouteMessage('')
-      setSearchMessage('')
+      if (insideCampus) {
+        setRouteMessage('')
+        setSearchMessage('')
+      } else if (!shownOutsideNoticeRef.current) {
+        shownOutsideNoticeRef.current = true
+        const msg = txRef.current.gpsOutsideMsg
+        if (activeTabRef.current === 'route') setRouteMessage(msg)
+        else setSearchMessage(msg)
+      }
       if (activeTabRef.current === 'route') setFromId('current')
       return
     }
 
     if (!manualPinOverrideRef.current && !isSimulating) {
-      setUserPosition([latitude, longitude])
+      setUserPosition([effectiveLat, effectiveLng])
       setUserElevation(nearestElev)
       setLocationSource('gps')
       setPickingLocation(false)
 
       // Update paused turn-by-turn route progress when walking live along an active route
-      if (isFollowing2DRef.current && routeSamplesRef.current.length > 0) {
+      if (insideCampus && isFollowing2DRef.current && routeSamplesRef.current.length > 0) {
         let bestDist = Infinity
         let bestProgress: number | null = null
         for (const s of routeSamplesRef.current) {
-          const d = haversineMeters(latitude, longitude, s.lat, s.lng)
+          const d = haversineMeters(effectiveLat, effectiveLng, s.lat, s.lng)
           if (d < bestDist) {
             bestDist = d
             bestProgress = s.distFromStart
@@ -1099,24 +1107,10 @@ export default function App() {
 
     if (gpsWatchIdRef.current !== null || gpsStartingRef.current) {
       if (focusOnFix && lastRawGpsCoordRef.current) {
-        const { lat, lng } = lastRawGpsCoordRef.current
-        if (isInsideCampusBounds(lat, lng)) {
-          pendingFocusOnGpsRef.current = false
-          setSelected(null)
-          setCampusUserLocation(lat, lng, 'gps')
-          setFocusUserSignal((n) => n + 1)
-          setRouteMessage('')
-          setSearchMessage('')
-          if (activeTabRef.current === 'route') setFromId('current')
-        } else {
-          pendingFocusOnGpsRef.current = false
-          shownOutsideNoticeRef.current = true
-          setFocusPos(userPositionRef.current)
-          setPickingLocation(true)
-          const msg = txRef.current.gpsOutsideMsg
-          if (activeTabRef.current === 'route') setRouteMessage(msg)
-          else setSearchMessage(msg)
-        }
+        applyLiveGpsPosition({
+          latitude: lastRawGpsCoordRef.current.lat,
+          longitude: lastRawGpsCoordRef.current.lng,
+        })
       }
       return
     }
@@ -1126,17 +1120,33 @@ export default function App() {
       if (denied) {
         setGpsActive(false)
         void stopLiveGpsWatch()
+        if (showErrors && pendingFocusOnGpsRef.current) {
+          pendingFocusOnGpsRef.current = false
+          setFocusPos(userPositionRef.current)
+          setPickingLocation(true)
+          if (activeTabRef.current === 'route') setRouteMessage(tRef.current.noLocation)
+          else setSearchMessage(tRef.current.noLocation)
+        }
+        return
       }
-      if (showErrors && pendingFocusOnGpsRef.current) {
-        pendingFocusOnGpsRef.current = false
-        setFocusPos(userPositionRef.current)
-        setPickingLocation(true)
-        if (activeTabRef.current === 'route') setRouteMessage(tRef.current.noLocation)
-        else setSearchMessage(tRef.current.noLocation)
+      // On high-accuracy timeout/unavailable, try a fast coarse location fix before showing any error
+      if (!Capacitor.isNativePlatform() && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          ({ coords }) => applyLiveGpsPosition(coords),
+          () => {
+            if (showErrors && pendingFocusOnGpsRef.current) {
+              pendingFocusOnGpsRef.current = false
+              setFocusPos(userPositionRef.current)
+              if (activeTabRef.current === 'route') setRouteMessage(tRef.current.noLocation)
+              else setSearchMessage(tRef.current.noLocation)
+            }
+          },
+          { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 },
+        )
       }
     }
 
-    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 2000 }
+    const options = { enableHighAccuracy: true, timeout: 20000, maximumAge: 3000 }
 
     if (Capacitor.isNativePlatform()) {
       gpsStartingRef.current = true
@@ -1151,6 +1161,9 @@ export default function App() {
           handleGpsError({ code: 1, message: 'Location permission not granted' })
           return
         }
+        void Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 })
+          .then(({ coords }) => applyLiveGpsPosition(coords))
+          .catch(() => undefined)
         const id = await Geolocation.watchPosition(options, (pos, err) => {
           if (err) {
             handleGpsError(err as { code?: number; message?: string })
@@ -1173,6 +1186,13 @@ export default function App() {
       handleGpsError({ code: 2, message: 'Geolocation unavailable' })
       return
     }
+
+    // Immediate coarse fix for fast response while high-accuracy watch locks on
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => applyLiveGpsPosition(coords),
+      () => undefined,
+      { enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 },
+    )
 
     const watchId = navigator.geolocation.watchPosition(
       ({ coords }) => applyLiveGpsPosition(coords),
@@ -1358,14 +1378,15 @@ export default function App() {
   }
 
   function stop2DFollowMode() {
+    isFollowing2DRef.current = false
+    isPlaying2DRef.current = false
     setIsFollowing2D(false)
     setIsPlaying2D(false)
-    if (gpsActive && !manualPinOverrideRef.current && lastGpsCoordRef.current) {
-      const { lat, lng } = lastGpsCoordRef.current
-      if (isInsideCampusBounds(lat, lng)) {
-        setUserPosition([lat, lng])
-        setLocationSource('gps')
-      }
+    if (gpsActive && !manualPinOverrideRef.current && lastRawGpsCoordRef.current) {
+      applyLiveGpsPosition({
+        latitude: lastRawGpsCoordRef.current.lat,
+        longitude: lastRawGpsCoordRef.current.lng,
+      })
     }
   }
 
@@ -1553,7 +1574,11 @@ export default function App() {
                       {tx.nearText(userLocationSummary.nearestDisplayName, userLocationSummary.distanceMeters)}
                     </strong>
                     <small>
-                      {tx.coordElevText(userPosition[0].toFixed(5), userPosition[1].toFixed(5), userElevation.toFixed(1))}
+                      {tx.coordElevText(
+                        (locationSource === 'gps' && rawGpsCoord ? rawGpsCoord[0] : userPosition[0]).toFixed(5),
+                        (locationSource === 'gps' && rawGpsCoord ? rawGpsCoord[1] : userPosition[1]).toFixed(5),
+                        userElevation.toFixed(1),
+                      )}
                     </small>
                   </div>
                 </div>
