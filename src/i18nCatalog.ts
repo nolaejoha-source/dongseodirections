@@ -971,6 +971,9 @@ export const EXT_UI_COPY: Record<
     clickMapPrompt: string
     changeLocOnMapBtn: string
     followMyViewBtn: string
+    compassViewBtn: string
+    compassViewOnTitle: string
+    compassViewOffTitle: string
     quickJumpLabel: string
     topBarTitle3D: string
     topBarTitle2D: string
@@ -1083,6 +1086,9 @@ export const EXT_UI_COPY: Record<
     clickMapPrompt: '지도를 클릭하세요',
     changeLocOnMapBtn: '지도에서 내 위치 변경',
     followMyViewBtn: '내 시점 길따라가기',
+    compassViewBtn: '방향 시점',
+    compassViewOnTitle: '휴대폰 방향 시점 추적 켜짐 (끄려면 클릭)',
+    compassViewOffTitle: '휴대폰 방향에 맞춰 시점 자동 회전',
     quickJumpLabel: '빠른 위치 이동:',
     topBarTitle3D: '동서대학교 3D 조감도 캠퍼스맵',
     topBarTitle2D: '동서대학교 2D 평면 캠퍼스맵',
@@ -1192,6 +1198,9 @@ export const EXT_UI_COPY: Record<
     clickMapPrompt: 'Click on the map',
     changeLocOnMapBtn: 'Pick Location on Map',
     followMyViewBtn: 'Follow My Route',
+    compassViewBtn: 'Heading View',
+    compassViewOnTitle: 'Phone compass camera lock ON (click to unlock)',
+    compassViewOffTitle: 'Align 3D view with phone compass direction',
     quickJumpLabel: 'Quick Jump:',
     topBarTitle3D: 'DSU 3D Aerial Campus Map',
     topBarTitle2D: 'DSU 2D Flat Campus Map',
@@ -1301,6 +1310,9 @@ export const EXT_UI_COPY: Record<
     clickMapPrompt: '請點擊地圖',
     changeLocOnMapBtn: '在地圖上更改位置',
     followMyViewBtn: '用戶視角跟隨導航',
+    compassViewBtn: '方向視角',
+    compassViewOnTitle: '手機指南針視角追蹤開啟 (點擊關閉)',
+    compassViewOffTitle: '依手機朝向自動旋轉 3D 視角',
     quickJumpLabel: '快速移動位置：',
     topBarTitle3D: '東西大學 3D 鳥瞰校園地圖',
     topBarTitle2D: '東西大學 2D 平面校園地圖',
@@ -1410,6 +1422,9 @@ export const EXT_UI_COPY: Record<
     clickMapPrompt: 'Nhấn vào bản đồ',
     changeLocOnMapBtn: 'Đổi vị trí trên bản đồ',
     followMyViewBtn: 'Dẫn đường theo góc nhìn',
+    compassViewBtn: 'Góc nhìn hướng',
+    compassViewOnTitle: 'Đang khóa góc nhìn theo hướng điện thoại (nhấn để tắt)',
+    compassViewOffTitle: 'Xoay góc nhìn 3D theo hướng điện thoại',
     quickJumpLabel: 'Di chuyển nhanh:',
     topBarTitle3D: 'Bản đồ 3D Đại học Dongseo',
     topBarTitle2D: 'Bản đồ 2D Đại học Dongseo',
@@ -1519,6 +1534,9 @@ export const EXT_UI_COPY: Record<
     clickMapPrompt: 'Spustelėkite žemėlapį',
     changeLocOnMapBtn: 'Keisti vietą žemėlapyje',
     followMyViewBtn: 'Sekti maršrutą',
+    compassViewBtn: 'Krypties vaizdas',
+    compassViewOnTitle: 'Telefono kompaso vaizdo sekimas įjungtas',
+    compassViewOffTitle: 'Pasukti 3D vaizdą pagal telefono kryptį',
     quickJumpLabel: 'Greitas perėjimas:',
     topBarTitle3D: 'DSU 3D erdvinis žemėlapis',
     topBarTitle2D: 'DSU 2D plokščias žemėlapis',
@@ -1628,6 +1646,9 @@ export const EXT_UI_COPY: Record<
     clickMapPrompt: 'नक्शे पर क्लिक करें',
     changeLocOnMapBtn: 'नक्शे पर स्थान बदलें',
     followMyViewBtn: 'मार्ग अनुसरण (Follow)',
+    compassViewBtn: 'दिशा व्यू',
+    compassViewOnTitle: 'फ़ोन दिशा कैमरा लॉक चालू (बंद करने के लिए क्लिक करें)',
+    compassViewOffTitle: 'फ़ोन की दिशा के अनुसार 3D व्यू घुमाएं',
     quickJumpLabel: 'त्वरित स्थान:',
     topBarTitle3D: 'डोंगसियो विश्वविद्यालय 3D कैंपस मैप',
     topBarTitle2D: 'डोंगसियो विश्वविद्यालय 2D कैंपस मैप',

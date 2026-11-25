@@ -19,6 +19,16 @@ import {
   getLocalizedFloorLabel,
   getLocalizedRoomTitleAndNote,
 } from './i18nCatalog'
+import {
+  extractCompassHeading,
+  formatCardinalDirection,
+  loadCachedGpsFix,
+  normalizeHeadingDeg,
+  requestCompassPermissionIfNeeded,
+  saveCachedGpsFix,
+  shortestAngleDeltaDeg,
+  stepAngleDeg,
+} from './liveSensors'
 
 // Minimal 2D Map Building Marker: keep campus numbers readable without rectangular photo or name cards.
 function createBuilding2DVisualIcon(building: Building, isSelected: boolean, language: Language) {
@@ -529,15 +539,34 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Building | null>(null)
   const [matchedFacility, setMatchedFacility] = useState<FacilityMatch | null>(null)
-  const [userPosition, setUserPosition] = useState<[number, number]>([35.14548, 129.00782])
+  const cachedGpsRef = useRef(loadCachedGpsFix())
+  const initialUserPos: [number, number] =
+    cachedGpsRef.current && isInsideCampusBounds(cachedGpsRef.current.lat, cachedGpsRef.current.lng)
+      ? [cachedGpsRef.current.lat, cachedGpsRef.current.lng]
+      : [35.14548, 129.00782]
+  const initialHeadingDeg = cachedGpsRef.current?.headingDeg ?? 115
+
+  const [userPosition, setUserPosition] = useState<[number, number]>(initialUserPos)
   const [rawGpsCoord, setRawGpsCoord] = useState<[number, number] | null>(null)
   const [userElevation, setUserElevation] = useState<number>(96.0)
-  const [userHeadingDeg, setUserHeadingDeg] = useState<number>(115)
+  const [userHeadingDeg, setUserHeadingDeg] = useState<number>(initialHeadingDeg)
   const [locationSource, setLocationSource] = useState<'campus-pin' | 'gps' | '2d-follow'>('campus-pin')
   const [gpsActive, setGpsActive] = useState(false)
+  const [compassActive, setCompassActive] = useState(false)
+  const [compassViewActive, setCompassViewActive] = useState(false)
   const [focusUserSignal, setFocusUserSignal] = useState(0)
   const [pickingLocation, setPickingLocation] = useState(false)
   const [focusPos, setFocusPos] = useState<[number, number] | null>(null)
+
+  const liveUserPosRef = useRef<[number, number]>(initialUserPos)
+  const liveHeadingRef = useRef<number>(initialHeadingDeg)
+  const compassActiveRef = useRef(false)
+  const compassInitializedRef = useRef(false)
+  const lastAbsoluteCompassAtRef = useRef(0)
+  const lastHeadingStateAtRef = useRef(0)
+  const lastCommittedHeadingRef = useRef(initialHeadingDeg)
+  const autoCompassAppliedRef = useRef(false)
+  const manualCompassDisabledRef = useRef(false)
 
   const gpsWatchIdRef = useRef<number | string | null>(null)
   const gpsStartingRef = useRef(false)
@@ -872,6 +901,8 @@ export default function App() {
   function chooseBuilding(building: Building, facility: FacilityMatch | null = null) {
     setIsFollowing2D(false)
     setIsPlaying2D(false)
+    manualCompassDisabledRef.current = true
+    setCompassViewActive(false)
     setMobileSheetSnap('peek')
     setSelected(building)
     setMatchedFacility(facility)
@@ -897,6 +928,7 @@ export default function App() {
     }
     setIsFollowing2D(false)
     setIsPlaying2D(false)
+    liveUserPosRef.current = [lat, lng]
     setUserPosition([lat, lng])
     setUserElevation(nearestElev)
     setLocationSource(source)
@@ -983,9 +1015,11 @@ export default function App() {
     latitude: number
     longitude: number
     heading?: number | null
+    trueHeading?: number | null
+    magneticHeading?: number | null
     speed?: number | null
   }) {
-    const { latitude, longitude, heading, speed } = coords
+    const { latitude, longitude, heading, trueHeading, magneticHeading, speed } = coords
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return
 
     setGpsActive(true)
@@ -1013,15 +1047,33 @@ export default function App() {
     const effectiveLng = insideCampus ? longitude : nearestNodeLng
 
     const prevCoord = lastGpsCoordRef.current
-    if (typeof heading === 'number' && Number.isFinite(heading) && heading >= 0 && (speed ?? 0) >= 0.4) {
-      setUserHeadingDeg(heading)
-    } else if (prevCoord) {
-      const movedM = haversineMeters(prevCoord.lat, prevCoord.lng, latitude, longitude)
-      if (movedM >= 1.5) {
-        setUserHeadingDeg(bearingDegrees(prevCoord.lat, prevCoord.lng, latitude, longitude))
+    const nativeGpsHeading =
+      typeof trueHeading === 'number' && Number.isFinite(trueHeading) && trueHeading >= 0
+        ? trueHeading
+        : typeof magneticHeading === 'number' && Number.isFinite(magneticHeading) && magneticHeading >= 0
+          ? magneticHeading
+          : typeof heading === 'number' && Number.isFinite(heading) && heading >= 0
+            ? heading
+            : null
+
+    let nextHeadingDeg = liveHeadingRef.current
+    if (!compassActiveRef.current) {
+      if (nativeGpsHeading !== null && (speed ?? 0) >= 0.35) {
+        nextHeadingDeg = normalizeHeadingDeg(nativeGpsHeading)
+        liveHeadingRef.current = nextHeadingDeg
+        setUserHeadingDeg(nextHeadingDeg)
+      } else if (prevCoord) {
+        const movedM = haversineMeters(prevCoord.lat, prevCoord.lng, latitude, longitude)
+        if (movedM >= 1.2) {
+          nextHeadingDeg = normalizeHeadingDeg(bearingDegrees(prevCoord.lat, prevCoord.lng, latitude, longitude))
+          liveHeadingRef.current = nextHeadingDeg
+          setUserHeadingDeg(nextHeadingDeg)
+        }
       }
     }
     lastGpsCoordRef.current = { lat: latitude, lng: longitude }
+    saveCachedGpsFix(latitude, longitude, nextHeadingDeg)
+
     if (insideCampus) {
       shownOutsideNoticeRef.current = false
     }
@@ -1035,6 +1087,7 @@ export default function App() {
       setSelected(null)
       setIsFollowing2D(false)
       setIsPlaying2D(false)
+      liveUserPosRef.current = [effectiveLat, effectiveLng]
       setUserPosition([effectiveLat, effectiveLng])
       setUserElevation(nearestElev)
       setLocationSource('gps')
@@ -1055,6 +1108,7 @@ export default function App() {
     }
 
     if (!manualPinOverrideRef.current && !isSimulating) {
+      liveUserPosRef.current = [effectiveLat, effectiveLng]
       setUserPosition([effectiveLat, effectiveLng])
       setUserElevation(nearestElev)
       setLocationSource('gps')
@@ -1146,7 +1200,14 @@ export default function App() {
       }
     }
 
-    const options = { enableHighAccuracy: true, timeout: 20000, maximumAge: 3000 }
+    const watchOptions = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+      interval: 500,
+      minimumUpdateInterval: 200,
+      enableLocationFallback: true,
+    }
 
     if (Capacitor.isNativePlatform()) {
       gpsStartingRef.current = true
@@ -1161,10 +1222,19 @@ export default function App() {
           handleGpsError({ code: 1, message: 'Location permission not granted' })
           return
         }
-        void Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 })
+        // Fire fast coarse + fast fine fix in parallel so first location renders immediately
+        void Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 2500, maximumAge: 60000 })
           .then(({ coords }) => applyLiveGpsPosition(coords))
           .catch(() => undefined)
-        const id = await Geolocation.watchPosition(options, (pos, err) => {
+        void Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 2000,
+          enableLocationFallback: true,
+        })
+          .then(({ coords }) => applyLiveGpsPosition(coords))
+          .catch(() => undefined)
+        const id = await Geolocation.watchPosition(watchOptions, (pos, err) => {
           if (err) {
             handleGpsError(err as { code?: number; message?: string })
             return
@@ -1187,17 +1257,22 @@ export default function App() {
       return
     }
 
-    // Immediate coarse fix for fast response while high-accuracy watch locks on
+    // Immediate parallel coarse + fine fix for fastest first render while watchPosition streams updates
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => applyLiveGpsPosition(coords),
       () => undefined,
-      { enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 },
+      { enableHighAccuracy: false, timeout: 2500, maximumAge: 60000 },
+    )
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => applyLiveGpsPosition(coords),
+      () => undefined,
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 2000 },
     )
 
     const watchId = navigator.geolocation.watchPosition(
       ({ coords }) => applyLiveGpsPosition(coords),
       (err) => handleGpsError(err),
-      options,
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
     )
     gpsWatchIdRef.current = watchId
   }
@@ -1212,7 +1287,7 @@ export default function App() {
         .then((perm) => {
           if (cancelled) return
           if (perm.location === 'granted' || perm.coarseLocation === 'granted') {
-            void startLiveGpsWatch({ focusOnFix: false, requestNativePerm: false, showErrors: false })
+            void startLiveGpsWatch({ focusOnFix: true, requestNativePerm: false, showErrors: false })
           }
         })
         .catch(() => undefined)
@@ -1223,11 +1298,11 @@ export default function App() {
           if (cancelled) return
           permStatus = status
           if (status.state === 'granted') {
-            void startLiveGpsWatch({ focusOnFix: false, requestNativePerm: false, showErrors: false })
+            void startLiveGpsWatch({ focusOnFix: true, requestNativePerm: false, showErrors: false })
           }
           onPermChange = () => {
             if (!cancelled && status.state === 'granted') {
-              void startLiveGpsWatch({ focusOnFix: false, requestNativePerm: false, showErrors: false })
+              void startLiveGpsWatch({ focusOnFix: true, requestNativePerm: false, showErrors: false })
             } else if (!cancelled && status.state === 'denied') {
               setGpsActive(false)
               void stopLiveGpsWatch()
@@ -1248,8 +1323,77 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // High-frequency phone compass / orientation streaming (60fps ref + throttled React sync)
+  useEffect(() => {
+    const handleOrientation = (ev: DeviceOrientationEvent) => {
+      const now = performance.now()
+      const reading = extractCompassHeading(ev as DeviceOrientationEvent & { webkitCompassHeading?: number | null })
+      if (!reading) return
+
+      if (reading.isAbsolute) {
+        lastAbsoluteCompassAtRef.current = now
+      } else if (now - lastAbsoluteCompassAtRef.current < 2500) {
+        return
+      }
+
+      const nextHeading = compassInitializedRef.current
+        ? stepAngleDeg(liveHeadingRef.current, reading.headingDeg, 0.45)
+        : reading.headingDeg
+      compassInitializedRef.current = true
+      liveHeadingRef.current = nextHeading
+
+      if (!compassActiveRef.current) {
+        compassActiveRef.current = true
+        setCompassActive(true)
+      }
+      if (!autoCompassAppliedRef.current && !manualCompassDisabledRef.current) {
+        autoCompassAppliedRef.current = true
+        setCompassViewActive(true)
+      }
+
+      if (
+        now - lastHeadingStateAtRef.current >= 80 &&
+        Math.abs(shortestAngleDeltaDeg(lastCommittedHeadingRef.current, nextHeading)) >= 2
+      ) {
+        lastHeadingStateAtRef.current = now
+        lastCommittedHeadingRef.current = nextHeading
+        setUserHeadingDeg(Math.round(nextHeading))
+      }
+    }
+
+    window.addEventListener('deviceorientationabsolute', handleOrientation as EventListener, true)
+    window.addEventListener('deviceorientation', handleOrientation as EventListener, true)
+    return () => {
+      window.removeEventListener('deviceorientationabsolute', handleOrientation as EventListener, true)
+      window.removeEventListener('deviceorientation', handleOrientation as EventListener, true)
+    }
+  }, [])
+
   function tryLocation() {
+    void requestCompassPermissionIfNeeded().catch(() => 'unsupported')
     void startLiveGpsWatch({ focusOnFix: true, requestNativePerm: true, showErrors: true })
+  }
+
+  function toggleCompassView() {
+    void requestCompassPermissionIfNeeded().catch(() => 'unsupported')
+    setCompassViewActive((prev) => {
+      const next = !prev
+      manualCompassDisabledRef.current = !next
+      if (next) {
+        setPickingLocation(false)
+        setFocusPos([...liveUserPosRef.current])
+        setFocusUserSignal((n) => n + 1)
+        if (gpsWatchIdRef.current === null && !gpsStartingRef.current) {
+          void startLiveGpsWatch({ focusOnFix: false, requestNativePerm: true, showErrors: false })
+        }
+      }
+      return next
+    })
+  }
+
+  function disableCompassView() {
+    manualCompassDisabledRef.current = true
+    setCompassViewActive(false)
   }
 
   async function executeRoute(
@@ -1590,6 +1734,15 @@ export default function App() {
                     <LocateFixed size={13} />{tx.gpsMyLocBtn}
                   </button>
                   <button
+                    className={compassViewActive ? 'my-loc-btn compass-live' : 'my-loc-btn'}
+                    onClick={toggleCompassView}
+                    aria-pressed={compassViewActive}
+                    title={compassViewActive ? tx.compassViewOnTitle : tx.compassViewOffTitle}
+                  >
+                    <Compass size={13} />
+                    {tx.compassViewBtn} · {formatCardinalDirection(userHeadingDeg, language)}
+                  </button>
+                  <button
                     className={pickingLocation ? 'my-loc-btn active' : 'my-loc-btn'}
                     onClick={() => setPickingLocation(!pickingLocation)}
                   >
@@ -1880,7 +2033,11 @@ export default function App() {
             userPosition={userPosition}
             userLocationLabel={userLocationSummary.shortText}
             userHeadingDeg={userHeadingDeg}
+            liveUserPosRef={liveUserPosRef}
+            liveHeadingRef={liveHeadingRef}
             gpsActive={gpsActive && locationSource === 'gps'}
+            compassViewActive={compassViewActive}
+            compassActive={compassActive}
             focusUserSignal={focusUserSignal}
             activeRoute={activeRoute}
             passedPositions={passedPositions}
@@ -1890,6 +2047,8 @@ export default function App() {
             onSelectBuilding={(b) => chooseBuilding(b)}
             onPickLocation={(lat, lng) => setCampusUserLocation(lat, lng, 'campus-pin')}
             onTryGpsLocation={tryLocation}
+            onToggleCompassView={toggleCompassView}
+            onDisableCompassView={disableCompassView}
             onSwitchTo2D={() => setMapViewMode('2d')}
             language={language}
           />
@@ -2111,14 +2270,26 @@ export default function App() {
         )}
 
         {mapViewMode === '2d' && (
-          <button
-            className={gpsActive && locationSource === 'gps' ? 'locate-button gps-live' : 'locate-button'}
-            onClick={tryLocation}
-            aria-label={t.locate}
-            title={t.locate}
-          >
-            <LocateFixed size={18} />
-          </button>
+          <>
+            <button
+              type="button"
+              className={compassViewActive ? 'compass-2d-button compass-live' : 'compass-2d-button'}
+              onClick={toggleCompassView}
+              aria-pressed={compassViewActive}
+              aria-label={compassViewActive ? tx.compassViewOnTitle : tx.compassViewOffTitle}
+              title={compassViewActive ? tx.compassViewOnTitle : tx.compassViewOffTitle}
+            >
+              <Compass size={18} />
+            </button>
+            <button
+              className={gpsActive && locationSource === 'gps' ? 'locate-button gps-live' : 'locate-button'}
+              onClick={tryLocation}
+              aria-label={t.locate}
+              title={t.locate}
+            >
+              <LocateFixed size={18} />
+            </button>
+          </>
         )}
 
         {!isFollowing2D && mapViewMode === '2d' && (

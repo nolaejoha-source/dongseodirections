@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react'
 import { Compass, Eye, LocateFixed, Maximize2, Minus, Plus, RotateCcw, Sparkles } from 'lucide-react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
@@ -7,6 +7,7 @@ import { CAMPUS_CENTER, SEEDED_PATH_NODES } from './campusData'
 import { classifySlope, type ActiveRouteData } from './FirstPerson3DNavigator'
 import type { Building, Language } from './data'
 import { EXT_UI_COPY, getLocalizedBuildingName } from './i18nCatalog'
+import { stepAngleDeg } from './liveSensors'
 
 const METERS_PER_DEG_LAT = 111_320
 const METERS_PER_DEG_LNG = 111_320 * Math.cos((CAMPUS_CENTER[0] * Math.PI) / 180)
@@ -34,7 +35,11 @@ export default function Campus3DIsoMap({
   userPosition,
   userLocationLabel,
   userHeadingDeg = 115,
+  liveUserPosRef,
+  liveHeadingRef,
   gpsActive = false,
+  compassViewActive = false,
+  compassActive = false,
   focusUserSignal = 0,
   activeRoute,
   passedPositions,
@@ -44,6 +49,8 @@ export default function Campus3DIsoMap({
   onSelectBuilding,
   onPickLocation,
   onTryGpsLocation,
+  onToggleCompassView,
+  onDisableCompassView,
   onSwitchTo2D,
   language = 'ko',
 }: {
@@ -52,7 +59,11 @@ export default function Campus3DIsoMap({
   userPosition: [number, number]
   userLocationLabel: string
   userHeadingDeg?: number
+  liveUserPosRef?: MutableRefObject<[number, number]>
+  liveHeadingRef?: MutableRefObject<number>
   gpsActive?: boolean
+  compassViewActive?: boolean
+  compassActive?: boolean
   focusUserSignal?: number
   activeRoute: ActiveRouteData | null
   passedPositions: [number, number][]
@@ -62,6 +73,8 @@ export default function Campus3DIsoMap({
   onSelectBuilding: (building: Building) => void
   onPickLocation: (lat: number, lng: number) => void
   onTryGpsLocation: () => void
+  onToggleCompassView?: () => void
+  onDisableCompassView?: () => void
   onSwitchTo2D: () => void
   language?: Language
 }) {
@@ -90,6 +103,10 @@ export default function Campus3DIsoMap({
   const bldgMeshByNumRef = useRef<Map<number, THREE.Mesh[]>>(new Map())
   const hitBoxesRef = useRef<Array<{ building: Building; cx: number; cy: number; r: number }>>([])
   const rafIdRef = useRef<number>(0)
+  const smoothUserPos3DRef = useRef<THREE.Vector3 | null>(null)
+  const smoothHeadingRef = useRef<number>(userHeadingDeg)
+  const followDistRef = useRef<number>(175)
+  const manualDragActiveRef = useRef<boolean>(false)
 
   // Elevation field interpolator matching the exact Blender terrain formula
   const elevationNodes = useMemo(() => {
@@ -160,10 +177,16 @@ export default function Campus3DIsoMap({
     userPosition,
     userLocationLabel,
     userHeadingDeg,
+    liveUserPosRef,
+    liveHeadingRef,
     gpsActive,
+    compassViewActive,
+    compassActive,
     activeRoute,
     passedPositions,
     isFollowing,
+    cameraLock,
+    onDisableCompassView,
     language,
     tx,
     modelLoaded,
@@ -177,10 +200,16 @@ export default function Campus3DIsoMap({
     userPosition,
     userLocationLabel,
     userHeadingDeg,
+    liveUserPosRef,
+    liveHeadingRef,
     gpsActive,
+    compassViewActive,
+    compassActive,
     activeRoute,
     passedPositions,
     isFollowing,
+    cameraLock,
+    onDisableCompassView,
     language,
     tx,
     modelLoaded,
@@ -232,6 +261,68 @@ export default function Campus3DIsoMap({
     controls.screenSpacePanning = false
     controls.update()
     controlsRef.current = controls
+
+    const activePointers = new Map<number, { x: number; y: number; downX: number; downY: number }>()
+    let prevPinchDist: number | null = null
+
+    const getPinchDist = () => {
+      if (activePointers.size < 2) return null
+      const pts = Array.from(activePointers.values())
+      return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
+    }
+
+    const onDomPointerDown = (e: PointerEvent) => {
+      activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY, downX: e.clientX, downY: e.clientY })
+      prevPinchDist = getPinchDist()
+    }
+
+    const onDomPointerMove = (e: PointerEvent) => {
+      const entry = activePointers.get(e.pointerId)
+      if (!entry) return
+      entry.x = e.clientX
+      entry.y = e.clientY
+
+      if (activePointers.size >= 2) {
+        const nextPinch = getPinchDist()
+        if (nextPinch && prevPinchDist && nextPinch > 4 && prevPinchDist > 4) {
+          const factor = prevPinchDist / nextPinch
+          followDistRef.current = Math.max(60, Math.min(520, followDistRef.current * factor))
+        }
+        prevPinchDist = nextPinch
+        return
+      }
+
+      const moved = Math.hypot(e.clientX - entry.downX, e.clientY - entry.downY)
+      if (moved > 12) {
+        manualDragActiveRef.current = true
+        if (stateRef.current.compassViewActive) {
+          stateRef.current.onDisableCompassView?.()
+        }
+      }
+    }
+
+    const onDomPointerUp = (e: PointerEvent) => {
+      activePointers.delete(e.pointerId)
+      prevPinchDist = getPinchDist()
+      if (activePointers.size === 0) {
+        manualDragActiveRef.current = false
+      }
+    }
+
+    const onDomWheel = (e: WheelEvent) => {
+      const st = stateRef.current
+      if (st.compassViewActive || (st.isFollowing && st.cameraLock)) {
+        const factor = e.deltaY > 0 ? 1.09 : 0.92
+        followDistRef.current = Math.max(60, Math.min(520, followDistRef.current * factor))
+      }
+    }
+
+    const domEl = renderer.domElement
+    domEl.addEventListener('pointerdown', onDomPointerDown)
+    domEl.addEventListener('pointermove', onDomPointerMove)
+    domEl.addEventListener('pointerup', onDomPointerUp)
+    domEl.addEventListener('pointercancel', onDomPointerUp)
+    domEl.addEventListener('wheel', onDomWheel, { passive: true })
 
     // Lighting matching Blender EEVEE setup
     const hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x1e293b, 1.35)
@@ -384,10 +475,55 @@ export default function Campus3DIsoMap({
 
     // Animation & Synchronized 2D HUD Overlay Loop
     const projVec = new THREE.Vector3()
+    const desiredTarget = new THREE.Vector3()
+    const desiredCam = new THREE.Vector3()
+    let lastFrameTime = performance.now()
 
     const animate = () => {
       rafIdRef.current = requestAnimationFrame(animate)
-      controls.update()
+
+      const nowPerf = performance.now()
+      const dt = Math.min(0.05, Math.max(0.001, (nowPerf - lastFrameTime) / 1000))
+      lastFrameTime = nowPerf
+      const smoothAlpha = 1 - Math.exp(-14 * dt)
+
+      const st = stateRef.current
+      const liveLatLng = st.liveUserPosRef?.current ?? st.userPosition
+      const targetUser3D = toThreeVec3(liveLatLng[0], liveLatLng[1], 3.0)
+      const targetHeadingDeg = st.liveHeadingRef?.current ?? st.userHeadingDeg
+
+      if (!smoothUserPos3DRef.current) {
+        smoothUserPos3DRef.current = targetUser3D.clone()
+      } else {
+        smoothUserPos3DRef.current.lerp(targetUser3D, smoothAlpha)
+      }
+      smoothHeadingRef.current = stepAngleDeg(smoothHeadingRef.current, targetHeadingDeg, smoothAlpha)
+
+      const shouldHeadingLock =
+        (st.compassViewActive || (st.isFollowing && st.cameraLock)) && !manualDragActiveRef.current
+
+      if (shouldHeadingLock) {
+        const sPos = smoothUserPos3DRef.current
+        const hRad = (smoothHeadingRef.current * Math.PI) / 180
+        const pitchRad = 0.66
+        const dist = followDistRef.current
+        const hDist = Math.cos(pitchRad) * dist
+        const vDist = Math.sin(pitchRad) * dist
+        desiredTarget.set(sPos.x, sPos.y + 2.5, sPos.z)
+        desiredCam.set(
+          sPos.x - Math.sin(hRad) * hDist,
+          sPos.y + 2.5 + vDist,
+          sPos.z + Math.cos(hRad) * hDist,
+        )
+        controls.target.lerp(desiredTarget, smoothAlpha)
+        camera.position.lerp(desiredCam, smoothAlpha)
+        controls.enableDamping = false
+        controls.update()
+        controls.enableDamping = true
+      } else {
+        controls.update()
+      }
+
       renderer.render(scene, camera)
 
       // Render crisp 2D HUD Overlay (Red Number Badges 1..31, Building Names, Route Slope Chips, User Beacon & Compass)
@@ -407,7 +543,6 @@ export default function Campus3DIsoMap({
       ctx.scale(dpr, dpr)
       ctx.clearRect(0, 0, cw, ch)
 
-      const st = stateRef.current
       const projectToScreen = (worldPos: THREE.Vector3) => {
         projVec.copy(worldPos).project(camera)
         return {
@@ -541,8 +676,8 @@ export default function Campus3DIsoMap({
       }
       hitBoxesRef.current = nextHits
 
-      // 3. Live User Location 3D Beacon (animated pulse + directional heading cone)
-      const uPos3D = toThreeVec3(st.userPosition[0], st.userPosition[1], 3.0)
+      // 3. Live User Location 3D Beacon (animated pulse + directional heading cone at 60fps)
+      const uPos3D = smoothUserPos3DRef.current ?? toThreeVec3(st.userPosition[0], st.userPosition[1], 3.0)
       const uSp = projectToScreen(uPos3D)
       if (uSp.z > -1 && uSp.z < 1) {
         const azimuth = controls.getAzimuthalAngle()
@@ -550,8 +685,8 @@ export default function Campus3DIsoMap({
         const pulseRadius = st.gpsActive ? 11 + pulsePhase * 22 : 18
         const pulseAlpha = st.gpsActive ? (1 - pulsePhase) * 0.55 : 0.35
 
-        // Directional heading cone synced with camera azimuth
-        const screenHeadingRad = (st.userHeadingDeg * Math.PI) / 180 + azimuth - Math.PI / 2
+        // Directional heading cone synced with phone compass & camera azimuth
+        const screenHeadingRad = (smoothHeadingRef.current * Math.PI) / 180 + azimuth - Math.PI / 2
         ctx.save()
         ctx.beginPath()
         ctx.moveTo(uSp.sx, uSp.sy)
@@ -605,16 +740,16 @@ export default function Campus3DIsoMap({
         ctx.fillText(uTxt, uSp.sx + liveDotPad / 2, pillY + 13)
       }
 
-      // 4. Top-Left 3D Compass Rose (Top-Right is reserved cleanly for the 2D / 3D Switcher Box)
+      // 4. Top-Left 3D Compass Rose (tap to toggle phone heading view)
       const compX = 36
       const compY = 36
       const compR = 20
       ctx.beginPath()
       ctx.arc(compX, compY, compR, 0, Math.PI * 2)
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)'
+      ctx.fillStyle = st.compassViewActive ? 'rgba(13, 148, 136, 0.92)' : 'rgba(15, 23, 42, 0.85)'
       ctx.fill()
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
-      ctx.lineWidth = 1.2
+      ctx.strokeStyle = st.compassViewActive ? '#5eead4' : 'rgba(255, 255, 255, 0.25)'
+      ctx.lineWidth = st.compassViewActive ? 2.2 : 1.2
       ctx.stroke()
 
       const azimuth = controls.getAzimuthalAngle()
@@ -652,6 +787,11 @@ export default function Campus3DIsoMap({
 
     return () => {
       cancelAnimationFrame(rafIdRef.current)
+      domEl.removeEventListener('pointerdown', onDomPointerDown)
+      domEl.removeEventListener('pointermove', onDomPointerMove)
+      domEl.removeEventListener('pointerup', onDomPointerUp)
+      domEl.removeEventListener('pointercancel', onDomPointerUp)
+      domEl.removeEventListener('wheel', onDomWheel)
       ro.disconnect()
       scene.traverse((obj) => {
         if ((obj as THREE.Mesh).isMesh) {
@@ -745,7 +885,7 @@ export default function Campus3DIsoMap({
 
   // Focus camera on selected building
   useEffect(() => {
-    if (!selected || isFollowing) return
+    if (!selected || isFollowing || compassViewActive) return
     const controls = controlsRef.current
     const camera = cameraRef.current
     if (!controls || !camera) return
@@ -759,34 +899,49 @@ export default function Campus3DIsoMap({
     controls.target.copy(targetPos)
     camera.position.copy(targetPos).add(offset)
     controls.update()
-  }, [selected, isFollowing, toThreeVec3])
+  }, [selected, isFollowing, compassViewActive, toThreeVec3])
 
-  // Follow user during active route guidance
+  // Snap heading follow distance when enabling compass view or route guidance
   useEffect(() => {
-    if (!isFollowing || !cameraLock) return
-    const controls = controlsRef.current
+    if (!compassViewActive && !(isFollowing && cameraLock)) return
     const camera = cameraRef.current
-    if (!controls || !camera) return
+    const controls = controlsRef.current
+    if (!camera || !controls) return
+    const curDist = camera.position.distanceTo(controls.target)
+    followDistRef.current = curDist > 260 ? 175 : Math.max(90, Math.min(240, curDist))
+  }, [compassViewActive, isFollowing, cameraLock])
 
-    const uPos = toThreeVec3(userPosition[0], userPosition[1], 4)
-    const offset = camera.position.clone().sub(controls.target)
-    offset.normalize().multiplyScalar(170)
-    controls.target.copy(uPos)
-    camera.position.copy(uPos).add(offset)
-    controls.update()
-  }, [isFollowing, cameraLock, userPosition, toThreeVec3])
-
-  // Focus 3D camera onto user position when user taps GPS Locate button
+  // Focus 3D camera onto user position immediately on GPS fix or Locate tap
   useEffect(() => {
     if (focusUserSignal <= 0) return
     const controls = controlsRef.current
     const camera = cameraRef.current
     if (!controls || !camera) return
 
-    const [lat, lng] = stateRef.current.userPosition
-    const uPos = toThreeVec3(lat, lng, 4)
+    const st = stateRef.current
+    const [lat, lng] = st.liveUserPosRef?.current ?? st.userPosition
+    const headingDeg = st.liveHeadingRef?.current ?? st.userHeadingDeg
+    const uPos = toThreeVec3(lat, lng, 3.0)
+    smoothUserPos3DRef.current = uPos.clone()
+    smoothHeadingRef.current = headingDeg
+
+    if (st.compassViewActive || (st.isFollowing && st.cameraLock)) {
+      const hRad = (headingDeg * Math.PI) / 180
+      const pitchRad = 0.66
+      const dist = Math.min(Math.max(followDistRef.current, 130), 210)
+      followDistRef.current = dist
+      controls.target.set(uPos.x, uPos.y + 2.5, uPos.z)
+      camera.position.set(
+        uPos.x - Math.sin(hRad) * Math.cos(pitchRad) * dist,
+        uPos.y + 2.5 + Math.sin(pitchRad) * dist,
+        uPos.z + Math.cos(hRad) * Math.cos(pitchRad) * dist,
+      )
+      controls.update()
+      return
+    }
+
     const offset = camera.position.clone().sub(controls.target)
-    const desiredDist = Math.min(Math.max(offset.length(), 150), 210)
+    const desiredDist = Math.min(Math.max(offset.length(), 145), 210)
     offset.normalize().multiplyScalar(desiredDist)
     controls.target.copy(uPos)
     camera.position.copy(uPos).add(offset)
@@ -841,8 +996,12 @@ export default function Campus3DIsoMap({
     const rect = e.currentTarget.getBoundingClientRect()
     const px = e.clientX - rect.left
     const py = e.clientY - rect.top
-    if (Math.hypot(px - 36, py - 36) <= 22) {
-      applyCameraPreset('iso')
+    if (Math.hypot(px - 36, py - 36) <= 24) {
+      if (onToggleCompassView) {
+        onToggleCompassView()
+      } else {
+        applyCameraPreset('iso')
+      }
     }
   }
 
@@ -874,6 +1033,7 @@ export default function Campus3DIsoMap({
     const camera = cameraRef.current
     const controls = controlsRef.current
     if (!camera || !controls) return
+    onDisableCompassView?.()
     setActivePreset(preset)
     controls.target.set(10, 38, 25)
     if (preset === 'ortho') {
@@ -890,6 +1050,7 @@ export default function Campus3DIsoMap({
     const camera = cameraRef.current
     const controls = controlsRef.current
     if (!camera || !controls) return
+    onDisableCompassView?.()
     const rad = (degDelta * Math.PI) / 180
     const offset = camera.position.clone().sub(controls.target)
     offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), rad)
@@ -898,6 +1059,7 @@ export default function Campus3DIsoMap({
   }
 
   const zoomByFactor = (factor: number) => {
+    followDistRef.current = Math.max(60, Math.min(520, followDistRef.current * factor))
     const camera = cameraRef.current
     const controls = controlsRef.current
     if (!camera || !controls) return
@@ -1018,6 +1180,17 @@ export default function Campus3DIsoMap({
         >
           <Maximize2 size={18} />
         </button>
+        {onToggleCompassView && (
+          <button
+            type="button"
+            className={compassViewActive ? 'iso3d-ctrl-btn touch-btn compass-live' : 'iso3d-ctrl-btn touch-btn'}
+            onClick={onToggleCompassView}
+            title={compassViewActive ? tx.compassViewOnTitle : tx.compassViewOffTitle}
+            aria-pressed={compassViewActive}
+          >
+            <Compass size={19} />
+          </button>
+        )}
         <button
           type="button"
           className={gpsActive ? 'iso3d-ctrl-btn touch-btn gps-live' : 'iso3d-ctrl-btn touch-btn'}
