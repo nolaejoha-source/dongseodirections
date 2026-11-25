@@ -164,21 +164,161 @@ export function extractCompassHeading(
   }
 }
 
+let cachedCompassPermission: 'granted' | 'denied' | 'unsupported' | null = null
+
 export async function requestCompassPermissionIfNeeded(): Promise<'granted' | 'denied' | 'unsupported'> {
   if (typeof window === 'undefined') return 'unsupported'
+  if (cachedCompassPermission === 'granted') return 'granted'
   const DO = window.DeviceOrientationEvent as
     | (typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> })
     | undefined
-  if (!DO) return 'unsupported'
+  if (!DO) {
+    cachedCompassPermission = 'unsupported'
+    return 'unsupported'
+  }
   if (typeof DO.requestPermission === 'function') {
     try {
       const res = await DO.requestPermission()
-      return res === 'granted' ? 'granted' : 'denied'
+      cachedCompassPermission = res === 'granted' ? 'granted' : 'denied'
+      return cachedCompassPermission
     } catch {
       return 'denied'
     }
   }
+  cachedCompassPermission = 'granted'
   return 'granted'
+}
+
+interface OrientationSensorLike {
+  quaternion?: number[] | Float32Array
+  start: () => void
+  stop: () => void
+  addEventListener: (type: string, listener: () => void) => void
+  removeEventListener: (type: string, listener: () => void) => void
+}
+
+type OrientationSensorCtor = new (options?: { frequency?: number; referenceFrame?: 'device' | 'screen' }) => OrientationSensorLike
+
+function headingFromQuaternion(
+  q: number[] | Float32Array,
+  screenAngleDeg: number,
+): number | null {
+  if (!q || q.length < 4) return null
+  const [qx, qy, qz, qw] = q
+  if (![qx, qy, qz, qw].every(Number.isFinite)) return null
+
+  // Rotate body +Y (top of phone: 0, 1, 0) into world ENU frame
+  const eTop = 2 * (qx * qy - qw * qz)
+  const nTop = 1 - 2 * (qx * qx + qz * qz)
+
+  // Rotate body -Z (back of phone: 0, 0, -1) into world ENU frame
+  const eBack = -2 * (qx * qz + qw * qy)
+  const nBack = -2 * (qy * qz - qw * qx)
+
+  // Tilt cosine factor from rotated +Z axis vertical component
+  const upZ = 1 - 2 * (qx * qx + qy * qy)
+  const wTop = Math.max(0.15, Math.min(1, Math.abs(upZ)))
+  const wBack = 1 - wTop
+  const vx = eTop * wTop + eBack * wBack
+  const vy = nTop * wTop + nBack * wBack
+  if (Math.hypot(vx, vy) < 1e-4) return null
+
+  const azimuth = normalizeHeadingDeg(Math.atan2(vx, vy) * RAD_TO_DEG)
+  return normalizeHeadingDeg(azimuth + screenAngleDeg)
+}
+
+export function subscribeLiveCompass(onReading: (reading: CompassReading) => void): () => void {
+  if (typeof window === 'undefined') return () => undefined
+
+  let screenAngleDeg = getScreenOrientationAngle()
+  let lastAbsoluteAt = 0
+  let stopped = false
+
+  const updateScreenAngle = () => {
+    screenAngleDeg = getScreenOrientationAngle()
+  }
+
+  const handleOrientation = (ev: DeviceOrientationEvent) => {
+    if (stopped) return
+    const reading = extractCompassHeading(
+      ev as DeviceOrientationEvent & { webkitCompassHeading?: number | null },
+      screenAngleDeg,
+    )
+    if (!reading) return
+    const now = performance.now()
+    if (reading.isAbsolute) {
+      lastAbsoluteAt = now
+    } else if (now - lastAbsoluteAt < 2500) {
+      return
+    }
+    onReading(reading)
+  }
+
+  window.addEventListener('deviceorientationabsolute', handleOrientation as EventListener, true)
+  window.addEventListener('deviceorientation', handleOrientation as EventListener, true)
+  window.addEventListener('orientationchange', updateScreenAngle, true)
+  try {
+    window.screen?.orientation?.addEventListener?.('change', updateScreenAngle)
+  } catch {
+    // Ignore restricted screen.orientation listeners
+  }
+
+  // Fallback high-frequency Web Sensor API (60Hz) for Android/Chrome where deviceorientation throttles
+  const sensors: OrientationSensorLike[] = []
+  const win = window as unknown as {
+    AbsoluteOrientationSensor?: OrientationSensorCtor
+    RelativeOrientationSensor?: OrientationSensorCtor
+  }
+
+  const attachSensor = (Ctor: OrientationSensorCtor | undefined, isAbsolute: boolean) => {
+    if (!Ctor) return
+    try {
+      const sensor = new Ctor({ frequency: 60, referenceFrame: 'device' })
+      const onSensorReading = () => {
+        if (stopped || !sensor.quaternion) return
+        const now = performance.now()
+        if (!isAbsolute && now - lastAbsoluteAt < 2500) return
+        const headingDeg = headingFromQuaternion(sensor.quaternion, screenAngleDeg)
+        if (headingDeg === null) return
+        if (isAbsolute) lastAbsoluteAt = now
+        onReading({ headingDeg, isAbsolute })
+      }
+      sensor.addEventListener('reading', onSensorReading)
+      sensor.addEventListener('error', () => {
+        try {
+          sensor.stop()
+        } catch {
+          // Ignore cleanup errors
+        }
+      })
+      sensor.start()
+      sensors.push(sensor)
+    } catch {
+      // Sensor API blocked by permissions policy or unsupported device
+    }
+  }
+
+  attachSensor(win.AbsoluteOrientationSensor, true)
+  attachSensor(win.RelativeOrientationSensor, false)
+
+  return () => {
+    stopped = true
+    window.removeEventListener('deviceorientationabsolute', handleOrientation as EventListener, true)
+    window.removeEventListener('deviceorientation', handleOrientation as EventListener, true)
+    window.removeEventListener('orientationchange', updateScreenAngle, true)
+    try {
+      window.screen?.orientation?.removeEventListener?.('change', updateScreenAngle)
+    } catch {
+      // Ignore cleanup errors
+    }
+    for (const s of sensors) {
+      try {
+        s.stop()
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+  }
 }
 
 export function formatCardinalDirection(deg: number, lang: string): string {

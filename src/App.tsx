@@ -20,7 +20,6 @@ import {
   getLocalizedRoomTitleAndNote,
 } from './i18nCatalog'
 import {
-  extractCompassHeading,
   formatCardinalDirection,
   loadCachedGpsFix,
   normalizeHeadingDeg,
@@ -28,6 +27,7 @@ import {
   saveCachedGpsFix,
   shortestAngleDeltaDeg,
   stepAngleDeg,
+  subscribeLiveCompass,
 } from './liveSensors'
 import { buildRouteFromWaypoints, MOCK_WAYPOINT_COURSES, ROUTE_NAV_CONFIG } from './routeNavigationConfig'
 
@@ -575,7 +575,6 @@ export default function App() {
   const liveHeadingRef = useRef<number>(initialHeadingDeg)
   const compassActiveRef = useRef(false)
   const compassInitializedRef = useRef(false)
-  const lastAbsoluteCompassAtRef = useRef(0)
   const lastHeadingStateAtRef = useRef(0)
   const lastCommittedHeadingRef = useRef(initialHeadingDeg)
   const autoCompassAppliedRef = useRef(false)
@@ -935,8 +934,6 @@ export default function App() {
   function chooseBuilding(building: Building, facility: FacilityMatch | null = null) {
     setIsFollowing2D(false)
     setIsPlaying2D(false)
-    manualCompassDisabledRef.current = true
-    setCompassViewActive(false)
     setMobileSheetSnap('peek')
     setSelected(building)
     setMatchedFacility(facility)
@@ -1359,20 +1356,13 @@ export default function App() {
 
   // High-frequency phone compass / orientation streaming (60fps ref + throttled React sync)
   useEffect(() => {
-    const handleOrientation = (ev: DeviceOrientationEvent) => {
-      if (isFollowing2DRef.current) return
+    const unsubscribeCompass = subscribeLiveCompass((reading) => {
+      // Allow live phone heading anytime except when simulated route playback is actively driving heading
+      if (isFollowing2DRef.current && isPlaying2DRef.current) return
       const now = performance.now()
-      const reading = extractCompassHeading(ev as DeviceOrientationEvent & { webkitCompassHeading?: number | null })
-      if (!reading) return
-
-      if (reading.isAbsolute) {
-        lastAbsoluteCompassAtRef.current = now
-      } else if (now - lastAbsoluteCompassAtRef.current < 2500) {
-        return
-      }
 
       const nextHeading = compassInitializedRef.current
-        ? stepAngleDeg(liveHeadingRef.current, reading.headingDeg, 0.45)
+        ? stepAngleDeg(liveHeadingRef.current, reading.headingDeg, 0.48)
         : reading.headingDeg
       compassInitializedRef.current = true
       liveHeadingRef.current = nextHeading
@@ -1387,20 +1377,31 @@ export default function App() {
       }
 
       if (
-        now - lastHeadingStateAtRef.current >= 80 &&
-        Math.abs(shortestAngleDeltaDeg(lastCommittedHeadingRef.current, nextHeading)) >= 2
+        now - lastHeadingStateAtRef.current >= 65 &&
+        Math.abs(shortestAngleDeltaDeg(lastCommittedHeadingRef.current, nextHeading)) >= 1.5
       ) {
         lastHeadingStateAtRef.current = now
         lastCommittedHeadingRef.current = nextHeading
         setUserHeadingDeg(Math.round(nextHeading))
       }
-    }
+    })
 
-    window.addEventListener('deviceorientationabsolute', handleOrientation as EventListener, true)
-    window.addEventListener('deviceorientation', handleOrientation as EventListener, true)
+    // Unlock iOS/mobile orientation sensors automatically on first user gesture anywhere in 2D or 3D view
+    const unlockOnGesture = () => {
+      void requestCompassPermissionIfNeeded().then((status) => {
+        if (status === 'granted') {
+          window.removeEventListener('pointerdown', unlockOnGesture, true)
+          window.removeEventListener('touchend', unlockOnGesture, true)
+        }
+      })
+    }
+    window.addEventListener('pointerdown', unlockOnGesture, { capture: true, passive: true })
+    window.addEventListener('touchend', unlockOnGesture, { capture: true, passive: true })
+
     return () => {
-      window.removeEventListener('deviceorientationabsolute', handleOrientation as EventListener, true)
-      window.removeEventListener('deviceorientation', handleOrientation as EventListener, true)
+      unsubscribeCompass()
+      window.removeEventListener('pointerdown', unlockOnGesture, true)
+      window.removeEventListener('touchend', unlockOnGesture, true)
     }
   }, [])
 
@@ -1812,7 +1813,7 @@ export default function App() {
                     title={compassViewActive ? tx.compassViewOnTitle : tx.compassViewOffTitle}
                   >
                     <Compass size={13} />
-                    {tx.compassViewBtn} · {formatCardinalDirection(userHeadingDeg, language)}
+                    {tx.compassViewBtn} · {formatCardinalDirection(userHeadingDeg, language)} {Math.round(userHeadingDeg)}°
                   </button>
                   <button
                     className={pickingLocation ? 'my-loc-btn active' : 'my-loc-btn'}

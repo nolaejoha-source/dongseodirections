@@ -7,7 +7,7 @@ import { CAMPUS_CENTER, SEEDED_PATH_NODES } from './campusData'
 import { classifySlope, type ActiveRouteData } from './FirstPerson3DNavigator'
 import type { Building, Language } from './data'
 import { EXT_UI_COPY, getLocalizedBuildingName } from './i18nCatalog'
-import { stepAngleDeg } from './liveSensors'
+import { formatCardinalDirection, requestCompassPermissionIfNeeded, stepAngleDeg } from './liveSensors'
 import { ROUTE_NAV_CONFIG } from './routeNavigationConfig'
 
 const METERS_PER_DEG_LAT = 111_320
@@ -103,6 +103,7 @@ export default function Campus3DIsoMap({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
   const controlsRef = useRef<OrbitControls | null>(null)
   const routeGroupRef = useRef<THREE.Group | null>(null)
+  const userBeaconGroupRef = useRef<THREE.Group | null>(null)
   const buildingMeshesRef = useRef<THREE.Mesh[]>([])
   const terrainMeshRef = useRef<THREE.Mesh | null>(null)
   const terrainGridRef = useRef<Float32Array | null>(null)
@@ -281,6 +282,7 @@ export default function Campus3DIsoMap({
     }
 
     const onDomPointerDown = (e: PointerEvent) => {
+      void requestCompassPermissionIfNeeded().catch(() => 'unsupported')
       activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY, downX: e.clientX, downY: e.clientY })
       prevPinchDist = getPinchDist()
     }
@@ -378,6 +380,46 @@ export default function Campus3DIsoMap({
     const routeGroup = new THREE.Group()
     scene.add(routeGroup)
     routeGroupRef.current = routeGroup
+
+    // Ground-projected 3D smartphone heading cone & positional ring (0 deg = -Z North, clockwise +Y rotation negated)
+    const userBeaconGroup = new THREE.Group()
+    const coneGeom = new THREE.CircleGeometry(15, 24, Math.PI * 0.5 - 0.45, 0.9)
+    coneGeom.rotateX(-Math.PI / 2)
+    const coneMat = new THREE.MeshBasicMaterial({
+      color: 0x3b82f6,
+      transparent: true,
+      opacity: 0.34,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    })
+    const coneMesh = new THREE.Mesh(coneGeom, coneMat)
+    coneMesh.renderOrder = 3
+    userBeaconGroup.add(coneMesh)
+
+    const ringGeom = new THREE.RingGeometry(3.2, 4.4, 24)
+    ringGeom.rotateX(-Math.PI / 2)
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x60a5fa,
+      transparent: true,
+      opacity: 0.55,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    })
+    const ringMesh = new THREE.Mesh(ringGeom, ringMat)
+    ringMesh.position.y = 0.08
+    ringMesh.renderOrder = 4
+    userBeaconGroup.add(ringMesh)
+
+    const arrowGeom = new THREE.ConeGeometry(1.75, 4.4, 3)
+    arrowGeom.rotateX(-Math.PI / 2)
+    const arrowMat = new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false })
+    const arrowMesh = new THREE.Mesh(arrowGeom, arrowMat)
+    arrowMesh.position.set(0, 0.25, -4.6)
+    arrowMesh.renderOrder = 5
+    userBeaconGroup.add(arrowMesh)
+
+    scene.add(userBeaconGroup)
+    userBeaconGroupRef.current = userBeaconGroup
 
     // Load exact Blender 3D Campus Model (/campus_scene.glb)
     const loader = new GLTFLoader()
@@ -499,6 +541,7 @@ export default function Campus3DIsoMap({
 
     // Animation & Synchronized 2D HUD Overlay Loop
     const projVec = new THREE.Vector3()
+    const aheadVec = new THREE.Vector3()
     const desiredTarget = new THREE.Vector3()
     const desiredCam = new THREE.Vector3()
     let lastFrameTime = performance.now()
@@ -524,12 +567,17 @@ export default function Campus3DIsoMap({
       }
       smoothHeadingRef.current = stepAngleDeg(smoothHeadingRef.current, targetHeadingDeg, headAlpha)
 
+      const sPos = smoothUserPos3DRef.current
+      const hRad = (smoothHeadingRef.current * Math.PI) / 180
+      if (userBeaconGroupRef.current) {
+        userBeaconGroupRef.current.position.set(sPos.x, sPos.y - 2.25, sPos.z)
+        userBeaconGroupRef.current.rotation.y = -hRad
+      }
+
       const isWaypointFollowLock = st.isFollowing && st.cameraLock && !manualDragActiveRef.current
       const shouldHeadingLock = (st.compassViewActive || isWaypointFollowLock) && !manualDragActiveRef.current
 
       if (shouldHeadingLock) {
-        const sPos = smoothUserPos3DRef.current
-        const hRad = (smoothHeadingRef.current * Math.PI) / 180
         const dist = followDistRef.current
         if (isWaypointFollowLock) {
           // 50°~60° tilted 3D navigation view with forward lookahead along the waypoint path
@@ -719,23 +767,35 @@ export default function Campus3DIsoMap({
       }
       hitBoxesRef.current = nextHits
 
-      // 3. Live User Location 3D Beacon (animated pulse + directional heading cone at 60fps)
+      // 3. Live User Location 3D Beacon (animated pulse + perspective-accurate directional heading cone & ▲ arrow)
       const uPos3D = smoothUserPos3DRef.current ?? toThreeVec3(st.userPosition[0], st.userPosition[1], 3.0)
       const uSp = projectToScreen(uPos3D)
       if (uSp.z > -1 && uSp.z < 1) {
         const azimuth = controls.getAzimuthalAngle()
+        const hRadLive = (smoothHeadingRef.current * Math.PI) / 180
         const pulsePhase = (performance.now() % 1800) / 1800
-        const pulseRadius = st.gpsActive ? 11 + pulsePhase * 22 : 18
-        const pulseAlpha = st.gpsActive ? (1 - pulsePhase) * 0.55 : 0.35
+        const pulseRadius = st.gpsActive || st.compassActive ? 12 + pulsePhase * 22 : 18
+        const pulseAlpha = st.gpsActive || st.compassActive ? (1 - pulsePhase) * 0.55 : 0.35
 
-        // Directional heading cone synced with phone compass & camera azimuth
-        const screenHeadingRad = (smoothHeadingRef.current * Math.PI) / 180 + azimuth - Math.PI / 2
+        // Project a 14m forward point along phone heading in 3D space for exact perspective screen angle
+        aheadVec.set(
+          uPos3D.x + Math.sin(hRadLive) * 14,
+          uPos3D.y,
+          uPos3D.z - Math.cos(hRadLive) * 14,
+        )
+        const aheadSp = projectToScreen(aheadVec)
+        const screenHeadingRad =
+          Math.hypot(aheadSp.sx - uSp.sx, aheadSp.sy - uSp.sy) > 1.5
+            ? Math.atan2(aheadSp.sy - uSp.sy, aheadSp.sx - uSp.sx)
+            : hRadLive + azimuth - Math.PI / 2
+
+        // Directional heading cone synced with phone compass & 3D perspective
         ctx.save()
         ctx.beginPath()
         ctx.moveTo(uSp.sx, uSp.sy)
-        ctx.arc(uSp.sx, uSp.sy, 32, screenHeadingRad - 0.42, screenHeadingRad + 0.42)
+        ctx.arc(uSp.sx, uSp.sy, 38, screenHeadingRad - 0.44, screenHeadingRad + 0.44)
         ctx.closePath()
-        ctx.fillStyle = st.gpsActive ? 'rgba(59, 130, 246, 0.36)' : 'rgba(59, 130, 246, 0.22)'
+        ctx.fillStyle = st.gpsActive || st.compassActive ? 'rgba(59, 130, 246, 0.38)' : 'rgba(59, 130, 246, 0.24)'
         ctx.fill()
         ctx.restore()
 
@@ -750,20 +810,36 @@ export default function Campus3DIsoMap({
 
         // Core blue beacon dot
         ctx.beginPath()
-        ctx.arc(uSp.sx, uSp.sy, 8.5, 0, Math.PI * 2)
-        ctx.fillStyle = st.gpsActive ? '#2563eb' : '#1d4ed8'
+        ctx.arc(uSp.sx, uSp.sy, 10, 0, Math.PI * 2)
+        ctx.fillStyle = st.gpsActive || st.compassActive ? '#2563eb' : '#1d4ed8'
         ctx.fill()
         ctx.strokeStyle = '#ffffff'
         ctx.lineWidth = 2.6
         ctx.stroke()
 
-        const uTxt = `${st.tx.myLocPillPrefix} · ${st.userLocationLabel}`
+        // Crisp rotating white directional ▲ arrow (matching 2D marker's .user-nav-arrow)
+        ctx.save()
+        ctx.translate(uSp.sx, uSp.sy)
+        ctx.rotate(screenHeadingRad + Math.PI / 2)
+        ctx.beginPath()
+        ctx.moveTo(0, -5.8)
+        ctx.lineTo(4.4, 4.4)
+        ctx.lineTo(0, 2.3)
+        ctx.lineTo(-4.4, 4.4)
+        ctx.closePath()
+        ctx.fillStyle = '#ffffff'
+        ctx.fill()
+        ctx.restore()
+
+        const dirLabel = formatCardinalDirection(smoothHeadingRef.current, st.language)
+        const dirDeg = Math.round(smoothHeadingRef.current)
+        const uTxt = `${st.tx.myLocPillPrefix} · ${st.userLocationLabel} · ${dirLabel} ${dirDeg}°`
         ctx.font = '800 10px "Noto Sans KR", sans-serif'
-        const liveDotPad = st.gpsActive ? 11 : 0
+        const liveDotPad = st.gpsActive || st.compassActive ? 11 : 0
         const uw = ctx.measureText(uTxt).width + 15 + liveDotPad
         const pillX = uSp.sx - uw / 2
-        const pillY = uSp.sy - 33
-        ctx.fillStyle = st.gpsActive ? '#1d4ed8' : '#1e3a8a'
+        const pillY = uSp.sy - 36
+        ctx.fillStyle = st.gpsActive || st.compassActive ? '#1d4ed8' : '#1e3a8a'
         ctx.beginPath()
         ctx.roundRect(pillX, pillY, uw, 19, 9)
         ctx.fill()
@@ -771,10 +847,10 @@ export default function Campus3DIsoMap({
         ctx.lineWidth = 1.5
         ctx.stroke()
 
-        if (st.gpsActive) {
+        if (st.gpsActive || st.compassActive) {
           ctx.beginPath()
           ctx.arc(pillX + 10, pillY + 9.5, 3.2, 0, Math.PI * 2)
-          ctx.fillStyle = '#4ade80'
+          ctx.fillStyle = st.compassActive ? '#5eead4' : '#4ade80'
           ctx.fill()
         }
 
@@ -1367,6 +1443,15 @@ export default function Campus3DIsoMap({
         <button type="button" className="recenter-follow-btn" onClick={onRecenterFollowCamera}>
           <RotateCcw size={15} />
           <span>시점 복귀</span>
+        </button>
+      )}
+
+      {!isFollowing && !compassViewActive && compassActive && onToggleCompassView && (
+        <button type="button" className="recenter-follow-btn compass-recenter" onClick={onToggleCompassView}>
+          <Compass size={15} />
+          <span>
+            스마트폰 방향 시점 ({formatCardinalDirection(userHeadingDeg, language)} {Math.round(userHeadingDeg)}°)
+          </span>
         </button>
       )}
 
