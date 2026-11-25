@@ -85,6 +85,7 @@ export default function Campus3DIsoMap({
   const routeGroupRef = useRef<THREE.Group | null>(null)
   const buildingMeshesRef = useRef<THREE.Mesh[]>([])
   const terrainMeshRef = useRef<THREE.Mesh | null>(null)
+  const terrainGridRef = useRef<Float32Array | null>(null)
   const bldgTopCentersRef = useRef<Map<number, THREE.Vector3>>(new Map())
   const bldgMeshByNumRef = useRef<Map<number, THREE.Mesh[]>>(new Map())
   const hitBoxesRef = useRef<Array<{ building: Building; cx: number; cy: number; r: number }>>([])
@@ -100,6 +101,26 @@ export default function Campus3DIsoMap({
 
   const getGroundY = useCallback(
     (bx: number, by: number): number => {
+      const grid = terrainGridRef.current
+      if (grid) {
+        const fx = (bx - -352) / 4
+        const fy = (by - -272) / 4
+        if (fx >= 0 && fx <= 177 && fy >= 0 && fy <= 123) {
+          const gx0 = Math.min(176, Math.floor(fx))
+          const gy0 = Math.min(122, Math.floor(fy))
+          const tx = fx - gx0
+          const ty = fy - gy0
+          const z00 = grid[gx0 * 124 + gy0]
+          const z10 = grid[(gx0 + 1) * 124 + gy0]
+          const z01 = grid[gx0 * 124 + (gy0 + 1)]
+          const z11 = grid[(gx0 + 1) * 124 + (gy0 + 1)]
+          if (Number.isFinite(z00) && Number.isFinite(z10) && Number.isFinite(z01) && Number.isFinite(z11)) {
+            const za = z00 * (1 - tx) + z10 * tx
+            const zb = z01 * (1 - tx) + z11 * tx
+            return za * (1 - ty) + zb * ty
+          }
+        }
+      }
       let num = 0
       let den = 0
       for (const en of elevationNodes) {
@@ -248,12 +269,17 @@ export default function Campus3DIsoMap({
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
 
     loader.load(
-      '/campus_scene.glb?v=44',
+      '/campus_scene.glb?v=45',
       (gltf) => {
         const root = gltf.scene
+        root.updateMatrixWorld(true)
         const bMeshes: THREE.Mesh[] = []
         const byNum = new Map<number, THREE.Mesh[]>()
         const topCenters = new Map<number, THREE.Vector3>()
+        const terrainGrid = new Float32Array(178 * 124)
+        terrainGrid.fill(Number.NaN)
+        const tmpVert = new THREE.Vector3()
+        let filledTerrainVerts = 0
         let totalVerts = 0
         let totalFaces = 0
 
@@ -298,9 +324,26 @@ export default function Campus3DIsoMap({
               byNum.set(bNum, list)
             } else if (checkName.includes('Campus_Terrain')) {
               terrainMeshRef.current = mesh
+              const posAttr = mesh.geometry?.attributes.position
+              if (posAttr) {
+                mesh.updateWorldMatrix(true, false)
+                for (let i = 0; i < posAttr.count; i++) {
+                  tmpVert.fromBufferAttribute(posAttr, i).applyMatrix4(mesh.matrixWorld)
+                  const gx = Math.round((tmpVert.x - -352) / 4)
+                  const gy = Math.round((-tmpVert.z - -272) / 4)
+                  if (gx >= 0 && gx < 178 && gy >= 0 && gy < 124) {
+                    terrainGrid[gx * 124 + gy] = tmpVert.y
+                    filledTerrainVerts += 1
+                  }
+                }
+              }
             }
           }
         })
+
+        if (filledTerrainVerts > 1000) {
+          terrainGridRef.current = terrainGrid
+        }
 
         // Compute world bounding box top center for each building (1..31)
         byNum.forEach((meshes, bNum) => {
@@ -698,7 +741,7 @@ export default function Campus3DIsoMap({
       const mesh = new THREE.Mesh(tubeGeom, tubeMat)
       group.add(mesh)
     })
-  }, [activeRoute, language, toThreeVec3])
+  }, [activeRoute, language, toThreeVec3, modelLoaded])
 
   // Focus camera on selected building
   useEffect(() => {
