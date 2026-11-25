@@ -473,3 +473,38 @@
 @media(max-width:680px){.compass-2d-button{right:58px;bottom:17px;width:39px;height:39px}}
 .iso3d-status-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:420;padding:10px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.24);background:rgba(15,23,42,.88);backdrop-filter:blur(8px);color:#f8fafc;font-size:12px;font-weight:700;box-shadow:0 10px 28px rgba(0,0,0,.38);pointer-events:none}
 .iso3d-status-badge.error{border-color:#fca5a5;background:rgba(127,29,29,.92);color:#fee2e2}
+.sheet-floorplan-card{margin:0 0 11px;padding:10px;border:1px solid #d5e5da;border-radius:11px;background:linear-gradient(180deg,#f9fcf9,#f2f7f3)}
+.sheet-floorplan-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.sheet-floorplan-title{display:flex;align-items:center;gap:6px;min-width:0;color:#1d573f;font-size:10.5px}
+.sheet-floorplan-title strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet-floorplan-expand-btn{height:24px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;flex:none;border:1px solid #c6dacb;border-radius:7px;background:#fff;color:#1d573f;font-size:9px;font-weight:700}
+.sheet-floorplan-expand-btn:hover{background:#eaf3ed}
+.sheet-floorplan-pills{display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.sheet-floorplan-pill{height:23px;padding:0 8px;flex:none;border:1px solid #d5e2d8;border-radius:6px;background:#fff;color:#4f6658;font-size:9px;font-weight:700}
+.sheet-floorplan-pill:hover{border-color:#8cb89b;color:#1d573f}
+.sheet-floorplan-pill.active{background:#1d573f;border-color:#1d573f;color:#fff}
+.sheet-floorplan-preview{position:relative;display:block;width:100%;padding:0;overflow:hidden;border:1px solid #d7e3da;border-radius:8px;background:#101d15}
+.sheet-floorplan-preview img{display:block;width:100%;max-height:190px;object-fit:contain;background:#fff}
+.sheet-floorplan-zoom-pill{position:absolute;right:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;background:rgba(15,35,25,.84);color:#fff;font-size:9px;font-weight:700;backdrop-filter:blur(6px)}
+.sheet-floorplan-summary{margin:7px 0 0;font-size:9px;line-height:1.45;color:#465e50}
+.floor-plan-mini-btn{height:20px;padding:0 6px;flex:none;border:1px solid #b9d4c2;border-radius:5px;background:#eff7f1;color:#1d573f;font-size:8.5px;font-weight:800}
+.floor-plan-mini-btn:hover{background:#1d573f;border-color:#1d573f;color:#fff}
+.floorplan-lightbox-backdrop{position:fixed;inset:0;z-index:3200;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(9,18,13,.76);backdrop-filter:blur(6px)}
+.floorplan-lightbox-dialog{width:min(960px,100%);max-height:92dvh;display:flex;flex-direction:column;overflow:hidden;border:1px solid #cfe0d4;border-radius:16px;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.floorplan-lightbox-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid #e9efe9;background:#f7faf7}
+.floorplan-lightbox-title{display:flex;align-items:center;gap:9px;min-width:0}
+.floorplan-lightbox-title>div{display:flex;flex-direction:column;min-width:0}
+.floorplan-lightbox-title strong{font-size:14px;color:#173223;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.floorplan-lightbox-title small{font-size:10px;color:#62776a}
+.floorplan-lightbox-actions{display:flex;align-items:center;gap:5px;flex:none}
+.floorplan-zoom-btn{height:28px;padding:0 8px;border:1px solid #d2dfd6;border-radius:7px;background:#fff;color:#355644;font-size:10px;font-weight:700}
+.floorplan-zoom-btn.active{background:#1d573f;border-color:#1d573f;color:#fff}
+.floorplan-close-btn{width:30px;height:30px;display:grid;place-items:center;border:0;border-radius:8px;background:#eaf2ec;color:#1d573f}
+.floorplan-lightbox-tabs{display:flex;gap:5px;overflow-x:auto;padding:8px 14px;border-bottom:1px solid #edf2ed;background:#fbfdfb;flex:none}
+.floorplan-lightbox-viewport{flex:1;min-height:220px;overflow:auto;background:#111b15;padding:10px;text-align:center}
+.floorplan-lightbox-viewport img{display:block;width:100%;max-width:100%;height:auto;margin:0 auto;border-radius:8px;background:#fff}
+.floorplan-lightbox-footer{padding:10px 14px 12px;border-top:1px solid #e9efe9;background:#fafcfa;flex:none}
+.floorplan-lightbox-chips{display:flex;gap:5px;flex-wrap:wrap;max-height:84px;overflow-y:auto;margin-top:6px}
+.floorplan-lightbox-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid #dde7df;border-radius:6px;background:#fff;font-size:9px;color:#324a3c}
+.floorplan-lightbox-chip b{color:#1e3a8a;font-family:Consolas,'Courier New',monospace}
+@media(max-width:680px){.sheet-floorplan-preview img{max-height:145px}.floorplan-lightbox-backdrop{padding:8px}.floorplan-lightbox-dialog{max-height:95dvh;border-radius:14px}.floorplan-lightbox-header{padding:10px 11px}.floorplan-lightbox-chips{max-height:66px}}

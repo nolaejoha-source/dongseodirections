@@ -55,6 +55,7 @@ class PointGeometry(BaseModel):
 
 
 class FloorRoom(BaseModel):
+    code: str | None = None
     name: str
     name_en: str | None = None
     name_zh: str | None = None
@@ -68,6 +69,8 @@ class FloorRoom(BaseModel):
 class FloorDetail(BaseModel):
     floor: int
     label: str
+    floor_plan_url: str | None = None
+    floor_summary: str | None = None
     facilities: list[FloorRoom] = Field(default_factory=list)
 
 

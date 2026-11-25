@@ -879,6 +879,17 @@ const TERM_TRANSLATIONS: Array<{
   { ko: '교목실', en: 'Chaplaincy Office', zh: '校牧室', vi: 'Văn phòng Mục vụ', lt: 'Kapeliono biuras', hi: 'चैपलिन कार्यालय' },
   { ko: '기숙사', en: 'Dormitory Rooms', zh: '宿舍寢室', vi: 'Phòng Ký túc xá', lt: 'Bendrabučio kambariai', hi: 'छात्रावास कक्ष' },
   { ko: '생활관', en: 'Residence Hall', zh: '生活館', vi: 'Ký túc xá', lt: 'Bendrabutis', hi: 'आवास हॉल' },
+  { ko: '영상강의실', en: 'Audio-Visual Lecture Hall', zh: '視聽階梯教室', vi: 'Giảng đường nghe nhìn', lt: 'Vaizdo auditorija', hi: 'ऑडियो-विज़ुअल लेक्चर हॉल' },
+  { ko: '국제세미나실', en: 'International Seminar Hall', zh: '國際研討廳', vi: 'Hội trường Quốc tế', lt: 'Tarptautinių seminarų salė', hi: 'अंतर्राष्ट्रीय सेमिनार हॉल' },
+  { ko: '강사대기실', en: 'Instructor Lounge', zh: '講師休息室', vi: 'Phòng chờ giảng viên', lt: 'Dėstytojų poilsio kambarys', hi: 'प्रशिक्षक प्रतीक्षालय' },
+  { ko: '서버실', en: 'Server Room', zh: '伺服器室', vi: 'Phòng máy chủ', lt: 'Serverinė', hi: 'सर्वर कक्ष' },
+  { ko: '뉴밀레니엄관', en: 'New Millennium Hall', zh: '新千禧館', vi: 'Tòa nhà New Millennium', lt: 'Naujojo tūkstantmečio rūmai', hi: 'न्यू मिलेनियम हॉल' },
+  { ko: '연결통로', en: 'Connecting Skybridge', zh: '連接走廊', vi: 'Cầu nối sang tòa nhà', lt: 'Jungiamasis koridorius', hi: 'कनेक्टिंग कॉरिडोर' },
+  { ko: '물탱크실', en: 'Water Tank Room', zh: '蓄水池機房', vi: 'Phòng bồn nước', lt: 'Vandens rezervuaro patalpa', hi: 'वाटर टैंक कक्ष' },
+  { ko: '발전기실', en: 'Generator Room', zh: '發電機房', vi: 'Phòng máy phát điện', lt: 'Generatorinės patalpa', hi: 'जनरेटर कक्ष' },
+  { ko: '전기실', en: 'Electrical Room', zh: '配電室', vi: 'Phòng điện', lt: 'Elektros skydinė', hi: 'इलेक्ट्रिकल कक्ष' },
+  { ko: '상부 좌석', en: 'Upper Balcony Seating', zh: '上層階梯座席區', vi: 'Khu ghế tầng trên', lt: 'Viršutinės sėdimos vietos', hi: 'ऊपरी बालकनी सीटिंग' },
+  { ko: '계단식', en: 'Tiered Auditorium', zh: '階梯式', vi: 'Kiểu bậc thang', lt: 'Pakopų auditorija', hi: 'सीढ़ीदार हॉल' },
 ]
 
 export function getLocalizedCategory(category: string | null | undefined, language: Language): string {
@@ -974,6 +985,11 @@ export const EXT_UI_COPY: Record<
     compassViewBtn: string
     compassViewOnTitle: string
     compassViewOffTitle: string
+    floorPlanSectionTitle: string
+    floorPlanTapToZoom: string
+    floorPlanClose: string
+    floorPlanBadge: string
+    floorPlanCountBadge: (count: number) => string
     quickJumpLabel: string
     topBarTitle3D: string
     topBarTitle2D: string
@@ -1089,6 +1105,11 @@ export const EXT_UI_COPY: Record<
     compassViewBtn: '방향 시점',
     compassViewOnTitle: '휴대폰 방향 시점 추적 켜짐 (끄려면 클릭)',
     compassViewOffTitle: '휴대폰 방향에 맞춰 시점 자동 회전',
+    floorPlanSectionTitle: '층별 배치도 (피난대피도)',
+    floorPlanTapToZoom: '배치도 크게 보기',
+    floorPlanClose: '배치도 닫기',
+    floorPlanBadge: '배치도',
+    floorPlanCountBadge: (count) => `배치도 ${count}개 층`,
     quickJumpLabel: '빠른 위치 이동:',
     topBarTitle3D: '동서대학교 3D 조감도 캠퍼스맵',
     topBarTitle2D: '동서대학교 2D 평면 캠퍼스맵',
@@ -1201,6 +1222,11 @@ export const EXT_UI_COPY: Record<
     compassViewBtn: 'Heading View',
     compassViewOnTitle: 'Phone compass camera lock ON (click to unlock)',
     compassViewOffTitle: 'Align 3D view with phone compass direction',
+    floorPlanSectionTitle: 'Floor Plan Layout',
+    floorPlanTapToZoom: 'Expand floor plan',
+    floorPlanClose: 'Close floor plan',
+    floorPlanBadge: 'Floor Plan',
+    floorPlanCountBadge: (count) => `${count} floor plans`,
     quickJumpLabel: 'Quick Jump:',
     topBarTitle3D: 'DSU 3D Aerial Campus Map',
     topBarTitle2D: 'DSU 2D Flat Campus Map',
@@ -1313,6 +1339,11 @@ export const EXT_UI_COPY: Record<
     compassViewBtn: '方向視角',
     compassViewOnTitle: '手機指南針視角追蹤開啟 (點擊關閉)',
     compassViewOffTitle: '依手機朝向自動旋轉 3D 視角',
+    floorPlanSectionTitle: '樓層平面配置圖',
+    floorPlanTapToZoom: '放大檢視配置圖',
+    floorPlanClose: '關閉配置圖',
+    floorPlanBadge: '配置圖',
+    floorPlanCountBadge: (count) => `共 ${count} 層配置圖`,
     quickJumpLabel: '快速移動位置：',
     topBarTitle3D: '東西大學 3D 鳥瞰校園地圖',
     topBarTitle2D: '東西大學 2D 平面校園地圖',
@@ -1425,6 +1456,11 @@ export const EXT_UI_COPY: Record<
     compassViewBtn: 'Góc nhìn hướng',
     compassViewOnTitle: 'Đang khóa góc nhìn theo hướng điện thoại (nhấn để tắt)',
     compassViewOffTitle: 'Xoay góc nhìn 3D theo hướng điện thoại',
+    floorPlanSectionTitle: 'Sơ đồ mặt bằng từng tầng',
+    floorPlanTapToZoom: 'Phóng to sơ đồ',
+    floorPlanClose: 'Đóng sơ đồ',
+    floorPlanBadge: 'Sơ đồ',
+    floorPlanCountBadge: (count) => `${count} tầng có sơ đồ`,
     quickJumpLabel: 'Di chuyển nhanh:',
     topBarTitle3D: 'Bản đồ 3D Đại học Dongseo',
     topBarTitle2D: 'Bản đồ 2D Đại học Dongseo',
@@ -1537,6 +1573,11 @@ export const EXT_UI_COPY: Record<
     compassViewBtn: 'Krypties vaizdas',
     compassViewOnTitle: 'Telefono kompaso vaizdo sekimas įjungtas',
     compassViewOffTitle: 'Pasukti 3D vaizdą pagal telefono kryptį',
+    floorPlanSectionTitle: 'Aukštų planai',
+    floorPlanTapToZoom: 'Padidinti planą',
+    floorPlanClose: 'Uždaryti planą',
+    floorPlanBadge: 'Planas',
+    floorPlanCountBadge: (count) => `${count} aukštų planai`,
     quickJumpLabel: 'Greitas perėjimas:',
     topBarTitle3D: 'DSU 3D erdvinis žemėlapis',
     topBarTitle2D: 'DSU 2D plokščias žemėlapis',
@@ -1649,6 +1690,11 @@ export const EXT_UI_COPY: Record<
     compassViewBtn: 'दिशा व्यू',
     compassViewOnTitle: 'फ़ोन दिशा कैमरा लॉक चालू (बंद करने के लिए क्लिक करें)',
     compassViewOffTitle: 'फ़ोन की दिशा के अनुसार 3D व्यू घुमाएं',
+    floorPlanSectionTitle: 'मंज़िल लेआउट मानचित्र',
+    floorPlanTapToZoom: 'मैप बड़ा देखें',
+    floorPlanClose: 'मानचित्र बंद करें',
+    floorPlanBadge: 'लेआउट',
+    floorPlanCountBadge: (count) => `${count} मंज़िल मानचित्र`,
     quickJumpLabel: 'त्वरित स्थान:',
     topBarTitle3D: 'डोंगसियो विश्वविद्यालय 3D कैंपस मैप',
     topBarTitle2D: 'डोंगसियो विश्वविद्यालय 2D कैंपस मैप',

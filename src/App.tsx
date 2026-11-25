@@ -4,7 +4,7 @@ import { Capacitor } from '@capacitor/core'
 import { Geolocation } from '@capacitor/geolocation'
 import L from 'leaflet'
 import { MapContainer, Marker, Polygon, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
-import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, Info, Languages, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, TrendingUp, X } from 'lucide-react'
+import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, Info, Languages, Layers, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, TrendingUp, X } from 'lucide-react'
 import { getBuildingAppearanceSvgDataUri } from './buildingAppearance'
 import { CAMPUS_BOUNDARY, CAMPUS_BOUNDS, CAMPUS_CENTER, CAMPUS_MASK_POLYGON, SEEDED_PATH_EDGES, SEEDED_PATH_NODES } from './campusData'
 import Campus3DIsoMap from './Campus3DIsoMap'
@@ -799,7 +799,13 @@ export default function App() {
               name_en?: string
               elevation?: number
               video_url?: string
-              floor_details?: Building['floorDetails']
+              floor_details?: Array<{
+                floor: number
+                label: string
+                floor_plan_url?: string
+                floor_summary?: string
+                facilities?: FloorRoomItem[]
+              }>
             }>,
           ) => {
             const byIdSeed = new Map(buildings.map((b) => [b.id, b]))
@@ -807,6 +813,13 @@ export default function App() {
               const coordinates = item.location?.coordinates
               if (!coordinates || coordinates.length !== 2 || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) return []
               const seeded = byIdSeed.get(item.id)
+              const normalizedFloorDetails = (item.floor_details ?? []).map((fl) => ({
+                floor: fl.floor,
+                label: fl.label,
+                floorPlanUrl: fl.floor_plan_url,
+                floorSummary: fl.floor_summary,
+                facilities: fl.facilities ?? [],
+              }))
               return [
                 {
                   id: item.id,
@@ -829,7 +842,7 @@ export default function App() {
                   photoUrl: seeded?.photoUrl,
                   photoSourceUrl: seeded?.photoSourceUrl,
                   videoUrl: item.video_url,
-                  floorDetails: seeded?.floorDetails?.length ? seeded.floorDetails : item.floor_details ?? [],
+                  floorDetails: seeded?.floorDetails?.length ? seeded.floorDetails : normalizedFloorDetails,
                   lng: coordinates[0],
                   lat: coordinates[1],
                 },
@@ -2797,7 +2810,11 @@ function BuildingSheet({
 }) {
   const videoUrl = safeYoutubeEmbed(building.videoUrl)
   const floorDetails = useMemo(() => [...(building.floorDetails ?? [])].sort((a, b) => a.floor - b.floor), [building.floorDetails])
+  const floorsWithPlans = useMemo(() => floorDetails.filter((fl) => Boolean(fl.floorPlanUrl)), [floorDetails])
   const [selectedFloor, setSelectedFloor] = useState<number | 'all'>('all')
+  const [planFloor, setPlanFloor] = useState<number | null>(null)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxZoom, setLightboxZoom] = useState<1 | 1.75 | 2.5>(1)
   const [roomFilter, setRoomFilter] = useState('')
   const [photoLoadError, setPhotoLoadError] = useState(false)
 
@@ -2807,8 +2824,33 @@ function BuildingSheet({
     } else {
       setSelectedFloor('all')
     }
+    if (facility?.floor !== undefined && floorsWithPlans.some((fl) => fl.floor === facility.floor)) {
+      setPlanFloor(facility.floor)
+    } else if (floorsWithPlans.some((fl) => fl.floor === 1)) {
+      setPlanFloor(1)
+    } else {
+      setPlanFloor(floorsWithPlans[0]?.floor ?? null)
+    }
+    setLightboxOpen(false)
+    setLightboxZoom(1)
     setRoomFilter('')
-  }, [building.id, facility])
+  }, [building.id, facility, floorsWithPlans])
+
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setLightboxOpen(false)
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [lightboxOpen])
+
+  const activeFloorPlan = useMemo(
+    () => floorsWithPlans.find((fl) => fl.floor === planFloor) ?? floorsWithPlans[0] ?? null,
+    [floorsWithPlans, planFloor],
+  )
 
   useEffect(() => setPhotoLoadError(false), [building.id, building.photoUrl])
 
@@ -2999,7 +3041,10 @@ function BuildingSheet({
             <button
               key={fl.floor}
               className={selectedFloor === fl.floor ? 'floor-tab active' : 'floor-tab'}
-              onClick={() => setSelectedFloor(fl.floor)}
+              onClick={() => {
+                setSelectedFloor(fl.floor)
+                if (fl.floorPlanUrl) setPlanFloor(fl.floor)
+              }}
             >
               {getLocalizedFloorLabel(fl.label, language)}
             </button>
@@ -3020,6 +3065,70 @@ function BuildingSheet({
         </div>
       </div>
 
+      {activeFloorPlan?.floorPlanUrl && (
+        <section className="sheet-floorplan-card" aria-label={tx.floorPlanSectionTitle}>
+          <div className="sheet-floorplan-head">
+            <span className="sheet-floorplan-title">
+              <Layers size={14} />
+              <strong>{tx.floorPlanSectionTitle}</strong>
+              <span className="floor-badge-pill">{getLocalizedFloorLabel(activeFloorPlan.label, language)}</span>
+            </span>
+            <button
+              type="button"
+              className="sheet-floorplan-expand-btn"
+              onClick={() => {
+                setLightboxZoom(1)
+                setLightboxOpen(true)
+              }}
+            >
+              <Maximize2 size={12} />
+              <span>{tx.floorPlanTapToZoom}</span>
+            </button>
+          </div>
+          <div className="sheet-floorplan-pills" role="tablist" aria-label={tx.floorPlanCountBadge(floorsWithPlans.length)}>
+            {floorsWithPlans.map((fl) => {
+              const active = fl.floor === activeFloorPlan.floor
+              return (
+                <button
+                  key={`fp-pill-${fl.floor}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  className={active ? 'sheet-floorplan-pill active' : 'sheet-floorplan-pill'}
+                  onClick={() => {
+                    setPlanFloor(fl.floor)
+                    setSelectedFloor(fl.floor)
+                  }}
+                >
+                  {getLocalizedFloorLabel(fl.label, language)}
+                </button>
+              )
+            })}
+          </div>
+          <button
+            type="button"
+            className="sheet-floorplan-preview"
+            onClick={() => {
+              setLightboxZoom(1)
+              setLightboxOpen(true)
+            }}
+            aria-label={`${localBuildingName} ${activeFloorPlan.label} ${tx.floorPlanTapToZoom}`}
+          >
+            <img
+              src={activeFloorPlan.floorPlanUrl}
+              alt={`${localBuildingName} ${getLocalizedFloorLabel(activeFloorPlan.label, language)}`}
+              loading="lazy"
+              decoding="async"
+            />
+            <span className="sheet-floorplan-zoom-pill">
+              <Maximize2 size={11} />
+              {tx.floorPlanTapToZoom}
+            </span>
+          </button>
+          {activeFloorPlan.floorSummary && <p className="sheet-floorplan-summary">{activeFloorPlan.floorSummary}</p>}
+        </section>
+      )}
+
       {filteredFloors.length ? (
         <div className="floor-list">
           {filteredFloors.map((floor) => (
@@ -3029,6 +3138,22 @@ function BuildingSheet({
                 <span className="floor-number">
                   {tx.floorZoneLabel(building.codePrefix ?? '', floor.floor < 0 ? '001~' : `${floor.floor}01~`)}
                 </span>
+                {floor.floorPlanUrl && (
+                  <button
+                    type="button"
+                    className="floor-plan-mini-btn"
+                    onClick={(event) => {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      setPlanFloor(floor.floor)
+                      setSelectedFloor(floor.floor)
+                      setLightboxZoom(1)
+                      setLightboxOpen(true)
+                    }}
+                  >
+                    {tx.floorPlanBadge}
+                  </button>
+                )}
                 <span className="floor-count">{tx.roomsCountUnit(floor.facilities.length)}</span>
                 <ChevronDown size={15} />
               </summary>
@@ -3074,6 +3199,90 @@ function BuildingSheet({
           <ArrowRight size={15} />
         </button>
       </div>
+      {lightboxOpen &&
+        activeFloorPlan?.floorPlanUrl &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="floorplan-lightbox-backdrop"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${localBuildingName} ${getLocalizedFloorLabel(activeFloorPlan.label, language)} ${tx.floorPlanSectionTitle}`}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setLightboxOpen(false)
+            }}
+          >
+            <div className="floorplan-lightbox-dialog">
+              <div className="floorplan-lightbox-header">
+                <div className="floorplan-lightbox-title">
+                  <span className="floor-badge-pill">{getLocalizedFloorLabel(activeFloorPlan.label, language)}</span>
+                  <div>
+                    <strong>{localBuildingName}</strong>
+                    <small>{tx.floorPlanSectionTitle}</small>
+                  </div>
+                </div>
+                <div className="floorplan-lightbox-actions">
+                  {([1, 1.75, 2.5] as const).map((zoomVal) => (
+                    <button
+                      key={`fp-zoom-${zoomVal}`}
+                      type="button"
+                      className={lightboxZoom === zoomVal ? 'floorplan-zoom-btn active' : 'floorplan-zoom-btn'}
+                      onClick={() => setLightboxZoom(zoomVal)}
+                    >
+                      {zoomVal}x
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className="floorplan-close-btn"
+                    onClick={() => setLightboxOpen(false)}
+                    aria-label={tx.floorPlanClose}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              </div>
+              <div className="floorplan-lightbox-tabs">
+                {floorsWithPlans.map((fl) => (
+                  <button
+                    key={`lb-fl-${fl.floor}`}
+                    type="button"
+                    className={fl.floor === activeFloorPlan.floor ? 'sheet-floorplan-pill active' : 'sheet-floorplan-pill'}
+                    onClick={() => {
+                      setPlanFloor(fl.floor)
+                      setSelectedFloor(fl.floor)
+                      setLightboxZoom(1)
+                    }}
+                  >
+                    {getLocalizedFloorLabel(fl.label, language)}
+                  </button>
+                ))}
+              </div>
+              <div className="floorplan-lightbox-viewport">
+                <img
+                  src={activeFloorPlan.floorPlanUrl}
+                  alt={`${localBuildingName} ${getLocalizedFloorLabel(activeFloorPlan.label, language)}`}
+                  style={lightboxZoom === 1 ? undefined : { width: `${lightboxZoom * 100}%`, maxWidth: 'none' }}
+                />
+              </div>
+              <div className="floorplan-lightbox-footer">
+                {activeFloorPlan.floorSummary && <p className="sheet-floorplan-summary">{activeFloorPlan.floorSummary}</p>}
+                <div className="floorplan-lightbox-chips">
+                  {activeFloorPlan.facilities.map((rm, idx) => {
+                    const loc = getLocalizedRoomTitleAndNote(rm, language, building, activeFloorPlan.floor, idx)
+                    return (
+                      <span className="floorplan-lightbox-chip" key={`lb-rm-${rm.code ?? idx}`}>
+                        <b>{loc.codeStr}</b>
+                        <span>{loc.titleStr}</span>
+                      </span>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </aside>
   )
 }

@@ -37,7 +37,13 @@ export type Building = {
   photoUrl?: string
   photoSourceUrl?: string
   videoUrl?: string
-  floorDetails?: Array<{ floor: number; label: string; facilities: FloorRoomItem[] }>
+  floorDetails?: Array<{
+    floor: number
+    label: string
+    floorPlanUrl?: string
+    floorSummary?: string
+    facilities: FloorRoomItem[]
+  }>
 }
 
 export type RouteSegment = {
@@ -105,7 +111,13 @@ export const buildings: Building[] = SEEDED_BUILDINGS_RAW.map((b) => {
     photoSourceUrl: campusPhotoHashes[b.num - 1]
       ? `https://www.dongseo.ac.kr/_Data/UnivCampusMap/${campusPhotoHashes[b.num - 1]}.jpg`
       : officialCampusMapUrl,
-    floorDetails: b.floor_details as Building['floorDetails'],
+    floorDetails: (b.floor_details as Array<Record<string, unknown>> | undefined)?.map((fl) => ({
+      floor: fl.floor as number,
+      label: fl.label as string,
+      floorPlanUrl: (fl.floor_plan_url ?? fl.floorPlanUrl) as string | undefined,
+      floorSummary: (fl.floor_summary ?? fl.floorSummary) as string | undefined,
+      facilities: (fl.facilities as FloorRoomItem[]) ?? [],
+    })),
   }
 })
 
