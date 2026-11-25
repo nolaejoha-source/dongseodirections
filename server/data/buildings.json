@@ -1944,7 +1944,7 @@
       {
         "floor": -1,
         "label": "B1",
-        "floor_plan_url": "/floorplans/uit/b1.jpg",
+        "floor_plan_url": "/floorplans/uit/b1_ai.jpg",
         "floor_summary": "영상강의실(U001~U004 · 169석 계단식 U003) · 강사대기실 및 서버실 · 중앙 엘리베이터(2대)·화장실 · 우측 설비실(물탱크·발전기·전기실)",
         "facilities": [
           {
@@ -1988,7 +1988,7 @@
       {
         "floor": 1,
         "label": "1F",
-        "floor_plan_url": "/floorplans/uit/1f.jpg",
+        "floor_plan_url": "/floorplans/uit/1f_ai.jpg",
         "floor_summary": "정면 주출입구(현관) · U101~U110 강의·실습실 · 중앙 엘리베이터(2대) · 중앙 및 우측 화장실 · 우측 비상계단",
         "facilities": [
           {
@@ -2056,7 +2056,7 @@
       {
         "floor": 2,
         "label": "2F",
-        "floor_plan_url": "/floorplans/uit/2f.jpg",
+        "floor_plan_url": "/floorplans/uit/2f_ai.jpg",
         "floor_summary": "U201~U212 강의·실습실 · 중앙 엘리베이터(2대)·화장실 · 우측 화장실 및 비상계단",
         "facilities": [
           {
@@ -2136,7 +2136,7 @@
       {
         "floor": 3,
         "label": "3F",
-        "floor_plan_url": "/floorplans/uit/3f.jpg",
+        "floor_plan_url": "/floorplans/uit/3f_ai.jpg",
         "floor_summary": "U301(도면 표기 V301)~U310 강의·실습실 · 중앙 엘리베이터(2대)·화장실 · 우측 화장실 및 비상계단",
         "facilities": [
           {
@@ -2204,7 +2204,7 @@
       {
         "floor": 4,
         "label": "4F",
-        "floor_plan_url": "/floorplans/uit/4f.jpg",
+        "floor_plan_url": "/floorplans/uit/4f_ai.jpg",
         "floor_summary": "U401~U407 행정실·대형실습실(U403) · 중앙 엘리베이터(2대)·화장실 · 우측 화장실 및 비상계단",
         "facilities": [
           {
@@ -2254,7 +2254,7 @@
       {
         "floor": 5,
         "label": "5F",
-        "floor_plan_url": "/floorplans/uit/5f.jpg",
+        "floor_plan_url": "/floorplans/uit/5f_ai.jpg",
         "floor_summary": "U501~U507 실습·연구실 · 중앙 엘리베이터 북측 출입/계단 연결부 · 중앙 및 우측 화장실",
         "facilities": [
           {
@@ -2304,7 +2304,7 @@
       {
         "floor": 6,
         "label": "6F",
-        "floor_plan_url": "/floorplans/uit/6f.jpg",
+        "floor_plan_url": "/floorplans/uit/6f_ai.jpg",
         "floor_summary": "뉴밀레니엄관 연결통로(중앙 북측 브리지) · U601~U602 · 국제세미나실(144석, U603) · 중앙 엘리베이터·화장실",
         "facilities": [
           {
@@ -2336,7 +2336,7 @@
       {
         "floor": 7,
         "label": "7F",
-        "floor_plan_url": "/floorplans/uit/7f.jpg",
+        "floor_plan_url": "/floorplans/uit/7f_ai.jpg",
         "floor_summary": "U701~U709 연구·실습실 · 우측 국제세미나실 상부 좌석(복층) · 중앙 엘리베이터·화장실",
         "facilities": [
           {
@@ -2404,7 +2404,7 @@
       {
         "floor": 8,
         "label": "8F",
-        "floor_plan_url": "/floorplans/uit/8f.jpg",
+        "floor_plan_url": "/floorplans/uit/8f_ai.jpg",
         "floor_summary": "U801(중앙 메인홀/복도) · U802·U803 · U805(3개 구획) · 중앙 엘리베이터(2대)·계단 및 우측 계단",
         "facilities": [
           {
