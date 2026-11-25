@@ -1,8 +1,9 @@
 import { useEffect, useMemo } from 'react'
-import { Compass, CornerUpLeft, CornerUpRight, EyeOff, Flag, Navigation, Pause, Play, X } from 'lucide-react'
+import { Compass, CornerUpLeft, CornerUpRight, EyeOff, Flag, Navigation, Pause, Play, RotateCcw, X } from 'lucide-react'
 import { CAMPUS_CENTER } from './campusData'
 import type { Building, Language, RouteSegment, RouteWaypoint } from './data'
 import { EXT_UI_COPY, getLocalizedBuildingName } from './i18nCatalog'
+import { MOCK_WAYPOINT_COURSES, ROUTE_NAV_CONFIG } from './routeNavigationConfig'
 
 export type ActiveRouteData = {
   startName: string
@@ -143,9 +144,9 @@ export function buildRouteSamples(route: ActiveRouteData, buildings: Building[],
   return { samples: pts, totalDistance: Math.max(1, accDist) }
 }
 
-export function interpolateSampleAtDistance(samples: RouteSamplePoint[], totalDistance: number, targetDist: number): RouteSamplePoint {
-  if (samples.length === 1) return samples[0]
-  const clamped = Math.max(0, Math.min(totalDistance, targetDist))
+function samplePositionAtDist(samples: RouteSamplePoint[], targetDist: number): { lat: number; lng: number; sampleIdx: number } {
+  if (samples.length === 1) return { lat: samples[0].lat, lng: samples[0].lng, sampleIdx: 0 }
+  const clamped = Math.max(samples[0].distFromStart, Math.min(samples[samples.length - 1].distFromStart, targetDist))
   let idx = 0
   while (idx < samples.length - 2 && samples[idx + 1].distFromStart < clamped) {
     idx++
@@ -154,19 +155,34 @@ export function interpolateSampleAtDistance(samples: RouteSamplePoint[], totalDi
   const b = samples[idx + 1]
   const span = Math.max(0.001, b.distFromStart - a.distFromStart)
   const t = Math.max(0, Math.min(1, (clamped - a.distFromStart) / span))
+  return {
+    lat: a.lat + (b.lat - a.lat) * t,
+    lng: a.lng + (b.lng - a.lng) * t,
+    sampleIdx: idx,
+  }
+}
 
-  const lookIdx = Math.min(samples.length - 1, idx + 3)
-  const [ax, ay] = toMetersXY(a.lat, a.lng)
-  const [lx, ly] = toMetersXY(samples[lookIdx].lat, samples[lookIdx].lng)
+export function interpolateSampleAtDistance(samples: RouteSamplePoint[], totalDistance: number, targetDist: number): RouteSamplePoint {
+  if (samples.length === 1) return samples[0]
+  const clamped = Math.max(0, Math.min(totalDistance, targetDist))
+  const cur = samplePositionAtDist(samples, clamped)
+  const a = samples[cur.sampleIdx]
+  const b = samples[cur.sampleIdx + 1]
+  const span = Math.max(0.001, b.distFromStart - a.distFromStart)
+  const t = Math.max(0, Math.min(1, (clamped - a.distFromStart) / span))
+
+  const ahead = samplePositionAtDist(samples, Math.min(totalDistance, clamped + ROUTE_NAV_CONFIG.BEARING_LOOKAHEAD_M))
+  const [ax, ay] = toMetersXY(cur.lat, cur.lng)
+  const [lx, ly] = toMetersXY(ahead.lat, ahead.lng)
   const smoothHeading =
-    Math.hypot(lx - ax, ly - ay) > 0.5
+    Math.hypot(lx - ax, ly - ay) > 0.35
       ? ((Math.atan2(lx - ax, ly - ay) * 180) / Math.PI + 360) % 360
       : a.headingDeg
 
   return {
     distFromStart: clamped,
-    lat: a.lat + (b.lat - a.lat) * t,
-    lng: a.lng + (b.lng - a.lng) * t,
+    lat: cur.lat,
+    lng: cur.lng,
     elevation: a.elevation + (b.elevation - a.elevation) * t,
     slope_pct: a.slope_pct,
     is_step_free: a.is_step_free,
@@ -185,8 +201,13 @@ export default function Naver2DRouteFollower({
   setProgressDist,
   isPlaying,
   setIsPlaying,
+  speedMultiplier = 1,
+  setSpeedMultiplier,
   headingUpMode,
   setHeadingUpMode,
+  onRecenterCamera,
+  selectedMockCourseId,
+  onSelectMockCourse,
   mapViewMode,
   onToggleMapViewMode,
   navHudEnabled,
@@ -206,6 +227,9 @@ export default function Naver2DRouteFollower({
   setSpeedMultiplier?: React.Dispatch<React.SetStateAction<1 | 2 | 4>>
   headingUpMode: boolean
   setHeadingUpMode: React.Dispatch<React.SetStateAction<boolean>>
+  onRecenterCamera?: () => void
+  selectedMockCourseId?: string
+  onSelectMockCourse?: (courseId: string) => void
   mapViewMode?: '2d' | '3d'
   onToggleMapViewMode?: () => void
   navHudEnabled: boolean
@@ -221,11 +245,11 @@ export default function Naver2DRouteFollower({
       if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
         e.preventDefault()
         setIsPlaying(false)
-        setProgressDist((d) => Math.min(totalDistance, d + 6))
+        setProgressDist((d) => Math.min(totalDistance, d + ROUTE_NAV_CONFIG.KEYBOARD_STEP_M))
       } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
         e.preventDefault()
         setIsPlaying(false)
-        setProgressDist((d) => Math.max(0, d - 6))
+        setProgressDist((d) => Math.max(0, d - ROUTE_NAV_CONFIG.KEYBOARD_STEP_M))
       } else if (e.key === ' ') {
         e.preventDefault()
         setIsPlaying((p) => !p)
@@ -380,15 +404,45 @@ export default function Naver2DRouteFollower({
             }}
             aria-label={tx.playBtn}
           />
+          {setSpeedMultiplier && (
+            <button
+              type="button"
+              className="naver2d-mini-btn naver2d-speed-btn"
+              onClick={() => {
+                const speeds = ROUTE_NAV_CONFIG.SPEED_MULTIPLIERS
+                const next = speeds[(speeds.indexOf(speedMultiplier) + 1) % speeds.length]
+                setSpeedMultiplier(next)
+              }}
+              title="이동 속도 배율"
+            >
+              {speedMultiplier}x
+            </button>
+          )}
           <button
             type="button"
             className={headingUpMode ? 'naver2d-mini-btn active' : 'naver2d-mini-btn'}
-            onClick={() => setHeadingUpMode(!headingUpMode)}
+            onClick={() => {
+              if (!headingUpMode && onRecenterCamera) {
+                onRecenterCamera()
+              } else {
+                setHeadingUpMode(!headingUpMode)
+              }
+            }}
             aria-label={headingUpMode ? tx.cameraLockOn : tx.cameraLockOff}
             title={headingUpMode ? tx.cameraLockOn : tx.cameraLockOff}
           >
             <Compass size={13} />
           </button>
+          {!headingUpMode && onRecenterCamera && (
+            <button
+              type="button"
+              className="naver2d-mini-btn recenter"
+              onClick={onRecenterCamera}
+            >
+              <RotateCcw size={12} />
+              <span>시점 복귀</span>
+            </button>
+          )}
           {onToggleMapViewMode && (
             <button
               type="button"
@@ -400,6 +454,20 @@ export default function Naver2DRouteFollower({
             </button>
           )}
         </div>
+        {onSelectMockCourse && (
+          <div className="naver2d-course-pills" role="group" aria-label="샘플 웨이포인트 경로">
+            {MOCK_WAYPOINT_COURSES.map((course) => (
+              <button
+                key={course.id}
+                type="button"
+                className={selectedMockCourseId === course.id ? 'naver2d-course-pill active' : 'naver2d-course-pill'}
+                onClick={() => onSelectMockCourse(course.id)}
+              >
+                {course.shortLabel}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

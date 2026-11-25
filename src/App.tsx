@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { Capacitor } from '@capacitor/core'
 import { Geolocation } from '@capacitor/geolocation'
 import L from 'leaflet'
-import { MapContainer, Marker, Polygon, Polyline, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, Marker, Polygon, Polyline, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, Info, Languages, Layers, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, TrendingUp, X } from 'lucide-react'
 import { getBuildingAppearanceSvgDataUri } from './buildingAppearance'
 import { CAMPUS_BOUNDARY, CAMPUS_BOUNDS, CAMPUS_CENTER, CAMPUS_MASK_POLYGON, SEEDED_PATH_EDGES, SEEDED_PATH_NODES } from './campusData'
@@ -29,6 +29,7 @@ import {
   shortestAngleDeltaDeg,
   stepAngleDeg,
 } from './liveSensors'
+import { buildRouteFromWaypoints, MOCK_WAYPOINT_COURSES, ROUTE_NAV_CONFIG } from './routeNavigationConfig'
 
 // Minimal 2D Map Building Marker: keep campus numbers readable without rectangular photo or name cards.
 function createBuilding2DVisualIcon(building: Building, isSelected: boolean, language: Language) {
@@ -405,7 +406,17 @@ function MapFocus({
   return null
 }
 
-function MapFollowUser({ active, cameraLock, userPosition }: { active: boolean; cameraLock: boolean; userPosition: [number, number] }) {
+function MapFollowUser({
+  active,
+  cameraLock,
+  userPosition,
+  onUserInteract,
+}: {
+  active: boolean
+  cameraLock: boolean
+  userPosition: [number, number]
+  onUserInteract?: () => void
+}) {
   const map = useMap()
   const isInteractingRef = useRef(false)
   const initializedFollowRef = useRef(false)
@@ -413,12 +424,14 @@ function MapFollowUser({ active, cameraLock, userPosition }: { active: boolean; 
   useMapEvents({
     zoomstart() {
       isInteractingRef.current = true
+      if (active && cameraLock) onUserInteract?.()
     },
     zoomend() {
       isInteractingRef.current = false
     },
     dragstart() {
       isInteractingRef.current = true
+      if (active && cameraLock) onUserInteract?.()
     },
     dragend() {
       isInteractingRef.current = false
@@ -581,7 +594,14 @@ export default function App() {
   const [stepFree, setStepFree] = useState(false)
   const [routeMessage, setRouteMessage] = useState('')
   const [searchMessage, setSearchMessage] = useState('')
-  const [activeRoute, setActiveRoute] = useState<ActiveRouteData | null>(null)
+  const [selectedMockCourseId, setSelectedMockCourseId] = useState<string>(MOCK_WAYPOINT_COURSES[0].id)
+  const [activeRoute, setActiveRoute] = useState<ActiveRouteData | null>(() =>
+    buildRouteFromWaypoints(
+      MOCK_WAYPOINT_COURSES[0].waypoints,
+      MOCK_WAYPOINT_COURSES[0].startName,
+      MOCK_WAYPOINT_COURSES[0].destinationName,
+    ),
+  )
   const [googleElevationProfile, setGoogleElevationProfile] = useState<GoogleRouteElevationProfile | null>(null)
   const [googleElevationLoading, setGoogleElevationLoading] = useState(false)
   const [googleElevationMessage, setGoogleElevationMessage] = useState('')
@@ -734,12 +754,13 @@ export default function App() {
 
   useEffect(() => {
     if (!isFollowing2D || !currentFollowSample) return
-    if (!isPlaying2D && gpsActive && locationSource === 'gps') return
+    liveUserPosRef.current = [currentFollowSample.lat, currentFollowSample.lng]
+    liveHeadingRef.current = currentFollowSample.headingDeg
     setUserPosition([currentFollowSample.lat, currentFollowSample.lng])
     setUserElevation(currentFollowSample.elevation)
     setUserHeadingDeg(currentFollowSample.headingDeg)
     setLocationSource('2d-follow')
-  }, [isFollowing2D, isPlaying2D, gpsActive, locationSource, currentFollowSample])
+  }, [isFollowing2D, currentFollowSample])
 
   useEffect(() => {
     if (!isFollowing2D || !isPlaying2D) return
@@ -748,7 +769,7 @@ export default function App() {
     const tick = (now: number) => {
       const dt = Math.min(0.08, (now - lastTime) / 1000)
       lastTime = now
-      const speedMetersPerSec = 10.0 * speedMultiplier2D
+      const speedMetersPerSec = ROUTE_NAV_CONFIG.BASE_MOVE_SPEED_MPS * speedMultiplier2D
       setProgressDist2D((prev) => {
         const next = prev + speedMetersPerSec * dt
         if (next >= routeTotalDist) {
@@ -1339,6 +1360,7 @@ export default function App() {
   // High-frequency phone compass / orientation streaming (60fps ref + throttled React sync)
   useEffect(() => {
     const handleOrientation = (ev: DeviceOrientationEvent) => {
+      if (isFollowing2DRef.current) return
       const now = performance.now()
       const reading = extractCompassHeading(ev as DeviceOrientationEvent & { webkitCompassHeading?: number | null })
       if (!reading) return
@@ -1563,6 +1585,32 @@ export default function App() {
     void executeRoute(targetOrigin, targetDest, stepFree, true)
   }
 
+  function handleUserCameraInterrupt() {
+    setCameraLock2D(false)
+    setIsPlaying2D(false)
+  }
+
+  function handleRecenterFollowCamera() {
+    setCameraLock2D(true)
+    setIsPlaying2D(true)
+    setFocusUserSignal((n) => n + 1)
+  }
+
+  function selectMockCourse(courseId: string) {
+    const course = MOCK_WAYPOINT_COURSES.find((c) => c.id === courseId)
+    if (!course) return
+    const built = buildRouteFromWaypoints(course.waypoints, course.startName, course.destinationName)
+    setSelectedMockCourseId(courseId)
+    setActiveRoute(built)
+    setProgressDist2D(0)
+    setSelected(null)
+    setCameraLock2D(true)
+    setNavHudEnabled(true)
+    setIsFollowing2D(true)
+    setIsPlaying2D(true)
+    setFocusUserSignal((n) => n + 1)
+  }
+
   function toggle2DFollowMode() {
     if (isFollowing2D) {
       stop2DFollowMode()
@@ -1602,6 +1650,17 @@ export default function App() {
     if (currentFollowSample) pts.push([currentFollowSample.lat, currentFollowSample.lng])
     return pts
   }, [isFollowing2D, routeSamples, progressDist2D, currentFollowSample])
+
+  const remainingPositions = useMemo<[number, number][]>(() => {
+    if (!activeRoute) return []
+    if (!isFollowing2D || !routeSamples.length) return routePositions
+    const pts: [number, number][] = []
+    if (currentFollowSample) pts.push([currentFollowSample.lat, currentFollowSample.lng])
+    for (const s of routeSamples) {
+      if (s.distFromStart > progressDist2D) pts.push([s.lat, s.lng])
+    }
+    return pts
+  }, [activeRoute, routePositions, isFollowing2D, routeSamples, progressDist2D, currentFollowSample])
 
   return (
     <main className="app-shell">
@@ -2054,6 +2113,7 @@ export default function App() {
             focusUserSignal={focusUserSignal}
             activeRoute={activeRoute}
             passedPositions={passedPositions}
+            progressDist={progressDist2D}
             isFollowing={isFollowing2D}
             cameraLock={cameraLock2D}
             pickingLocation={pickingLocation}
@@ -2062,6 +2122,8 @@ export default function App() {
             onTryGpsLocation={tryLocation}
             onToggleCompassView={toggleCompassView}
             onDisableCompassView={disableCompassView}
+            onUserCameraInterrupt={handleUserCameraInterrupt}
+            onRecenterFollowCamera={handleRecenterFollowCamera}
             onSwitchTo2D={() => setMapViewMode('2d')}
             language={language}
           />
@@ -2086,7 +2148,12 @@ export default function App() {
               focusUserSignal={focusUserSignal}
               isFollowingRoute={isFollowing2D}
             />
-            <MapFollowUser active={isFollowing2D} cameraLock={cameraLock2D} userPosition={userPosition} />
+            <MapFollowUser
+              active={isFollowing2D}
+              cameraLock={cameraLock2D}
+              userPosition={userPosition}
+              onUserInteract={handleUserCameraInterrupt}
+            />
             <FitRoute routeId={routeKey} positions={routePositions} isFollowingRoute={isFollowing2D} />
             <MapZoomButtons
               onResetCampus={() => {
@@ -2149,34 +2216,56 @@ export default function App() {
               />
             )}
 
-            {activeRoute && routePositions.length > 1 && (
-              <Polyline
-                positions={routePositions}
-                pathOptions={{ color: '#ffffff', weight: 11, opacity: 0.92, lineCap: 'round', lineJoin: 'round' }}
-              />
+            {/* Passed path polyline (muted gray) */}
+            {isFollowing2D && passedPositions.length > 1 && (
+              <>
+                <Polyline
+                  positions={passedPositions}
+                  pathOptions={{
+                    color: ROUTE_NAV_CONFIG.PASSED_CASING_COLOR,
+                    weight: ROUTE_NAV_CONFIG.LINE_PASSED_CASING_WEIGHT_2D,
+                    opacity: 0.55,
+                    lineCap: 'round',
+                    lineJoin: 'round',
+                  }}
+                />
+                <Polyline
+                  positions={passedPositions}
+                  pathOptions={{
+                    color: ROUTE_NAV_CONFIG.PASSED_LINE_COLOR,
+                    weight: ROUTE_NAV_CONFIG.LINE_PASSED_WEIGHT_2D,
+                    opacity: 0.72,
+                    lineCap: 'round',
+                    lineJoin: 'round',
+                  }}
+                />
+              </>
             )}
 
-            {activeRoute &&
-              activeRoute.segments.map((seg) => {
-                const info = classifySlope(seg.slope_pct, seg.is_step_free, language)
-                return (
-                  <Polyline
-                    key={seg.id}
-                    positions={[seg.from_coord, seg.to_coord]}
-                    pathOptions={{ color: info.roadColor, weight: 7, opacity: 0.96, lineCap: 'round' }}
-                  >
-                    <Tooltip sticky>
-                      {info.label} · {tx.segmentMoveDesc(Math.round(seg.distance_m), Math.round(seg.from_elevation), Math.round(seg.to_elevation))}
-                    </Tooltip>
-                  </Polyline>
-                )
-              })}
-
-            {isFollowing2D && passedPositions.length > 1 && (
-              <Polyline
-                positions={passedPositions}
-                pathOptions={{ color: '#94a3b8', weight: 7, opacity: 0.92, lineCap: 'round' }}
-              />
+            {/* Remaining destination polyline with high-contrast white outer border & vivid green main stroke */}
+            {activeRoute && remainingPositions.length > 1 && (
+              <>
+                <Polyline
+                  positions={remainingPositions}
+                  pathOptions={{
+                    color: ROUTE_NAV_CONFIG.CASING_COLOR,
+                    weight: ROUTE_NAV_CONFIG.LINE_CASING_WEIGHT_2D,
+                    opacity: 0.96,
+                    lineCap: 'round',
+                    lineJoin: 'round',
+                  }}
+                />
+                <Polyline
+                  positions={remainingPositions}
+                  pathOptions={{
+                    color: ROUTE_NAV_CONFIG.MAIN_LINE_COLOR,
+                    weight: ROUTE_NAV_CONFIG.LINE_MAIN_WEIGHT_2D,
+                    opacity: 0.98,
+                    lineCap: 'round',
+                    lineJoin: 'round',
+                  }}
+                />
+              </>
             )}
 
             {activeRoute &&
@@ -2265,6 +2354,9 @@ export default function App() {
             setSpeedMultiplier={setSpeedMultiplier2D}
             headingUpMode={cameraLock2D}
             setHeadingUpMode={setCameraLock2D}
+            onRecenterCamera={handleRecenterFollowCamera}
+            selectedMockCourseId={selectedMockCourseId}
+            onSelectMockCourse={selectMockCourse}
             mapViewMode={mapViewMode}
             onToggleMapViewMode={() => setMapViewMode((m) => (m === '2d' ? '3d' : '2d'))}
             navHudEnabled={navHudEnabled}
@@ -2272,6 +2364,13 @@ export default function App() {
             onCloseFollow={stop2DFollowMode}
             language={language}
           />
+        )}
+
+        {mapViewMode === '2d' && isFollowing2D && !cameraLock2D && (
+          <button type="button" className="recenter-follow-btn" onClick={handleRecenterFollowCamera}>
+            <Navigation size={15} />
+            <span>시점 복귀</span>
+          </button>
         )}
 
         {pickingLocation && (

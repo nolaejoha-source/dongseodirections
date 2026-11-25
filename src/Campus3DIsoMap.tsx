@@ -8,6 +8,7 @@ import { classifySlope, type ActiveRouteData } from './FirstPerson3DNavigator'
 import type { Building, Language } from './data'
 import { EXT_UI_COPY, getLocalizedBuildingName } from './i18nCatalog'
 import { stepAngleDeg } from './liveSensors'
+import { ROUTE_NAV_CONFIG } from './routeNavigationConfig'
 
 const METERS_PER_DEG_LAT = 111_320
 const METERS_PER_DEG_LNG = 111_320 * Math.cos((CAMPUS_CENTER[0] * Math.PI) / 180)
@@ -43,6 +44,7 @@ export default function Campus3DIsoMap({
   focusUserSignal = 0,
   activeRoute,
   passedPositions,
+  progressDist = 0,
   isFollowing,
   cameraLock,
   pickingLocation,
@@ -51,6 +53,8 @@ export default function Campus3DIsoMap({
   onTryGpsLocation,
   onToggleCompassView,
   onDisableCompassView,
+  onUserCameraInterrupt,
+  onRecenterFollowCamera,
   onSwitchTo2D,
   language = 'ko',
 }: {
@@ -67,6 +71,7 @@ export default function Campus3DIsoMap({
   focusUserSignal?: number
   activeRoute: ActiveRouteData | null
   passedPositions: [number, number][]
+  progressDist?: number
   isFollowing: boolean
   cameraLock: boolean
   pickingLocation: boolean
@@ -75,6 +80,8 @@ export default function Campus3DIsoMap({
   onTryGpsLocation: () => void
   onToggleCompassView?: () => void
   onDisableCompassView?: () => void
+  onUserCameraInterrupt?: () => void
+  onRecenterFollowCamera?: () => void
   onSwitchTo2D: () => void
   language?: Language
 }) {
@@ -187,6 +194,7 @@ export default function Campus3DIsoMap({
     isFollowing,
     cameraLock,
     onDisableCompassView,
+    onUserCameraInterrupt,
     language,
     tx,
     modelLoaded,
@@ -210,6 +218,7 @@ export default function Campus3DIsoMap({
     isFollowing,
     cameraLock,
     onDisableCompassView,
+    onUserCameraInterrupt,
     language,
     tx,
     modelLoaded,
@@ -286,15 +295,24 @@ export default function Campus3DIsoMap({
         const nextPinch = getPinchDist()
         if (nextPinch && prevPinchDist && nextPinch > 4 && prevPinchDist > 4) {
           const factor = prevPinchDist / nextPinch
-          followDistRef.current = Math.max(60, Math.min(520, followDistRef.current * factor))
+          followDistRef.current = Math.max(
+            ROUTE_NAV_CONFIG.CAMERA_MIN_DISTANCE,
+            Math.min(520, followDistRef.current * factor),
+          )
+          if (stateRef.current.isFollowing && stateRef.current.cameraLock) {
+            stateRef.current.onUserCameraInterrupt?.()
+          }
         }
         prevPinchDist = nextPinch
         return
       }
 
       const moved = Math.hypot(e.clientX - entry.downX, e.clientY - entry.downY)
-      if (moved > 12) {
+      if (moved > 10) {
         manualDragActiveRef.current = true
+        if (stateRef.current.isFollowing && stateRef.current.cameraLock) {
+          stateRef.current.onUserCameraInterrupt?.()
+        }
         if (stateRef.current.compassViewActive) {
           stateRef.current.onDisableCompassView?.()
         }
@@ -311,9 +329,15 @@ export default function Campus3DIsoMap({
 
     const onDomWheel = (e: WheelEvent) => {
       const st = stateRef.current
-      if (st.compassViewActive || (st.isFollowing && st.cameraLock)) {
+      if (st.isFollowing && st.cameraLock) {
+        st.onUserCameraInterrupt?.()
+      }
+      if (st.compassViewActive || st.isFollowing) {
         const factor = e.deltaY > 0 ? 1.09 : 0.92
-        followDistRef.current = Math.max(60, Math.min(520, followDistRef.current * factor))
+        followDistRef.current = Math.max(
+          ROUTE_NAV_CONFIG.CAMERA_MIN_DISTANCE,
+          Math.min(520, followDistRef.current * factor),
+        )
       }
     }
 
@@ -485,7 +509,8 @@ export default function Campus3DIsoMap({
       const nowPerf = performance.now()
       const dt = Math.min(0.05, Math.max(0.001, (nowPerf - lastFrameTime) / 1000))
       lastFrameTime = nowPerf
-      const smoothAlpha = 1 - Math.exp(-14 * dt)
+      const posAlpha = 1 - Math.exp(-ROUTE_NAV_CONFIG.POSITION_SMOOTHING * dt)
+      const headAlpha = 1 - Math.exp(-ROUTE_NAV_CONFIG.HEADING_SMOOTHING * dt)
 
       const st = stateRef.current
       const liveLatLng = st.liveUserPosRef?.current ?? st.userPosition
@@ -495,28 +520,46 @@ export default function Campus3DIsoMap({
       if (!smoothUserPos3DRef.current) {
         smoothUserPos3DRef.current = targetUser3D.clone()
       } else {
-        smoothUserPos3DRef.current.lerp(targetUser3D, smoothAlpha)
+        smoothUserPos3DRef.current.lerp(targetUser3D, posAlpha)
       }
-      smoothHeadingRef.current = stepAngleDeg(smoothHeadingRef.current, targetHeadingDeg, smoothAlpha)
+      smoothHeadingRef.current = stepAngleDeg(smoothHeadingRef.current, targetHeadingDeg, headAlpha)
 
-      const shouldHeadingLock =
-        (st.compassViewActive || (st.isFollowing && st.cameraLock)) && !manualDragActiveRef.current
+      const isWaypointFollowLock = st.isFollowing && st.cameraLock && !manualDragActiveRef.current
+      const shouldHeadingLock = (st.compassViewActive || isWaypointFollowLock) && !manualDragActiveRef.current
 
       if (shouldHeadingLock) {
         const sPos = smoothUserPos3DRef.current
         const hRad = (smoothHeadingRef.current * Math.PI) / 180
-        const pitchRad = 0.66
         const dist = followDistRef.current
-        const hDist = Math.cos(pitchRad) * dist
-        const vDist = Math.sin(pitchRad) * dist
-        desiredTarget.set(sPos.x, sPos.y + 2.5, sPos.z)
-        desiredCam.set(
-          sPos.x - Math.sin(hRad) * hDist,
-          sPos.y + 2.5 + vDist,
-          sPos.z + Math.cos(hRad) * hDist,
-        )
-        controls.target.lerp(desiredTarget, smoothAlpha)
-        camera.position.lerp(desiredCam, smoothAlpha)
+        if (isWaypointFollowLock) {
+          // 50°~60° tilted 3D navigation view with forward lookahead along the waypoint path
+          const tiltRad = (ROUTE_NAV_CONFIG.CAMERA_TILT_DEG * Math.PI) / 180
+          const hDist = Math.sin(tiltRad) * dist
+          const vDist = Math.cos(tiltRad) * dist
+          const lookAhead = ROUTE_NAV_CONFIG.CAMERA_LOOKAHEAD_OFFSET
+          desiredTarget.set(
+            sPos.x + Math.sin(hRad) * lookAhead,
+            sPos.y + 2.5,
+            sPos.z - Math.cos(hRad) * lookAhead,
+          )
+          desiredCam.set(
+            sPos.x - Math.sin(hRad) * hDist,
+            sPos.y + 2.5 + vDist,
+            sPos.z + Math.cos(hRad) * hDist,
+          )
+        } else {
+          const pitchRad = 0.66
+          const hDist = Math.cos(pitchRad) * dist
+          const vDist = Math.sin(pitchRad) * dist
+          desiredTarget.set(sPos.x, sPos.y + 2.5, sPos.z)
+          desiredCam.set(
+            sPos.x - Math.sin(hRad) * hDist,
+            sPos.y + 2.5 + vDist,
+            sPos.z + Math.cos(hRad) * hDist,
+          )
+        }
+        controls.target.lerp(desiredTarget, posAlpha)
+        camera.position.lerp(desiredCam, posAlpha)
         controls.enableDamping = false
         controls.update()
         controls.enableDamping = true
@@ -844,7 +887,31 @@ export default function Campus3DIsoMap({
     })
   }, [selected, hoveredId, buildings, modelLoaded])
 
-  // Rebuild 3D Route Tube Meshes on the terrain whenever activeRoute changes
+  // Precompute dense 3D samples along the active route for dual-casing passed/remaining polyline split
+  const denseRouteSamples = useMemo(() => {
+    if (!activeRoute || activeRoute.segments.length === 0) return []
+    const pts: Array<{ dist: number; pt: THREE.Vector3 }> = []
+    let accDist = 0
+    activeRoute.segments.forEach((seg, segIdx) => {
+      const segLen = Math.max(1, seg.distance_m)
+      const steps = Math.max(2, Math.ceil(segLen / 2.0))
+      for (let i = 0; i < steps; i++) {
+        if (segIdx > 0 && i === 0) continue
+        const t = i / steps
+        const lat = seg.from_coord[0] + (seg.to_coord[0] - seg.from_coord[0]) * t
+        const lng = seg.from_coord[1] + (seg.to_coord[1] - seg.from_coord[1]) * t
+        pts.push({ dist: accDist + segLen * t, pt: toThreeVec3(lat, lng, 1.85) })
+      }
+      accDist += segLen
+    })
+    const lastSeg = activeRoute.segments[activeRoute.segments.length - 1]
+    pts.push({ dist: accDist, pt: toThreeVec3(lastSeg.to_coord[0], lastSeg.to_coord[1], 1.85) })
+    return pts
+  }, [activeRoute, toThreeVec3, modelLoaded])
+
+  const quantizedSplitDist = isFollowing ? Math.floor(Math.max(0, progressDist) / 1.5) * 1.5 : 0
+
+  // Rebuild dual-layer 3D Route Polylines (White Outer Casing + #03C75A Main Remaining + Muted Passed)
   useEffect(() => {
     const group = routeGroupRef.current
     if (!group) return
@@ -858,30 +925,96 @@ export default function Campus3DIsoMap({
       group.remove(child)
     }
 
-    if (!activeRoute || activeRoute.segments.length === 0) return
+    if (denseRouteSamples.length < 2) return
 
-    activeRoute.segments.forEach((seg) => {
-      const p1 = toThreeVec3(seg.from_coord[0], seg.from_coord[1], 1.6)
-      const p2 = toThreeVec3(seg.to_coord[0], seg.to_coord[1], 1.6)
-      const mid = p1.clone().lerp(p2, 0.5)
-      const midLat = (seg.from_coord[0] + seg.to_coord[0]) * 0.5
-      const midLng = (seg.from_coord[1] + seg.to_coord[1]) * 0.5
-      mid.y = toThreeVec3(midLat, midLng, 1.75).y
+    const splitAt = isFollowing ? quantizedSplitDist : 0
+    const passedPts: THREE.Vector3[] = []
+    const remainingPts: THREE.Vector3[] = []
 
-      const curve = new THREE.CatmullRomCurve3([p1, mid, p2])
-      const info = classifySlope(seg.slope_pct, seg.is_step_free, language)
+    if (splitAt <= 0.5) {
+      denseRouteSamples.forEach((s) => remainingPts.push(s.pt))
+    } else {
+      let splitInserted = false
+      for (let i = 0; i < denseRouteSamples.length; i++) {
+        const cur = denseRouteSamples[i]
+        if (cur.dist < splitAt) {
+          passedPts.push(cur.pt)
+        } else {
+          if (!splitInserted && i > 0) {
+            const prev = denseRouteSamples[i - 1]
+            const span = Math.max(0.001, cur.dist - prev.dist)
+            const t = Math.max(0, Math.min(1, (splitAt - prev.dist) / span))
+            const interp = prev.pt.clone().lerp(cur.pt, t)
+            passedPts.push(interp)
+            remainingPts.push(interp.clone())
+            splitInserted = true
+          }
+          remainingPts.push(cur.pt)
+        }
+      }
+    }
 
-      const tubeGeom = new THREE.TubeGeometry(curve, 12, 1.45, 8, false)
-      const tubeMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(info.roadColor),
-        emissive: new THREE.Color(info.roadColor),
-        emissiveIntensity: 0.35,
-        roughness: 0.3,
+    const addDualTube = (
+      points: THREE.Vector3[],
+      mainColor: string,
+      casingColor: string,
+      mainRadius: number,
+      casingRadius: number,
+      opacity: number,
+      emissiveIntensity: number,
+    ) => {
+      if (points.length < 2) return
+      const curve = new THREE.CatmullRomCurve3(points)
+      const tubularSegments = Math.min(360, Math.max(16, points.length * 2))
+
+      // Outer white/slate border casing sitting cleanly underneath the main route line
+      const casingPts = points.map((p) => new THREE.Vector3(p.x, p.y - 0.25, p.z))
+      const casingCurve = new THREE.CatmullRomCurve3(casingPts)
+      const casingGeom = new THREE.TubeGeometry(casingCurve, tubularSegments, casingRadius, 8, false)
+      const casingMat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(casingColor),
+        transparent: opacity < 1,
+        opacity: opacity < 1 ? opacity * 0.72 : 1,
       })
-      const mesh = new THREE.Mesh(tubeGeom, tubeMat)
-      group.add(mesh)
-    })
-  }, [activeRoute, language, toThreeVec3, modelLoaded])
+      group.add(new THREE.Mesh(casingGeom, casingMat))
+
+      // Inner crisp main route line
+      const mainGeom = new THREE.TubeGeometry(curve, tubularSegments, mainRadius, 8, false)
+      const mainMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(mainColor),
+        emissive: new THREE.Color(mainColor),
+        emissiveIntensity,
+        roughness: 0.28,
+        transparent: opacity < 1,
+        opacity,
+      })
+      group.add(new THREE.Mesh(mainGeom, mainMat))
+    }
+
+    if (passedPts.length >= 2) {
+      addDualTube(
+        passedPts,
+        ROUTE_NAV_CONFIG.PASSED_LINE_COLOR,
+        ROUTE_NAV_CONFIG.PASSED_CASING_COLOR,
+        ROUTE_NAV_CONFIG.TUBE_PASSED_RADIUS_3D,
+        ROUTE_NAV_CONFIG.TUBE_PASSED_CASING_RADIUS_3D,
+        0.62,
+        0.08,
+      )
+    }
+
+    if (remainingPts.length >= 2) {
+      addDualTube(
+        remainingPts,
+        ROUTE_NAV_CONFIG.MAIN_LINE_COLOR,
+        ROUTE_NAV_CONFIG.CASING_COLOR,
+        ROUTE_NAV_CONFIG.TUBE_MAIN_RADIUS_3D,
+        ROUTE_NAV_CONFIG.TUBE_CASING_RADIUS_3D,
+        1.0,
+        0.38,
+      )
+    }
+  }, [denseRouteSamples, quantizedSplitDist, isFollowing])
 
   // Focus camera on selected building
   useEffect(() => {
@@ -907,11 +1040,15 @@ export default function Campus3DIsoMap({
     const camera = cameraRef.current
     const controls = controlsRef.current
     if (!camera || !controls) return
-    const curDist = camera.position.distanceTo(controls.target)
-    followDistRef.current = curDist > 260 ? 175 : Math.max(90, Math.min(240, curDist))
+    if (isFollowing && cameraLock) {
+      followDistRef.current = ROUTE_NAV_CONFIG.CAMERA_FOLLOW_DISTANCE
+    } else {
+      const curDist = camera.position.distanceTo(controls.target)
+      followDistRef.current = curDist > 260 ? 175 : Math.max(90, Math.min(240, curDist))
+    }
   }, [compassViewActive, isFollowing, cameraLock])
 
-  // Focus 3D camera onto user position immediately on GPS fix or Locate tap
+  // Focus 3D camera onto user position immediately on GPS fix, Locate tap, or 시점 복귀
   useEffect(() => {
     if (focusUserSignal <= 0) return
     const controls = controlsRef.current
@@ -925,7 +1062,23 @@ export default function Campus3DIsoMap({
     smoothUserPos3DRef.current = uPos.clone()
     smoothHeadingRef.current = headingDeg
 
-    if (st.compassViewActive || (st.isFollowing && st.cameraLock)) {
+    if (st.isFollowing && st.cameraLock) {
+      const hRad = (headingDeg * Math.PI) / 180
+      const tiltRad = (ROUTE_NAV_CONFIG.CAMERA_TILT_DEG * Math.PI) / 180
+      const dist = ROUTE_NAV_CONFIG.CAMERA_FOLLOW_DISTANCE
+      followDistRef.current = dist
+      const lookAhead = ROUTE_NAV_CONFIG.CAMERA_LOOKAHEAD_OFFSET
+      controls.target.set(uPos.x + Math.sin(hRad) * lookAhead, uPos.y + 2.5, uPos.z - Math.cos(hRad) * lookAhead)
+      camera.position.set(
+        uPos.x - Math.sin(hRad) * Math.sin(tiltRad) * dist,
+        uPos.y + 2.5 + Math.cos(tiltRad) * dist,
+        uPos.z + Math.cos(hRad) * Math.sin(tiltRad) * dist,
+      )
+      controls.update()
+      return
+    }
+
+    if (st.compassViewActive) {
       const hRad = (headingDeg * Math.PI) / 180
       const pitchRad = 0.66
       const dist = Math.min(Math.max(followDistRef.current, 130), 210)
@@ -1059,7 +1212,10 @@ export default function Campus3DIsoMap({
   }
 
   const zoomByFactor = (factor: number) => {
-    followDistRef.current = Math.max(60, Math.min(520, followDistRef.current * factor))
+    if (stateRef.current.isFollowing && stateRef.current.cameraLock) {
+      stateRef.current.onUserCameraInterrupt?.()
+    }
+    followDistRef.current = Math.max(ROUTE_NAV_CONFIG.CAMERA_MIN_DISTANCE, Math.min(520, followDistRef.current * factor))
     const camera = cameraRef.current
     const controls = controlsRef.current
     if (!camera || !controls) return
@@ -1205,6 +1361,13 @@ export default function Campus3DIsoMap({
         <div className={modelLoadError ? 'iso3d-status-badge error' : 'iso3d-status-badge'} role="status">
           {modelLoadError ? '3D 모델 로드 실패 — 새로고침 해주세요' : '3D 캠퍼스 모델 불러오는 중…'}
         </div>
+      )}
+
+      {isFollowing && !cameraLock && onRecenterFollowCamera && (
+        <button type="button" className="recenter-follow-btn" onClick={onRecenterFollowCamera}>
+          <RotateCcw size={15} />
+          <span>시점 복귀</span>
+        </button>
       )}
 
       {!isFollowing && (
