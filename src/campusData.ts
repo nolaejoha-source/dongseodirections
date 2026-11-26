@@ -247,7 +247,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 159.0,
+    "elevation": 159,
     "code_prefix": "CO",
     "code_range": "CO101 ~ CO904",
     "department_summary": "민석교양대학 · 학생상담센터 · 일반대학원 · 동아시아학과 · 일본연구센터",
@@ -462,7 +462,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 132.0,
+    "elevation": 132,
     "code_prefix": "EL",
     "code_range": "EL101 ~ EL608",
     "department_summary": "이공대학 · 팹랩(Fab Lab) · 전자공학 · 건축/토목 · 미래커리어대학",
@@ -680,7 +680,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 147.0,
+    "elevation": 147,
     "code_prefix": "HC",
     "code_range": "HC101 ~ HC606",
     "department_summary": "바이오헬스융합대학 · 간호학과 · 임상병리학과",
@@ -922,7 +922,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 147.0,
+    "elevation": 147,
     "code_prefix": "AE",
     "code_range": "AE101 ~ AE605",
     "department_summary": "바이오제약공학 · 식품영양학 · 신소재/화학 · 스마트모빌리티",
@@ -1114,7 +1114,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 106.0,
+    "elevation": 106,
     "code_prefix": "SH",
     "code_range": "SH101 ~ SH503",
     "department_summary": "창업보육센터 · 경찰학과 · 경호전공 · 대강당",
@@ -1320,7 +1320,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 160.0,
+    "elevation": 160,
     "code_prefix": "LL",
     "code_range": "LL101 ~ LL902",
     "department_summary": "영어학과 · 일본어학과 · 중국어학과 · 솔루션데스크 · CBT실",
@@ -1477,7 +1477,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 160.0,
+    "elevation": 160,
     "code_prefix": "IS",
     "code_range": "IS101 ~ IS508",
     "department_summary": "국제학부 · 글로벌통상 · 차이니스카페",
@@ -1697,7 +1697,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 159.0,
+    "elevation": 159,
     "code_prefix": "BA",
     "code_range": "BA101 ~ BA605",
     "department_summary": "글로벌비즈니스대학 · 경영학부 · 관광경영컨벤션 · 국제물류 · 경영관식당",
@@ -1737,7 +1737,85 @@ export const SEEDED_BUILDINGS_RAW = [
       "DH504",
       "DH510",
       "디자인관",
-      "디자인홀"
+      "디자인홀",
+      "9101",
+      "9102",
+      "9103",
+      "9104",
+      "9105",
+      "9106",
+      "9107",
+      "9108",
+      "9109",
+      "9110",
+      "9201",
+      "9202",
+      "9203",
+      "9204",
+      "9205",
+      "9206",
+      "9207",
+      "9208",
+      "9209",
+      "9210",
+      "9211",
+      "9212",
+      "9213",
+      "9214",
+      "9215",
+      "9216",
+      "9301",
+      "9302",
+      "9303",
+      "9304",
+      "9305",
+      "9306",
+      "9307",
+      "9308",
+      "9309",
+      "9310",
+      "9311",
+      "9312",
+      "9313",
+      "9314",
+      "9315",
+      "9401",
+      "9402",
+      "9403",
+      "9404",
+      "9405",
+      "9406",
+      "9407",
+      "9408",
+      "9409",
+      "9410",
+      "9411",
+      "9412",
+      "9413",
+      "9414",
+      "9415",
+      "9501",
+      "9502",
+      "9503",
+      "9504",
+      "9505",
+      "9506",
+      "9507",
+      "9508",
+      "9509",
+      "9510",
+      "9511",
+      "9512",
+      "9513",
+      "9514",
+      "9515",
+      "9516",
+      "디자인갤러리",
+      "목업스튜디오",
+      "디자인대학 교학과",
+      "공용스튜디오",
+      "대형 세미나실",
+      "CK-1 디자인사업단"
     ],
     "footprint": [
       [
@@ -1765,139 +1843,377 @@ export const SEEDED_BUILDINGS_RAW = [
       {
         "floor": 1,
         "label": "1F",
+        "floor_plan_url": "/floorplans/design/1f_ai.jpg",
+        "floor_summary": "중앙 주출입구 · 9101 영상강의실 · 9102 디자인갤러리 · 9103 목업스튜디오 · 9104 카페 · 9105 교학과 · 9106~9110 실기/실습실 · 좌/우 화장실 · 3개 피난계단/출구",
         "facilities": [
           {
-            "code": "DH101",
-            "name": "[DH101] 디자인대학 통합행정실 (9101호)",
-            "category": "학과사무실",
-            "note": "디자인학부·건축·광고홍보 학사 행정실"
+            "code": "9101",
+            "name": "[9101] 영상강의실 (빔/스크린)",
+            "category": "강의실",
+            "note": "1층 좌측 단부 영상강의실 (도장실·좌측 화장실/계단 인접)"
           },
           {
-            "code": "DH102",
-            "name": "[DH102] 디자인홀 갤러리 (D-Gallery)",
+            "code": "1F-SUP1",
+            "name": "[1F] 도장실 · 창고",
+            "category": "실습·연구",
+            "note": "1층 좌측 계단 양옆 작업 지원 공간 (9101·9102 사이)"
+          },
+          {
+            "code": "9102",
+            "name": "[9102] 디자인갤러리 (D-Gallery)",
             "category": "전시·문화",
-            "note": "학생 졸업작품 및 국제 초대전시관"
+            "note": "1층 좌측 중앙 대형 전시실 (졸업작품·기획전시)"
           },
           {
-            "code": "DH105",
-            "name": "[DH105] IFS 국제디자인스튜디오",
+            "code": "9103",
+            "name": "[9103] 목업스튜디오",
             "category": "실습·연구",
-            "note": "국제 워크숍 및 융합 디자인 스튜디오"
+            "note": "1층 디자인갤러리 북측 조형·목업 제작 스튜디오"
           },
           {
-            "code": "DH108",
-            "name": "[DH108] 3D 프린팅·모형제작 워크숍",
+            "code": "9104",
+            "name": "[9104] 카페 · 경비실 · 재료실",
+            "category": "행정·지원",
+            "note": "1층 중앙 로비(주출입구) 인접 학생 휴게·지원 시설"
+          },
+          {
+            "code": "9105",
+            "name": "[9105] 디자인대학 교학과 (DH101)",
+            "category": "학과사무실",
+            "note": "1층 중앙 계단 동측 디자인대학 행정실·교학과"
+          },
+          {
+            "code": "9106",
+            "name": "[9106] 디자인실기실 7",
             "category": "실습·연구",
-            "note": "레이저커터 및 목공·조형 작업실"
+            "note": "1층 중앙 우측 복도 디자인 실기실"
+          },
+          {
+            "code": "9107",
+            "name": "[9107] 디자인실습실 6",
+            "category": "실습·연구",
+            "note": "1층 중앙 우측 복도 디자인 실습실"
+          },
+          {
+            "code": "9108",
+            "name": "[9108] 디자인실습실 5 (서)",
+            "category": "실습·연구",
+            "note": "1층 우측 계단 좌측 디자인 실습실"
+          },
+          {
+            "code": "1F-MAT",
+            "name": "[1F] 학부재료실",
+            "category": "실습·연구",
+            "note": "1층 우측 비상계단 뒤편 학부 공용 재료실"
+          },
+          {
+            "code": "9109",
+            "name": "[9109] 디자인실기실 5 (동)",
+            "category": "실습·연구",
+            "note": "1층 우측 계단 동측 디자인 실기실"
+          },
+          {
+            "code": "9110",
+            "name": "[9110] 디자인실기실 4",
+            "category": "실습·연구",
+            "note": "1층 우측 단부 디자인 실기실 (우측 화장실 인접)"
           }
         ]
       },
       {
         "floor": 2,
         "label": "2F",
+        "floor_plan_url": "/floorplans/design/2f_ai.jpg",
+        "floor_summary": "9201·9202 컴퓨터실습실1·2 · 9203·9206·9207 DM studio 1~3 · 9210 공용스튜디오 · 9211·9212 멀티미디어2·3 · 9215 IS studio 3 · 9216 재료실 · 좌/중앙/우 계단",
         "facilities": [
           {
-            "code": "DH201",
-            "name": "[DH201] 시각디자인 스튜디오 1",
+            "code": "9201",
+            "name": "[9201] 컴퓨터실습실 1",
             "category": "실습·연구",
-            "note": "브랜드·편집·패키지 디자인 실습실"
+            "note": "2층 좌측 단부 컴퓨터·그래픽 실습실 (좌측 화장실/계단 인접)"
           },
           {
-            "code": "DH203",
-            "name": "[DH203] 멀티미디어디자인 Mac 실습실",
+            "code": "9202",
+            "name": "[9202] 컴퓨터실습실 2",
             "category": "실습·연구",
-            "note": "iMac 기반 그래픽·모션디자인 실습실"
+            "note": "2층 좌측 계단 동측 컴퓨터 실습실"
           },
           {
-            "code": "DH204",
-            "name": "[DH204] 시각디자인 교수연구실 (DH204~210)",
-            "category": "교수연구실",
-            "note": "시각디자인전공 교수 연구 공간"
+            "code": "9203",
+            "name": "[9203] DM studio 1 (9203~9205)",
+            "category": "실습·연구",
+            "note": "2층 디지털미디어 스튜디오 및 소형 실기·연구 구역 (9204·9205 인접)"
+          },
+          {
+            "code": "9206",
+            "name": "[9206] DM studio 2",
+            "category": "실습·연구",
+            "note": "2층 중앙 좌측 디지털미디어 스튜디오 2"
+          },
+          {
+            "code": "9207",
+            "name": "[9207] DM studio 3",
+            "category": "실습·연구",
+            "note": "2층 중앙 계단 좌측 대형 북측 돌출형 DM studio 3"
+          },
+          {
+            "code": "9216",
+            "name": "[9216] 재료실",
+            "category": "행정·지원",
+            "note": "2층 중앙 계단·PIT 인접 공용 재료실"
+          },
+          {
+            "code": "9208",
+            "name": "[9208~9209] 디자인실습·연구실",
+            "category": "실습·연구",
+            "note": "2층 중앙 우측 복도 실기·연구실"
+          },
+          {
+            "code": "9210",
+            "name": "[9210] 공용스튜디오",
+            "category": "실습·연구",
+            "note": "2층 중앙 우측 대형 공용 디자인 스튜디오"
+          },
+          {
+            "code": "9211",
+            "name": "[9211] 멀티미디어디자인 2",
+            "category": "실습·연구",
+            "note": "2층 우측 멀티미디어디자인 실습실 2"
+          },
+          {
+            "code": "9212",
+            "name": "[9212] 멀티미디어디자인 3",
+            "category": "실습·연구",
+            "note": "2층 우측 계단 좌측 북측 돌출형 멀티미디어디자인 3"
+          },
+          {
+            "code": "9213",
+            "name": "[9213~9214] 디자인실습·연구실",
+            "category": "실습·연구",
+            "note": "2층 우측 계단 동측 실기·연구실"
+          },
+          {
+            "code": "9215",
+            "name": "[9215] IS studio 3",
+            "category": "실습·연구",
+            "note": "2층 우측 단부 인더스트리/공간 스튜디오 (우측 화장실 인접)"
           }
         ]
       },
       {
         "floor": 3,
         "label": "3F",
+        "floor_plan_url": "/floorplans/design/3f_ai.jpg",
+        "floor_summary": "표준층 구조 + 복도 표지판(9309~9315) 기반 추정 배치 · 서측 9301~9308(설계·제품·미디어실) · 중앙 계단·PIT · 동측 9309~9315(연구·강의실) · 좌/우 화장실",
         "facilities": [
           {
-            "code": "DH301",
-            "name": "[DH301] 환경·실내건축디자인 제도실",
+            "code": "9301",
+            "name": "[9301] 환경·실내건축 제도·설계실 (DH301)",
             "category": "실습·연구",
-            "note": "공간설계 및 CAD/BIM 디자인 스튜디오"
+            "note": "3층 좌측 단부 (첨단 프로젝터 완비 강의·설계 스튜디오, 추정 배치)"
           },
           {
-            "code": "DH304",
-            "name": "[DH304] 제품·인터랙션 디자인 실습실",
-            "category": "실습·연구",
-            "note": "산업디자인 프로토타이핑 실습실"
+            "code": "9302",
+            "name": "[9302~9303] 환경디자인 강의·세미나실",
+            "category": "강의실",
+            "note": "3층 좌측 계단 동측 강의실 구역 (표준층 추정 배치)"
           },
           {
-            "code": "DH307",
-            "name": "[DH307] 디지털미디어디자인 연구실 (9307호)",
+            "code": "9304",
+            "name": "[9304] 제품·인터랙션 디자인 실습실 (DH304)",
             "category": "실습·연구",
-            "note": "UI/UX 및 인터랙티브 미디어 연구"
+            "note": "3층 좌측 중앙 산업디자인·프로토타이핑 실습실 (추정 배치)"
           },
           {
-            "code": "DH309",
-            "name": "[DH309] 환경디자인 교수연구실 (9309호)",
+            "code": "9305",
+            "name": "[9305~9306] 디자인 실기·프로젝트실",
+            "category": "실습·연구",
+            "note": "3층 중앙 좌측 소형 실기·모형 작업실 (표준층 추정 배치)"
+          },
+          {
+            "code": "9307",
+            "name": "[9307] 디지털미디어디자인 미디어실 (DH307)",
+            "category": "실습·연구",
+            "note": "3층 중앙 계단 좌측 북측 대형 미디어·UI/UX 스튜디오 (추정 배치)"
+          },
+          {
+            "code": "9308",
+            "name": "[9308] 3층 지원·기자재실",
+            "category": "행정·지원",
+            "note": "3층 중앙 계단·PIT 인접 공용 지원 공간 (표준층 추정 배치)"
+          },
+          {
+            "code": "9309",
+            "name": "[9309] 환경디자인 교수연구실 (9309~9311)",
             "category": "교수연구실",
-            "note": "환경디자인전공 교수 연구실"
+            "note": "3층 동측 복도 초입(9309~9315 표지판 구역) 연구실"
+          },
+          {
+            "code": "9312",
+            "name": "[9312] 3층 대형 프로젝트 스튜디오",
+            "category": "실습·연구",
+            "note": "3층 우측 계단 좌측 북측 대형 스튜디오 (표준층 추정 배치)"
+          },
+          {
+            "code": "9313",
+            "name": "[9313~9315] 3층 교수연구·전공실 (9309~9315 구역)",
+            "category": "교수연구실",
+            "note": "3층 우측 계단 동측~우측 화장실 인접 호실 구역"
           }
         ]
       },
       {
         "floor": 4,
         "label": "4F",
+        "floor_plan_url": "/floorplans/design/4f_ai.jpg",
+        "floor_summary": "표준층 구조 + 4F 복도 표지판(9401~9408 / 9409~9415) 기반 추정 배치 · 서측 9401~9408(스튜디오·촬영실) · 중앙 계단 · 동측 9409~9415(연구실·실기실)",
         "facilities": [
           {
-            "code": "DH401",
-            "name": "[DH401] 통합 디자인 스튜디오 A",
+            "code": "9401",
+            "name": "[9401] 통합 디자인 스튜디오 A (DH401)",
             "category": "실습·연구",
-            "note": "캡스톤 디자인 및 산학 프로젝트실"
+            "note": "4층 서측 구역(9401~9408 표지판) 캡스톤·산학 스튜디오 (추정 배치)"
           },
           {
-            "code": "DH405",
-            "name": "[DH405] 포토그래피·광고촬영 스튜디오",
+            "code": "9402",
+            "name": "[9402~9404] 4층 전공 스튜디오·강의실",
+            "category": "강의실",
+            "note": "4층 좌측 계단 동측 강의·실습실 (9401~9408 구역 추정 배치)"
+          },
+          {
+            "code": "9405",
+            "name": "[9405] 포토그래피·광고촬영 스튜디오 (DH405)",
             "category": "미디어·스튜디오",
-            "note": "제품 및 인물 광고사진 촬영실"
+            "note": "4층 중앙 좌측 제품·인물 촬영 스튜디오 (추정 배치)"
           },
           {
-            "code": "DH409",
-            "name": "[DH409] 디지털미디어 연구실 (9409호)",
+            "code": "9406",
+            "name": "[9406~9408] 융합 디자인 랩·세미나실",
+            "category": "실습·연구",
+            "note": "4층 중앙 계단 좌측(9401~9408 단부) 대형 스튜디오 구역 (추정 배치)"
+          },
+          {
+            "code": "9409",
+            "name": "[9409] 디지털미디어 연구실 (DH409)",
             "category": "교수연구실",
-            "note": "미디어디자인 교수 연구 및 지도실"
+            "note": "4층 중앙 계단 동측(9409~9415 표지판 시작) 연구실 구역"
+          },
+          {
+            "code": "9410",
+            "name": "[9410~9411] 디자인 교수연구·지도실",
+            "category": "교수연구실",
+            "note": "4층 동측 중앙 복도 교수연구실 구역 (표준층 추정 배치)"
+          },
+          {
+            "code": "9412",
+            "name": "[9412] 4층 대형 디자인 스튜디오 B",
+            "category": "실습·연구",
+            "note": "4층 우측 계단 좌측 북측 대형 스튜디오 (표준층 추정 배치)"
+          },
+          {
+            "code": "9413",
+            "name": "[9413~9415] 4층 연구·전공실 (9409~9415 구역)",
+            "category": "교수연구실",
+            "note": "4층 우측 계단 동측~우측 화장실 인접 호실 구역"
           }
         ]
       },
       {
         "floor": 5,
         "label": "5F",
+        "floor_plan_url": "/floorplans/design/5f_ai.jpg",
+        "floor_summary": "9501 동아리방 · 9502 디자인실습실2 · 9504~9506 C studio 1~3 · 9509 학생회 · 9512 소형 세미나실 · 9513 대형 세미나실 · 9514~9515 PI studio 2~3 · 9516 CK-1 디자인사업단",
         "facilities": [
           {
-            "code": "DH501",
-            "name": "[DH501] 디자인 크리틱 세미나실",
-            "category": "강의실",
-            "note": "디자인 품평회 및 프레젠테이션 홀"
+            "code": "9501",
+            "name": "[9501] 동아리방",
+            "category": "학생자치·복지",
+            "note": "5층 좌측 단부 디자인대학 동아리방"
           },
           {
-            "code": "DH504",
-            "name": "[DH504] 공모전 준비실 (Red Dot / iF Lab)",
+            "code": "9502",
+            "name": "[9502] 디자인실습실 2",
             "category": "실습·연구",
-            "note": "국제 디자인 어워드 출품 프로젝트실"
+            "note": "5층 좌측 계단 좌측 디자인 실습실"
           },
           {
-            "code": "DH510",
-            "name": "[DH510] 디자인대학 교수연구실 (DH508~512)",
-            "category": "교수연구실",
-            "note": "전임교원 연구실 구역"
+            "code": "9503",
+            "name": "[9503] 5층 디자인 지원실",
+            "category": "실습·연구",
+            "note": "5층 좌측 계단 동측 소형실"
+          },
+          {
+            "code": "9504",
+            "name": "[9504] C studio 1",
+            "category": "실습·연구",
+            "note": "5층 컨셉/커뮤니케이션 스튜디오 1"
+          },
+          {
+            "code": "9505",
+            "name": "[9505] C studio 2",
+            "category": "실습·연구",
+            "note": "5층 컨셉/커뮤니케이션 스튜디오 2"
+          },
+          {
+            "code": "9506",
+            "name": "[9506] C studio 3",
+            "category": "실습·연구",
+            "note": "5층 컨셉/커뮤니케이션 스튜디오 3"
+          },
+          {
+            "code": "9507",
+            "name": "[9507~9508] 5층 연구·작업실",
+            "category": "실습·연구",
+            "note": "5층 중앙 좌측 복도 소형 연구·작업실"
+          },
+          {
+            "code": "9509",
+            "name": "[9509] 디자인대학 학생회",
+            "category": "학생자치·복지",
+            "note": "5층 중앙 계단 좌측 디자인대학 학생회실"
+          },
+          {
+            "code": "9510",
+            "name": "[9510~9511] 5층 세미나·준비실",
+            "category": "행정·지원",
+            "note": "5층 중앙 계단 동측(PIT 우측) 지원·준비실"
+          },
+          {
+            "code": "9512",
+            "name": "[9512] 소형 세미나실",
+            "category": "강의실",
+            "note": "5층 우측 복도 소형 품평회·세미나실"
+          },
+          {
+            "code": "9513",
+            "name": "[9513] 대형 세미나실",
+            "category": "강의실",
+            "note": "5층 우측 대형 디자인 크리틱·프레젠테이션 세미나실"
+          },
+          {
+            "code": "9514",
+            "name": "[9514] PI studio 2",
+            "category": "실습·연구",
+            "note": "5층 우측 계단 동측 제품/인터랙션 스튜디오 2"
+          },
+          {
+            "code": "9515",
+            "name": "[9515] PI studio 3",
+            "category": "실습·연구",
+            "note": "5층 우측 계단 동측 제품/인터랙션 스튜디오 3"
+          },
+          {
+            "code": "9516",
+            "name": "[9516] CK-1 디자인사업단",
+            "category": "행정·지원",
+            "note": "5층 우측 단부 CK-1 특성화 디자인사업단 사무실"
           }
         ]
       }
     ],
-    "elevation": 123.0,
+    "elevation": 123,
     "code_prefix": "DH",
-    "code_range": "DH101 ~ DH512",
+    "code_range": "9101~9516",
     "department_summary": "디자인대학 · 시각디자인 · 디지털미디어디자인 · 환경/산업디자인",
     "roof_color": "#7c8ea0",
     "wall_color": "#f1f5f9",
@@ -1913,7 +2229,7 @@ export const SEEDED_BUILDINGS_RAW = [
     "name_en": "Green Hall",
     "lat": 35.14415,
     "lng": 129.00722,
-    "elevation": 136.0,
+    "elevation": 136,
     "levels": 5,
     "code_prefix": "GH",
     "code_range": "GH101 ~ GH505",
@@ -2026,7 +2342,7 @@ export const SEEDED_BUILDINGS_RAW = [
     "name_en": "Dream E. Valley",
     "lat": 35.14448,
     "lng": 129.00855,
-    "elevation": 134.0,
+    "elevation": 134,
     "levels": 2,
     "code_prefix": "DV",
     "code_range": "DV001 ~ DV105",
@@ -2209,7 +2525,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 133.0,
+    "elevation": 133,
     "code_prefix": "IH",
     "code_range": "IH001 ~ IH801",
     "department_summary": "제1국제생활관 기숙사 · 소극장 · 스카이라운지",
@@ -2706,7 +3022,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 97.0,
+    "elevation": 97,
     "code_prefix": "NM",
     "code_range": "NM001 ~ NM1503",
     "department_summary": "대학본부 · 미디어커뮤니케이션 · 패션디자인 · 소향아트홀",
@@ -3330,7 +3646,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 88.0,
+    "elevation": 88,
     "code_prefix": "U",
     "code_range": "U001 ~ U805",
     "department_summary": "소프트웨어융합대학 · 컴퓨터공학 · AI공학 · 정보보안",
@@ -3348,7 +3664,7 @@ export const SEEDED_BUILDINGS_RAW = [
     "name_en": "Bio Health Hall",
     "lat": 35.14328,
     "lng": 129.00812,
-    "elevation": 154.0,
+    "elevation": 154,
     "levels": 4,
     "code_prefix": "BH",
     "code_range": "BH101 ~ BH404",
@@ -3629,7 +3945,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 97.0,
+    "elevation": 97,
     "code_prefix": "CC",
     "code_range": "CC001 ~ CC1001",
     "department_summary": "콘서트홀 · 정보통신센터 · 부산디지털대학교",
@@ -3794,7 +4110,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 117.0,
+    "elevation": 117,
     "code_prefix": "MS",
     "code_range": "MS001 ~ MS404",
     "department_summary": "실내체육관 · 피트니스/헬스장 · 스쿼시실 · 레포츠과학부",
@@ -3932,7 +4248,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 117.0,
+    "elevation": 117,
     "code_prefix": "CH",
     "code_range": "CH101 ~ CH302",
     "department_summary": "대예배당 · 채플홀 · 교회음악 실습실 · 교목실",
@@ -4014,7 +4330,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 84.0,
+    "elevation": 84,
     "code_prefix": "SA",
     "code_range": "SA101 ~ SA510",
     "department_summary": "아파트형 학생기숙사 · 자치조리실 · 스터디룸",
@@ -4142,7 +4458,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 90.0,
+    "elevation": 90,
     "code_prefix": "IH2",
     "code_range": "IH2-001 ~ IH2-1315",
     "department_summary": "제2국제생활관 기숙사 · 동서어학당 강의실 · 농협",
@@ -4392,7 +4708,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 162.0,
+    "elevation": 162,
     "code_prefix": "ML",
     "code_range": "ML001 ~ ML604",
     "department_summary": "중앙도서관 · 열람실 · IT-Zone · 멀티플렉스 · 공자아카데미",
@@ -4509,7 +4825,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 90.0,
+    "elevation": 90,
     "code_prefix": "KL",
     "code_range": "KL001 ~ KL306",
     "department_summary": "한국어학당 · TOPIK 교육 · 유학생 한국문화체험실",
@@ -4718,7 +5034,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 69.0,
+    "elevation": 69,
     "code_prefix": "GV",
     "code_range": "GV101 ~ GV1920",
     "department_summary": "디지털콘텐츠 · 보건의료관II(방사선/치위생) · 건축설계 · 글로벌하우스 기숙사",
@@ -4873,7 +5189,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 114.0,
+    "elevation": 114,
     "code_prefix": "SP",
     "code_range": "SP101 ~ SP315",
     "department_summary": "학생식당(푸드코트) · 입학처 · 학생취업지원처 · 총학생회 · 동아리방",
@@ -4891,7 +5207,7 @@ export const SEEDED_BUILDINGS_RAW = [
     "name_en": "Tennis Court",
     "lat": 35.14283,
     "lng": 129.007817,
-    "elevation": 158.0,
+    "elevation": 158,
     "levels": 1,
     "code_prefix": "TC",
     "code_range": "TC101",
@@ -4952,7 +5268,7 @@ export const SEEDED_BUILDINGS_RAW = [
     "name_en": "Min-seok Hill",
     "lat": 35.14492,
     "lng": 129.01105,
-    "elevation": 135.0,
+    "elevation": 135,
     "levels": 1,
     "code_prefix": "MH",
     "code_range": "MH101",
@@ -5061,7 +5377,7 @@ export const SEEDED_BUILDINGS_RAW = [
     "name_en": "Friendship House",
     "lat": 35.14382,
     "lng": 129.00958,
-    "elevation": 152.0,
+    "elevation": 152,
     "levels": 2,
     "code_prefix": "FH",
     "code_range": "FH101 ~ FH201",
@@ -5122,7 +5438,7 @@ export const SEEDED_BUILDINGS_RAW = [
     "name_en": "University Park",
     "lat": 35.14422,
     "lng": 129.00958,
-    "elevation": 145.0,
+    "elevation": 145,
     "levels": 1,
     "code_prefix": "UP",
     "code_range": "UP101",
@@ -5231,7 +5547,7 @@ export const SEEDED_BUILDINGS_RAW = [
     "name_en": "Muse Park Amphitheater",
     "lat": 35.14335,
     "lng": 129.00965,
-    "elevation": 158.0,
+    "elevation": 158,
     "levels": 2,
     "code_prefix": "MP",
     "code_range": "MP101",
@@ -5521,7 +5837,7 @@ export const SEEDED_BUILDINGS_RAW = [
         ]
       }
     ],
-    "elevation": 84.0,
+    "elevation": 84,
     "code_prefix": "IC",
     "code_range": "IC101 ~ IC704",
     "department_summary": "인터내셔널칼리지 · 디자인팩토리(DFK) · 글로벌전공",
