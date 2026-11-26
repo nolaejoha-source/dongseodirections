@@ -629,12 +629,19 @@ export class GpsFusion10HzEngine {
     }
 
     const dtFix = Math.max(0.05, (now - this.lastFixPerf) / 1000)
+    const dtOutlier = Math.max(0.25, dtFix)
     const jumpFromEst = Math.hypot(fx - this.estE, fy - this.estN)
 
-    // Reject single-frame GNSS multipath spikes (>35 m/s jump) unless repeated
-    if (jumpFromEst / dtFix > 35 && this.outlierCount < 1) {
-      this.outlierCount += 1
-      return
+    // Allow small normal jitter/coarse-to-fine updates, but reject multipath teleport spikes
+    if (jumpFromEst > Math.max(14, acc * 1.25)) {
+      if (jumpFromEst > 250 && dtFix < 5 && this.outlierCount < 2) {
+        this.outlierCount += 1
+        return
+      }
+      if (jumpFromEst / dtOutlier > 35 && this.outlierCount < 1) {
+        this.outlierCount += 1
+        return
+      }
     }
     this.outlierCount = 0
 
@@ -708,9 +715,7 @@ export class GpsFusion10HzEngine {
       this.velN *= 0.25
     }
 
-    if (this.running) {
-      this.emitTick(false)
-    }
+    this.emitTick(false)
   }
 
   private emitTick(_predictedHint: boolean): void {

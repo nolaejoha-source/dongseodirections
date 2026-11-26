@@ -613,10 +613,11 @@ def build_route(request: RouteInput) -> dict[str, Any]:
     route_edges.reverse()
 
     # Trim terminal building-center interior stubs so routes begin/end at road/sidewalk entrances
-    if len(route_ids) >= 2 and request.start_coordinates is None and by_id[route_ids[0]].get("building_id") is not None and by_id[route_ids[1]].get("building_id") is None:
+    # while preserving at least 1 valid segment for adjacent buildings
+    if len(route_ids) >= 3 and request.start_coordinates is None and by_id[route_ids[0]].get("building_id") is not None and by_id[route_ids[1]].get("building_id") is None:
         route_ids.pop(0)
         route_edges.pop(0)
-    if len(route_ids) >= 2 and by_id[route_ids[-1]].get("building_id") is not None and by_id[route_ids[-2]].get("building_id") is None:
+    if (len(route_ids) >= 3 or (prepend_origin_point is not None and len(route_ids) >= 2)) and by_id[route_ids[-1]].get("building_id") is not None and by_id[route_ids[-2]].get("building_id") is None:
         route_ids.pop()
         route_edges.pop()
 

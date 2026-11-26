@@ -363,8 +363,9 @@ function computeClientRoute(
   routeEdges.reverse()
 
   // Trim terminal building-center interior stubs so routes start/end at verified road/sidewalk entrances
+  // while guaranteeing at least 1 valid road/walkway segment remains
   if (
-    routeNodeIds.length >= 2 &&
+    routeNodeIds.length >= 3 &&
     fromId !== 'current' &&
     byId.get(routeNodeIds[0])?.building_id !== null &&
     byId.get(routeNodeIds[1])?.building_id === null
@@ -373,7 +374,7 @@ function computeClientRoute(
     routeEdges.shift()
   }
   if (
-    routeNodeIds.length >= 2 &&
+    (routeNodeIds.length >= 3 || (prependOrigin !== null && routeNodeIds.length >= 2)) &&
     byId.get(routeNodeIds[routeNodeIds.length - 1])?.building_id !== null &&
     byId.get(routeNodeIds[routeNodeIds.length - 2])?.building_id === null
   ) {
@@ -1025,29 +1026,41 @@ export default function App() {
     const px = lng * mLng
     const py = lat * mLat
 
+    let nextProgress = progressDist2DRef.current
+    const winMin = Math.max(0, nextProgress - 12)
+    const winMax = nextProgress + 75
     let bestDistToRoute = Infinity
-    let bestAlong = progressDist2DRef.current
-    for (let i = 0; i < samples.length - 1; i++) {
-      const a = samples[i]
-      const b = samples[i + 1]
-      const ax = a.lng * mLng
-      const ay = a.lat * mLat
-      const bx = b.lng * mLng
-      const by = b.lat * mLat
-      const vx = bx - ax
-      const vy = by - ay
-      const len2 = vx * vx + vy * vy
-      const tProj = len2 > 1e-6 ? Math.max(0, Math.min(1, ((px - ax) * vx + (py - ay) * vy) / len2)) : 0
-      const projX = ax + vx * tProj
-      const projY = ay + vy * tProj
-      const dM = Math.hypot(px - projX, py - projY)
-      if (dM < bestDistToRoute) {
-        bestDistToRoute = dM
-        bestAlong = a.distFromStart + (b.distFromStart - a.distFromStart) * tProj
+    let bestAlong = nextProgress
+
+    const scanSegments = (useWindow: boolean) => {
+      for (let i = 0; i < samples.length - 1; i++) {
+        const a = samples[i]
+        const b = samples[i + 1]
+        if (useWindow && (b.distFromStart < winMin || a.distFromStart > winMax)) continue
+        const ax = a.lng * mLng
+        const ay = a.lat * mLat
+        const bx = b.lng * mLng
+        const by = b.lat * mLat
+        const vx = bx - ax
+        const vy = by - ay
+        const len2 = vx * vx + vy * vy
+        const tProj = len2 > 1e-6 ? Math.max(0, Math.min(1, ((px - ax) * vx + (py - ay) * vy) / len2)) : 0
+        const projX = ax + vx * tProj
+        const projY = ay + vy * tProj
+        const dM = Math.hypot(px - projX, py - projY)
+        if (dM < bestDistToRoute) {
+          bestDistToRoute = dM
+          bestAlong = a.distFromStart + (b.distFromStart - a.distFromStart) * tProj
+        }
       }
     }
 
-    let nextProgress = progressDist2DRef.current
+    scanSegments(true)
+    if (bestDistToRoute > 35) {
+      bestDistToRoute = Infinity
+      scanSegments(false)
+    }
+
     if (bestDistToRoute <= 35 && bestAlong > nextProgress) {
       nextProgress = Math.min(totalD, bestAlong)
       progressDist2DRef.current = nextProgress
@@ -1255,11 +1268,14 @@ export default function App() {
     }
   }
 
+  const handleFusedTickRef = useRef<(tick: FusedLocationTick) => void>(() => undefined)
+  handleFusedTickRef.current = handleFusedLocationTick
+
   function ensureGpsFusionEngine(): GpsFusion10HzEngine {
     if (!gpsFusionEngineRef.current) {
       gpsFusionEngineRef.current = new GpsFusion10HzEngine({
         getHeadingDeg: () => liveHeadingRef.current,
-        onTick: (tick) => handleFusedLocationTick(tick),
+        onTick: (tick) => handleFusedTickRef.current(tick),
         reportIntervalMs: 100,
       })
     }

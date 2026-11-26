@@ -106,6 +106,8 @@ export default function Campus3DIsoMap({
   const userBeaconGroupRef = useRef<THREE.Group | null>(null)
   const buildingMeshesRef = useRef<THREE.Mesh[]>([])
   const roadMeshesRef = useRef<THREE.Mesh[]>([])
+  const bldgMeshBoxesRef = useRef<Array<{ mesh: THREE.Mesh; minX: number; maxX: number; minZ: number; maxZ: number }>>([])
+  const roadMeshBoxesRef = useRef<Array<{ mesh: THREE.Mesh; minX: number; maxX: number; minZ: number; maxZ: number }>>([])
   const roadSurfacePtsRef = useRef<THREE.Vector3[]>([])
   const terrainMeshRef = useRef<THREE.Mesh | null>(null)
   const terrainGridRef = useRef<Float32Array | null>(null)
@@ -528,8 +530,14 @@ export default function Campus3DIsoMap({
           topCenters.set(bNum, center)
         })
 
+        const toMeshBox = (m: THREE.Mesh) => {
+          const box = new THREE.Box3().setFromObject(m)
+          return { mesh: m, minX: box.min.x - 1, maxX: box.max.x + 1, minZ: box.min.z - 1, maxZ: box.max.z + 1 }
+        }
         buildingMeshesRef.current = bMeshes
         roadMeshesRef.current = rMeshes
+        bldgMeshBoxesRef.current = bMeshes.map(toMeshBox)
+        roadMeshBoxesRef.current = rMeshes.map(toMeshBox)
         roadSurfacePtsRef.current = rPts
         bldgMeshByNumRef.current = byNum
         bldgTopCentersRef.current = topCenters
@@ -984,28 +992,39 @@ export default function Campus3DIsoMap({
   }, [selected, hoveredId, buildings, modelLoaded])
 
   // Snap 3D route points onto actual GLB road/sidewalk meshes & exact road elevations (never through buildings)
-  const snapToRoad3D = useCallback(
-    (lat: number, lng: number): THREE.Vector3 => {
+  const snapToRoad3D = useMemo(() => {
+    const downDir = new THREE.Vector3(0, -1, 0)
+    const originVec = new THREE.Vector3()
+    const rc = new THREE.Raycaster()
+
+    const sampleSurfaceY = (x: number, z: number): { roadY: number | null; terrainY: number | null; bldgY: number | null } => {
+      originVec.set(x, 180, z)
+      rc.set(originVec, downDir)
+
+      const candRoads = roadMeshBoxesRef.current.length
+        ? roadMeshBoxesRef.current.filter((b) => x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ).map((b) => b.mesh)
+        : roadMeshesRef.current
+      const candBldgs = bldgMeshBoxesRef.current.length
+        ? bldgMeshBoxesRef.current.filter((b) => x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ).map((b) => b.mesh)
+        : buildingMeshesRef.current
+
+      const rHits = candRoads.length ? rc.intersectObjects(candRoads, false) : []
+      const tHits = terrainMeshRef.current ? rc.intersectObject(terrainMeshRef.current, false) : []
+      const bHits = candBldgs.length ? rc.intersectObjects(candBldgs, false) : []
+      return {
+        roadY: rHits.length ? rHits[0].point.y : null,
+        terrainY: tHits.length ? tHits[0].point.y : null,
+        bldgY: bHits.length ? bHits[0].point.y : null,
+      }
+    }
+
+    return (lat: number, lng: number): THREE.Vector3 => {
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
         return new THREE.Vector3(0, 12, 0)
       }
       const [bx, by] = toBlenderXY(lat, lng)
       let tx = bx
       let tz = -by
-      const downDir = new THREE.Vector3(0, -1, 0)
-      const rc = new THREE.Raycaster()
-
-      const sampleSurfaceY = (x: number, z: number): { roadY: number | null; terrainY: number | null; bldgY: number | null } => {
-        rc.set(new THREE.Vector3(x, 180, z), downDir)
-        const rHits = roadMeshesRef.current.length ? rc.intersectObjects(roadMeshesRef.current, false) : []
-        const tHits = terrainMeshRef.current ? rc.intersectObject(terrainMeshRef.current, false) : []
-        const bHits = buildingMeshesRef.current.length ? rc.intersectObjects(buildingMeshesRef.current, false) : []
-        return {
-          roadY: rHits.length ? rHits[0].point.y : null,
-          terrainY: tHits.length ? tHits[0].point.y : null,
-          bldgY: bHits.length ? bHits[0].point.y : null,
-        }
-      }
 
       const initial = sampleSurfaceY(tx, tz)
       const baseGroundY = initial.roadY ?? initial.terrainY ?? getGroundY(bx, by)
@@ -1033,9 +1052,8 @@ export default function Campus3DIsoMap({
 
       const finalY = initial.roadY ?? initial.terrainY ?? getGroundY(tx, -tz)
       return new THREE.Vector3(tx, finalY + 0.55, tz)
-    },
-    [getGroundY],
-  )
+    }
+  }, [getGroundY])
 
   // Precompute dense 3D samples along the active route hugging 3D roads and sidewalks
   const denseRouteSamples = useMemo(() => {
