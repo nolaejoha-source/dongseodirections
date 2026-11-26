@@ -3082,5 +3082,41 @@
       ]
     },
     "elevation": 176
+  },
+  {
+    "id": "road-stairs-co-n",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010369,
+        35.144667
+      ]
+    },
+    "elevation": 142
+  },
+  {
+    "id": "road-stairs-co-m",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010411,
+        35.144562
+      ]
+    },
+    "elevation": 145
+  },
+  {
+    "id": "road-stairs-co-s",
+    "building_id": null,
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        129.010454,
+        35.144456
+      ]
+    },
+    "elevation": 148
   }
 ]

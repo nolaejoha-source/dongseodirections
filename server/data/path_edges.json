@@ -2540,16 +2540,6 @@
     "accessible": true
   },
   {
-    "id": "edge-v2-9",
-    "from_node": "road-upark-e",
-    "to_node": "osm-4642032058",
-    "distance_m": 25,
-    "slope_pct": -35,
-    "is_step_free": true,
-    "bidirectional": true,
-    "accessible": true
-  },
-  {
     "id": "edge-v2-10",
     "from_node": "osm-4642036690",
     "to_node": "road-dream-n1",
@@ -3016,6 +3006,66 @@
     "distance_m": 93,
     "slope_pct": -18.3,
     "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-stairs-co-conn1",
+    "from_node": "osm-4642036714",
+    "to_node": "road-stairs-co-n",
+    "distance_m": 5.8,
+    "slope_pct": 35,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-stairs-co-conn2",
+    "from_node": "osm-6974524313",
+    "to_node": "road-stairs-co-n",
+    "distance_m": 6.1,
+    "slope_pct": 35,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-stairs-co-upark-e",
+    "from_node": "road-upark-e",
+    "to_node": "road-stairs-co-s",
+    "distance_m": 13.7,
+    "slope_pct": -21.9,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-stairs-co-2058",
+    "from_node": "road-stairs-co-s",
+    "to_node": "osm-4642032058",
+    "distance_m": 12.6,
+    "slope_pct": -35,
+    "is_step_free": true,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-stairs-co-1",
+    "from_node": "road-stairs-co-n",
+    "to_node": "road-stairs-co-m",
+    "distance_m": 12.3,
+    "slope_pct": 24.4,
+    "is_step_free": false,
+    "bidirectional": true,
+    "accessible": true
+  },
+  {
+    "id": "edge-stairs-co-2",
+    "from_node": "road-stairs-co-m",
+    "to_node": "road-stairs-co-s",
+    "distance_m": 12.4,
+    "slope_pct": 24.2,
+    "is_step_free": false,
     "bidirectional": true,
     "accessible": true
   }
