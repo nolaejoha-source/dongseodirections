@@ -431,7 +431,7 @@ export default function Campus3DIsoMap({
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
 
     loader.load(
-      '/campus_scene.glb?v=56',
+      '/campus_scene.glb?v=57',
       (gltf) => {
         const root = gltf.scene
         root.updateMatrixWorld(true)
