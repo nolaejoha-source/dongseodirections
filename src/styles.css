@@ -524,3 +524,9 @@
 .floorplan-lightbox-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid #dde7df;border-radius:6px;background:#fff;font-size:9px;color:#324a3c}
 .floorplan-lightbox-chip b{color:#1e3a8a;font-family:Consolas,'Courier New',monospace}
 @media(max-width:680px){.sheet-floorplan-preview img{max-height:145px}.floorplan-lightbox-backdrop{padding:8px}.floorplan-lightbox-dialog{max-height:95dvh;border-radius:14px}.floorplan-lightbox-header{padding:10px 11px}.floorplan-lightbox-chips{max-height:66px}}
+.satellite-2d-button{position:absolute;right:120px;bottom:66px;z-index:400;height:42px;display:inline-flex;align-items:center;gap:5px;padding:0 12px;border:1px solid #d5e3d8;border-radius:12px;background:#fff;color:#376c4b;font-size:11px;font-weight:800;box-shadow:0 3px 14px #243b2d24;transition:all .15s}
+.satellite-2d-button:hover{background:#f2f7f2}
+.satellite-2d-button.active{background:#1d573f;border-color:#143d2c;color:#fff;box-shadow:0 4px 14px rgba(29,87,63,.35)}
+.route-gmaps-link{width:100%;height:36px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;color:#1d4ed8;font-size:11.5px;font-weight:700;text-decoration:none;transition:all .15s}
+.route-gmaps-link:hover{background:#2563eb;border-color:#2563eb;color:#fff}
+@media(max-width:680px){.satellite-2d-button{right:103px;bottom:17px;height:39px;padding:0 9px;font-size:10px}}

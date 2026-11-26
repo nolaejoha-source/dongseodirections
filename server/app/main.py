@@ -490,13 +490,6 @@ def search_places(request: SearchInput) -> dict[str, Any]:
     return {"status": "not_found", "language": language, "reply": strings["not_found"], "building": None, "source": "registered_alias"}
 
 
-BUILDING_CUTTING_EDGE_IDS = {
-    "edge-3", "edge-6", "edge-8", "edge-57", "edge-58", "edge-65",
-    "edge-82", "edge-83", "edge-87", "edge-88", "edge-89", "edge-93",
-    "edge-94", "edge-97", "edge-99", "edge-254",
-}
-
-
 def haversine_meters(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     d_phi, d_lam = math.radians(lat2 - lat1), math.radians(lng2 - lng1)
@@ -565,10 +558,8 @@ def build_route(request: RouteInput) -> dict[str, Any]:
         if distance <= 0:
             continue
         slope = float(edge.get("slope_pct") or 0)
-        edge_id = str(edge.get("id") or "")
-        penalty = 8.0 if edge_id in BUILDING_CUTTING_EDGE_IDS else 1.0
         # In step_free / ramp mode, penalize steep slopes more strongly to prefer gentle ramps
-        weight = distance * (1 + abs(slope) / 100 * (1.2 if request.step_free else 0.35)) * penalty
+        weight = distance * (1 + abs(slope) / 100 * (1.2 if request.step_free else 0.35))
         graph[source].append((target, weight, edge))
         if edge.get("bidirectional", True):
             reverse_edge = {**edge, "from_node": target, "to_node": source, "slope_pct": round(-slope, 1)}

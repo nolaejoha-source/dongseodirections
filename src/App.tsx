@@ -4,7 +4,7 @@ import { Capacitor } from '@capacitor/core'
 import { Geolocation } from '@capacitor/geolocation'
 import L from 'leaflet'
 import { MapContainer, Marker, Polygon, Polyline, TileLayer, useMap, useMapEvents } from 'react-leaflet'
-import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, Info, Languages, Layers, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, Trash2, TrendingUp, X } from 'lucide-react'
+import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, ExternalLink, Info, Languages, Layers, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, Trash2, TrendingUp, X } from 'lucide-react'
 import { getBuildingAppearanceSvgDataUri } from './buildingAppearance'
 import { CAMPUS_BOUNDARY, CAMPUS_BOUNDS, CAMPUS_CENTER, CAMPUS_MASK_POLYGON, SEEDED_PATH_EDGES, SEEDED_PATH_NODES } from './campusData'
 import Campus3DIsoMap from './Campus3DIsoMap'
@@ -250,12 +250,6 @@ function isInsideCampusBounds(lat: number, lng: number) {
   )
 }
 
-const BUILDING_CUTTING_EDGE_IDS = new Set([
-  'edge-3', 'edge-6', 'edge-8', 'edge-57', 'edge-58', 'edge-65',
-  'edge-82', 'edge-83', 'edge-87', 'edge-88', 'edge-89', 'edge-93',
-  'edge-94', 'edge-97', 'edge-99', 'edge-254',
-])
-
 function computeClientRoute(
   fromId: number | 'current',
   toId: number,
@@ -305,8 +299,7 @@ function computeClientRoute(
   for (const e of edges) {
     if (!byId.has(e.from_node) || !byId.has(e.to_node) || !e.accessible) continue
     if (stepFree && !e.is_step_free) continue
-    const penalty = BUILDING_CUTTING_EDGE_IDS.has(e.id) ? 8.0 : 1.0
-    const w = e.distance_m * (1 + (Math.abs(e.slope_pct) / 100) * (stepFree ? 1.2 : 0.35)) * penalty
+    const w = e.distance_m * (1 + (Math.abs(e.slope_pct) / 100) * (stepFree ? 1.2 : 0.35))
     adj.get(e.from_node)?.push({ to: e.to_node, cost: w, edge: e })
     if (e.bidirectional) {
       const revEdge = { ...e, from_node: e.to_node, to_node: e.from_node, slope_pct: -e.slope_pct }
@@ -696,6 +689,16 @@ export default function App() {
   const [progressDist2D, setProgressDist2D] = useState(0)
   const [navHudEnabled, setNavHudEnabled] = useState(true)
   const [mapViewMode, setMapViewMode] = useState<'2d' | '3d'>('3d')
+  const [tileLayerMode, setTileLayerMode] = useState<'osm' | 'satellite'>('osm')
+
+  const tileLayerUi = {
+    ko: { sat: '위성', osm: '지도', gmaps: 'Google 지도에서 도보 경로 보기' },
+    en: { sat: 'Satellite', osm: 'Map', gmaps: 'Open Walking Route in Google Maps' },
+    zh: { sat: '卫星', osm: '地图', gmaps: '在 Google 地图中查看步行路线' },
+    vi: { sat: 'Vệ tinh', osm: 'Bản đồ', gmaps: 'Xem lộ trình đi bộ trên Google Maps' },
+    lt: { sat: 'Palydovas', osm: 'Žemėlapis', gmaps: 'Atidaryti pėsčiųjų maršrutą Google Maps' },
+    hi: { sat: 'सैटेलाइट', osm: 'मानचित्र', gmaps: 'Google Maps में पैदल मार्ग देखें' },
+  }[language]
 
   const [pathNodeCount, setPathNodeCount] = useState(SEEDED_PATH_NODES.length)
   const [pathEdgeCount, setPathEdgeCount] = useState(SEEDED_PATH_EDGES.length)
@@ -2292,6 +2295,7 @@ export default function App() {
                   }}
                   onClearRoute={clearActiveRoute}
                   clearRouteLabel={clearRouteLabel}
+                  googleMapsRouteLabel={tileLayerUi.gmaps}
                   isFollowing2D={isFollowing2D}
                   activeRoute={activeRoute}
                   googleElevationProfile={googleElevationProfile}
@@ -2395,14 +2399,27 @@ export default function App() {
               pickingMode={pickingLocation}
               onPickLocation={(lat, lng) => setCampusUserLocation(lat, lng, 'campus-pin')}
             />
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              minZoom={15}
-              maxZoom={19}
-              maxNativeZoom={19}
-              keepBuffer={8}
-            />
+            {tileLayerMode === 'satellite' ? (
+              <TileLayer
+                key="satellite"
+                attribution="Tiles &copy; Esri"
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                minZoom={15}
+                maxZoom={19}
+                maxNativeZoom={18}
+                keepBuffer={8}
+              />
+            ) : (
+              <TileLayer
+                key="osm"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                minZoom={15}
+                maxZoom={19}
+                maxNativeZoom={19}
+                keepBuffer={8}
+              />
+            )}
 
             {/* Exterior Mask Polygon */}
             <Polygon
@@ -2596,6 +2613,17 @@ export default function App() {
 
         {mapViewMode === '2d' && (
           <>
+            <button
+              type="button"
+              className={tileLayerMode === 'satellite' ? 'satellite-2d-button active' : 'satellite-2d-button'}
+              onClick={() => setTileLayerMode((prev) => (prev === 'osm' ? 'satellite' : 'osm'))}
+              aria-pressed={tileLayerMode === 'satellite'}
+              aria-label={tileLayerMode === 'satellite' ? tileLayerUi.osm : tileLayerUi.sat}
+              title={tileLayerMode === 'satellite' ? tileLayerUi.osm : tileLayerUi.sat}
+            >
+              <Layers size={16} />
+              <span>{tileLayerMode === 'satellite' ? tileLayerUi.osm : tileLayerUi.sat}</span>
+            </button>
             <button
               type="button"
               className={compassViewActive ? 'compass-2d-button compass-live' : 'compass-2d-button'}
@@ -2858,6 +2886,7 @@ function RoutePanel({
   onStartFollow,
   onClearRoute,
   clearRouteLabel,
+  googleMapsRouteLabel,
   isFollowing2D,
   activeRoute,
   googleElevationProfile,
@@ -2882,6 +2911,7 @@ function RoutePanel({
   onStartFollow: () => void
   onClearRoute: () => void
   clearRouteLabel: string
+  googleMapsRouteLabel: string
   isFollowing2D: boolean
   activeRoute: ActiveRouteData | null
   googleElevationProfile: GoogleRouteElevationProfile | null
@@ -2984,10 +3014,28 @@ function RoutePanel({
           <ArrowRight size={16} />
         </button>
         {activeRoute && (
-          <button type="button" className="route-clear-btn" onClick={onClearRoute}>
-            <Trash2 size={15} />
-            <span>{clearRouteLabel}</span>
-          </button>
+          <>
+            <button type="button" className="route-clear-btn" onClick={onClearRoute}>
+              <Trash2 size={15} />
+              <span>{clearRouteLabel}</span>
+            </button>
+            {activeRoute.segments.length > 0 && (() => {
+              const firstSeg = activeRoute.segments[0]
+              const lastSeg = activeRoute.segments[activeRoute.segments.length - 1]
+              const gmapsHref = `https://www.google.com/maps/dir/?api=1&origin=${firstSeg.from_coord[0]},${firstSeg.from_coord[1]}&destination=${lastSeg.to_coord[0]},${lastSeg.to_coord[1]}&travelmode=walking`
+              return (
+                <a
+                  className="route-gmaps-link"
+                  href={gmapsHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink size={14} />
+                  <span>{googleMapsRouteLabel}</span>
+                </a>
+              )
+            })()}
+          </>
         )}
       </div>
 
