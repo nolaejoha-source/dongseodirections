@@ -375,6 +375,7 @@ export default function Campus3DIsoMap({
     sunLight.shadow.camera.top = d
     sunLight.shadow.camera.bottom = -d
     sunLight.shadow.bias = -0.0005
+    sunLight.shadow.normalBias = 0.04
     scene.add(sunLight)
 
     const fillLight = new THREE.DirectionalLight(0x93c5fd, 0.65)
@@ -430,7 +431,7 @@ export default function Campus3DIsoMap({
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
 
     loader.load(
-      '/campus_scene.glb?v=55',
+      '/campus_scene.glb?v=56',
       (gltf) => {
         const root = gltf.scene
         root.updateMatrixWorld(true)
