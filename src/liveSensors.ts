@@ -357,6 +357,51 @@ export function formatCardinalDirection(deg: number, lang: string): string {
   return labels[idx]
 }
 
+export function unlockSpeechSynthesis(): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+  try {
+    const utter = new SpeechSynthesisUtterance('')
+    utter.volume = 0
+    window.speechSynthesis.speak(utter)
+    window.speechSynthesis.cancel()
+  } catch {
+    // Ignore blocked speech synthesis before interaction
+  }
+}
+
+export function cancelSpeech(): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+  try {
+    window.speechSynthesis.cancel()
+  } catch {
+    // Ignore cleanup errors
+  }
+}
+
+export function speakArrivalAnnouncement(lang: string): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+  const textByLang: Record<string, { text: string; locale: string }> = {
+    ko: { text: '도착지점에 도착하셨습니다.', locale: 'ko-KR' },
+    en: { text: 'You have arrived at your destination.', locale: 'en-US' },
+    zh: { text: '您已到达目的地。', locale: 'zh-CN' },
+    vi: { text: 'Bạn đã đến điểm đến.', locale: 'vi-VN' },
+    lt: { text: 'Atvykote į kelionės tikslą.', locale: 'lt-LT' },
+    hi: { text: 'आप अपने गंतव्य पर पहुँच गए हैं।', locale: 'hi-IN' },
+  }
+  const entry = textByLang[lang] ?? textByLang.ko
+  try {
+    window.speechSynthesis.cancel()
+    const utter = new SpeechSynthesisUtterance(entry.text)
+    utter.lang = entry.locale
+    utter.rate = 1.0
+    utter.pitch = 1.0
+    utter.volume = 1.0
+    window.speechSynthesis.speak(utter)
+  } catch {
+    // Ignore TTS failures on unsupported devices
+  }
+}
+
 export interface RawGpsFixInput {
   latitude: number
   longitude: number

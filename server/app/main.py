@@ -490,6 +490,13 @@ def search_places(request: SearchInput) -> dict[str, Any]:
     return {"status": "not_found", "language": language, "reply": strings["not_found"], "building": None, "source": "registered_alias"}
 
 
+BUILDING_CUTTING_EDGE_IDS = {
+    "edge-3", "edge-6", "edge-8", "edge-57", "edge-58", "edge-65",
+    "edge-82", "edge-83", "edge-87", "edge-88", "edge-89", "edge-93",
+    "edge-94", "edge-97", "edge-99", "edge-254",
+}
+
+
 def haversine_meters(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     d_phi, d_lam = math.radians(lat2 - lat1), math.radians(lng2 - lng1)
@@ -511,12 +518,15 @@ def build_route(request: RouteInput) -> dict[str, Any]:
     prepend_origin_point: dict[str, Any] | None = None
     initial_walk_m = 0.0
 
+    # Prefer verified exterior road/sidewalk nodes (building_id is None) when snapping user GPS
+    road_nodes = [node for node in nodes if node.get("building_id") is None] or nodes
+
     if request.start_coordinates is not None:
         origin_lng, origin_lat = request.start_coordinates.coordinates
         def meters_from_origin(node: dict[str, Any]) -> float:
             node_lng, node_lat = node["location"]["coordinates"]
             return haversine_meters(origin_lat, origin_lng, node_lat, node_lng)
-        nearest = min(nodes, key=meters_from_origin, default=None)
+        nearest = min(road_nodes, key=meters_from_origin, default=None)
         if nearest is None or meters_from_origin(nearest) > 450:
             raise HTTPException(status_code=404, detail="현재 위치가 동서대학교 캠퍼스 반경 밖에 있습니다. 캠퍼스 안에서 내 위치를 지정하거나 출발 건물을 선택해 주세요.")
         start_nodes = [nearest["id"]]
@@ -543,6 +553,7 @@ def build_route(request: RouteInput) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail="No verified pedestrian path is connected to one or both buildings.")
 
     by_id = {node["id"]: node for node in nodes}
+    start_set = set(start_nodes)
     graph: dict[str, list[tuple[str, float, dict[str, Any]]]] = {node_id: [] for node_id in by_id}
     for edge in edges:
         source, target = edge.get("from_node"), edge.get("to_node")
@@ -554,13 +565,14 @@ def build_route(request: RouteInput) -> dict[str, Any]:
         if distance <= 0:
             continue
         slope = float(edge.get("slope_pct") or 0)
+        edge_id = str(edge.get("id") or "")
+        penalty = 8.0 if edge_id in BUILDING_CUTTING_EDGE_IDS else 1.0
         # In step_free / ramp mode, penalize steep slopes more strongly to prefer gentle ramps
-        weight = distance * (1 + abs(slope) / 100 * (1.2 if request.step_free else 0.35))
+        weight = distance * (1 + abs(slope) / 100 * (1.2 if request.step_free else 0.35)) * penalty
         graph[source].append((target, weight, edge))
         if edge.get("bidirectional", True):
             reverse_edge = {**edge, "from_node": target, "to_node": source, "slope_pct": round(-slope, 1)}
-            reverse_weight = distance * (1 + abs(slope) / 100 * (1.2 if request.step_free else 0.35))
-            graph[target].append((source, reverse_weight, reverse_edge))
+            graph[target].append((source, weight, reverse_edge))
 
     distances: dict[str, float] = {}
     previous: dict[str, tuple[str, dict[str, Any]]] = {}
@@ -577,6 +589,10 @@ def build_route(request: RouteInput) -> dict[str, Any]:
             destination = node_id
             break
         for neighbor, edge_cost, edge in graph[node_id]:
+            # Never shortcut through intermediate building interior nodes
+            neighbor_node = by_id[neighbor]
+            if neighbor_node.get("building_id") is not None and neighbor not in goal_nodes and neighbor not in start_set:
+                continue
             new_cost = cost + edge_cost
             if new_cost < distances.get(neighbor, math.inf):
                 distances[neighbor] = new_cost
@@ -595,6 +611,14 @@ def build_route(request: RouteInput) -> dict[str, Any]:
         current = parent
     route_ids.reverse()
     route_edges.reverse()
+
+    # Trim terminal building-center interior stubs so routes begin/end at road/sidewalk entrances
+    if len(route_ids) >= 2 and request.start_coordinates is None and by_id[route_ids[0]].get("building_id") is not None and by_id[route_ids[1]].get("building_id") is None:
+        route_ids.pop(0)
+        route_edges.pop(0)
+    if len(route_ids) >= 2 and by_id[route_ids[-1]].get("building_id") is not None and by_id[route_ids[-2]].get("building_id") is None:
+        route_ids.pop()
+        route_edges.pop()
 
     waypoints: list[dict[str, Any]] = []
     path_coords: list[dict[str, Any]] = []

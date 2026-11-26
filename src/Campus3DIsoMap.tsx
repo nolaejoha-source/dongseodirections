@@ -105,6 +105,8 @@ export default function Campus3DIsoMap({
   const routeGroupRef = useRef<THREE.Group | null>(null)
   const userBeaconGroupRef = useRef<THREE.Group | null>(null)
   const buildingMeshesRef = useRef<THREE.Mesh[]>([])
+  const roadMeshesRef = useRef<THREE.Mesh[]>([])
+  const roadSurfacePtsRef = useRef<THREE.Vector3[]>([])
   const terrainMeshRef = useRef<THREE.Mesh | null>(null)
   const terrainGridRef = useRef<Float32Array | null>(null)
   const bldgTopCentersRef = useRef<Map<number, THREE.Vector3>>(new Map())
@@ -431,6 +433,8 @@ export default function Campus3DIsoMap({
         const root = gltf.scene
         root.updateMatrixWorld(true)
         const bMeshes: THREE.Mesh[] = []
+        const rMeshes: THREE.Mesh[] = []
+        const rPts: THREE.Vector3[] = []
         const byNum = new Map<number, THREE.Mesh[]>()
         const topCenters = new Map<number, THREE.Vector3>()
         const terrainGrid = new Float32Array(178 * 124)
@@ -479,6 +483,18 @@ export default function Campus3DIsoMap({
               const list = byNum.get(bNum) ?? []
               list.push(mesh)
               byNum.set(bNum, list)
+            } else if (checkName.includes('Campus_Roads') || checkName.includes('MinseokCorridor') || checkName.includes('Landmark_')) {
+              rMeshes.push(mesh)
+              if (checkName.includes('Campus_Roads') || checkName.includes('MinseokCorridor')) {
+                const posAttr = mesh.geometry?.attributes.position
+                if (posAttr) {
+                  mesh.updateWorldMatrix(true, false)
+                  for (let i = 0; i < posAttr.count; i += 3) {
+                    const p = new THREE.Vector3().fromBufferAttribute(posAttr, i).applyMatrix4(mesh.matrixWorld)
+                    rPts.push(p)
+                  }
+                }
+              }
             } else if (checkName.includes('Campus_Terrain')) {
               terrainMeshRef.current = mesh
               const posAttr = mesh.geometry?.attributes.position
@@ -513,6 +529,8 @@ export default function Campus3DIsoMap({
         })
 
         buildingMeshesRef.current = bMeshes
+        roadMeshesRef.current = rMeshes
+        roadSurfacePtsRef.current = rPts
         bldgMeshByNumRef.current = byNum
         bldgTopCentersRef.current = topCenters
         setMeshStats({ faces: Math.round(totalFaces), verts: totalVerts })
@@ -965,31 +983,85 @@ export default function Campus3DIsoMap({
     })
   }, [selected, hoveredId, buildings, modelLoaded])
 
-  // Precompute dense 3D samples along the active route for dual-casing passed/remaining polyline split
+  // Snap 3D route points onto actual GLB road/sidewalk meshes & exact road elevations (never through buildings)
+  const snapToRoad3D = useCallback(
+    (lat: number, lng: number): THREE.Vector3 => {
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return new THREE.Vector3(0, 12, 0)
+      }
+      const [bx, by] = toBlenderXY(lat, lng)
+      let tx = bx
+      let tz = -by
+      const downDir = new THREE.Vector3(0, -1, 0)
+      const rc = new THREE.Raycaster()
+
+      const sampleSurfaceY = (x: number, z: number): { roadY: number | null; terrainY: number | null; bldgY: number | null } => {
+        rc.set(new THREE.Vector3(x, 180, z), downDir)
+        const rHits = roadMeshesRef.current.length ? rc.intersectObjects(roadMeshesRef.current, false) : []
+        const tHits = terrainMeshRef.current ? rc.intersectObject(terrainMeshRef.current, false) : []
+        const bHits = buildingMeshesRef.current.length ? rc.intersectObjects(buildingMeshesRef.current, false) : []
+        return {
+          roadY: rHits.length ? rHits[0].point.y : null,
+          terrainY: tHits.length ? tHits[0].point.y : null,
+          bldgY: bHits.length ? bHits[0].point.y : null,
+        }
+      }
+
+      const initial = sampleSurfaceY(tx, tz)
+      const baseGroundY = initial.roadY ?? initial.terrainY ?? getGroundY(bx, by)
+      const insideBuilding = initial.bldgY !== null && initial.bldgY > baseGroundY + 1.8
+
+      if ((insideBuilding || initial.roadY === null) && roadSurfacePtsRef.current.length > 0) {
+        const searchRadius = insideBuilding ? 34 : 11
+        let bestDist = searchRadius
+        let bestPt: THREE.Vector3 | null = null
+        for (const rp of roadSurfacePtsRef.current) {
+          const d = Math.hypot(rp.x - tx, rp.z - tz)
+          if (d < bestDist) {
+            bestDist = d
+            bestPt = rp
+          }
+        }
+        if (bestPt) {
+          tx = bestPt.x
+          tz = bestPt.z
+          const snapped = sampleSurfaceY(tx, tz)
+          const snappedY = snapped.roadY ?? bestPt.y ?? snapped.terrainY ?? getGroundY(tx, -tz)
+          return new THREE.Vector3(tx, snappedY + 0.55, tz)
+        }
+      }
+
+      const finalY = initial.roadY ?? initial.terrainY ?? getGroundY(tx, -tz)
+      return new THREE.Vector3(tx, finalY + 0.55, tz)
+    },
+    [getGroundY],
+  )
+
+  // Precompute dense 3D samples along the active route hugging 3D roads and sidewalks
   const denseRouteSamples = useMemo(() => {
     if (!activeRoute || activeRoute.segments.length === 0) return []
     const pts: Array<{ dist: number; pt: THREE.Vector3 }> = []
     let accDist = 0
     activeRoute.segments.forEach((seg, segIdx) => {
       const segLen = Math.max(1, seg.distance_m)
-      const steps = Math.max(2, Math.ceil(segLen / 2.0))
+      const steps = Math.max(2, Math.ceil(segLen / 3.0))
       for (let i = 0; i < steps; i++) {
         if (segIdx > 0 && i === 0) continue
         const t = i / steps
         const lat = seg.from_coord[0] + (seg.to_coord[0] - seg.from_coord[0]) * t
         const lng = seg.from_coord[1] + (seg.to_coord[1] - seg.from_coord[1]) * t
-        pts.push({ dist: accDist + segLen * t, pt: toThreeVec3(lat, lng, 1.85) })
+        pts.push({ dist: accDist + segLen * t, pt: snapToRoad3D(lat, lng) })
       }
       accDist += segLen
     })
     const lastSeg = activeRoute.segments[activeRoute.segments.length - 1]
-    pts.push({ dist: accDist, pt: toThreeVec3(lastSeg.to_coord[0], lastSeg.to_coord[1], 1.85) })
+    pts.push({ dist: accDist, pt: snapToRoad3D(lastSeg.to_coord[0], lastSeg.to_coord[1]) })
     return pts
-  }, [activeRoute, toThreeVec3, modelLoaded])
+  }, [activeRoute, snapToRoad3D, modelLoaded])
 
-  const quantizedSplitDist = isFollowing ? Math.floor(Math.max(0, progressDist) / 1.5) * 1.5 : 0
+  const quantizedSplitDist = Math.floor(Math.max(0, progressDist) * 2) / 2
 
-  // Rebuild dual-layer 3D Route Polylines (White Outer Casing + #03C75A Main Remaining + Muted Passed)
+  // Rebuild remaining 3D Route Polylines only (walked portion erases cleanly as GPS moves along the route)
   useEffect(() => {
     const group = routeGroupRef.current
     if (!group) return
@@ -1005,94 +1077,84 @@ export default function Campus3DIsoMap({
 
     if (denseRouteSamples.length < 2) return
 
-    const splitAt = isFollowing ? quantizedSplitDist : 0
-    const passedPts: THREE.Vector3[] = []
+    const splitAt = quantizedSplitDist
     const remainingPts: THREE.Vector3[] = []
 
-    if (splitAt <= 0.5) {
+    if (splitAt <= 0.25) {
       denseRouteSamples.forEach((s) => remainingPts.push(s.pt))
     } else {
       let splitInserted = false
       for (let i = 0; i < denseRouteSamples.length; i++) {
         const cur = denseRouteSamples[i]
-        if (cur.dist < splitAt) {
-          passedPts.push(cur.pt)
-        } else {
-          if (!splitInserted && i > 0) {
-            const prev = denseRouteSamples[i - 1]
-            const span = Math.max(0.001, cur.dist - prev.dist)
-            const t = Math.max(0, Math.min(1, (splitAt - prev.dist) / span))
-            const interp = prev.pt.clone().lerp(cur.pt, t)
-            passedPts.push(interp)
-            remainingPts.push(interp.clone())
-            splitInserted = true
-          }
-          remainingPts.push(cur.pt)
+        if (cur.dist < splitAt) continue
+        if (!splitInserted && i > 0) {
+          const prev = denseRouteSamples[i - 1]
+          const span = Math.max(0.001, cur.dist - prev.dist)
+          const t = Math.max(0, Math.min(1, (splitAt - prev.dist) / span))
+          remainingPts.push(prev.pt.clone().lerp(cur.pt, t))
+          splitInserted = true
         }
+        remainingPts.push(cur.pt)
       }
     }
 
-    const addDualTube = (
+    const addPiecewiseDualTube = (
       points: THREE.Vector3[],
       mainColor: string,
       casingColor: string,
       mainRadius: number,
       casingRadius: number,
-      opacity: number,
       emissiveIntensity: number,
     ) => {
-      if (points.length < 2) return
-      const curve = new THREE.CatmullRomCurve3(points)
-      const tubularSegments = Math.min(360, Math.max(16, points.length * 2))
+      // Filter consecutive duplicate points so LineCurve3 never produces zero-length tangents
+      const clean: THREE.Vector3[] = []
+      for (const p of points) {
+        if (clean.length === 0 || clean[clean.length - 1].distanceToSquared(p) > 0.04) {
+          clean.push(p)
+        }
+      }
+      if (clean.length < 2) return
 
-      // Outer white/slate border casing sitting cleanly underneath the main route line
-      const casingPts = points.map((p) => new THREE.Vector3(p.x, p.y - 0.25, p.z))
-      const casingCurve = new THREE.CatmullRomCurve3(casingPts)
-      const casingGeom = new THREE.TubeGeometry(casingCurve, tubularSegments, casingRadius, 8, false)
-      const casingMat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color(casingColor),
-        transparent: opacity < 1,
-        opacity: opacity < 1 ? opacity * 0.72 : 1,
-      })
+      const pathMain = new THREE.CurvePath<THREE.Vector3>()
+      const pathCasing = new THREE.CurvePath<THREE.Vector3>()
+      for (let i = 0; i < clean.length - 1; i++) {
+        const a = clean[i]
+        const b = clean[i + 1]
+        pathMain.add(new THREE.LineCurve3(a, b))
+        pathCasing.add(
+          new THREE.LineCurve3(
+            new THREE.Vector3(a.x, a.y - 0.16, a.z),
+            new THREE.Vector3(b.x, b.y - 0.16, b.z),
+          ),
+        )
+      }
+
+      const tubularSegments = Math.min(480, Math.max(clean.length * 2, 16))
+      const casingGeom = new THREE.TubeGeometry(pathCasing, tubularSegments, casingRadius, 8, false)
+      const casingMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(casingColor) })
       group.add(new THREE.Mesh(casingGeom, casingMat))
 
-      // Inner crisp main route line
-      const mainGeom = new THREE.TubeGeometry(curve, tubularSegments, mainRadius, 8, false)
+      const mainGeom = new THREE.TubeGeometry(pathMain, tubularSegments, mainRadius, 8, false)
       const mainMat = new THREE.MeshStandardMaterial({
         color: new THREE.Color(mainColor),
         emissive: new THREE.Color(mainColor),
         emissiveIntensity,
         roughness: 0.28,
-        transparent: opacity < 1,
-        opacity,
       })
       group.add(new THREE.Mesh(mainGeom, mainMat))
     }
 
-    if (passedPts.length >= 2) {
-      addDualTube(
-        passedPts,
-        ROUTE_NAV_CONFIG.PASSED_LINE_COLOR,
-        ROUTE_NAV_CONFIG.PASSED_CASING_COLOR,
-        ROUTE_NAV_CONFIG.TUBE_PASSED_RADIUS_3D,
-        ROUTE_NAV_CONFIG.TUBE_PASSED_CASING_RADIUS_3D,
-        0.62,
-        0.08,
-      )
-    }
-
     if (remainingPts.length >= 2) {
-      addDualTube(
+      addPiecewiseDualTube(
         remainingPts,
         ROUTE_NAV_CONFIG.MAIN_LINE_COLOR,
         ROUTE_NAV_CONFIG.CASING_COLOR,
         ROUTE_NAV_CONFIG.TUBE_MAIN_RADIUS_3D,
         ROUTE_NAV_CONFIG.TUBE_CASING_RADIUS_3D,
-        1.0,
         0.38,
       )
     }
-  }, [denseRouteSamples, quantizedSplitDist, isFollowing])
+  }, [denseRouteSamples, quantizedSplitDist])
 
   // Focus camera on selected building
   useEffect(() => {

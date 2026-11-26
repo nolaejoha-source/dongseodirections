@@ -1,9 +1,9 @@
-import { useEffect, useMemo } from 'react'
-import { Compass, CornerUpLeft, CornerUpRight, EyeOff, Flag, Navigation, Pause, Play, RotateCcw, X } from 'lucide-react'
+import { useMemo } from 'react'
+import { Compass, CornerUpLeft, CornerUpRight, EyeOff, Flag, Navigation, RotateCcw, Trash2, X } from 'lucide-react'
 import { CAMPUS_CENTER } from './campusData'
 import type { Building, Language, RouteSegment, RouteWaypoint } from './data'
 import { EXT_UI_COPY, getLocalizedBuildingName } from './i18nCatalog'
-import { MOCK_WAYPOINT_COURSES, ROUTE_NAV_CONFIG } from './routeNavigationConfig'
+import { ROUTE_NAV_CONFIG } from './routeNavigationConfig'
 
 export type ActiveRouteData = {
   startName: string
@@ -198,21 +198,16 @@ export default function Naver2DRouteFollower({
   totalDistance,
   currentSample,
   progressDist,
-  setProgressDist,
-  isPlaying,
-  setIsPlaying,
-  speedMultiplier = 1,
-  setSpeedMultiplier,
   headingUpMode,
   setHeadingUpMode,
   onRecenterCamera,
-  selectedMockCourseId,
-  onSelectMockCourse,
   mapViewMode,
   onToggleMapViewMode,
   navHudEnabled,
   onToggleNavHud,
   onCloseFollow,
+  onClearRoute,
+  gpsActive = false,
   language = 'ko',
 }: {
   route: ActiveRouteData
@@ -220,64 +215,62 @@ export default function Naver2DRouteFollower({
   totalDistance: number
   currentSample: RouteSamplePoint
   progressDist: number
-  setProgressDist: React.Dispatch<React.SetStateAction<number>>
-  isPlaying: boolean
-  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>
-  speedMultiplier?: 1 | 2 | 4
-  setSpeedMultiplier?: React.Dispatch<React.SetStateAction<1 | 2 | 4>>
   headingUpMode: boolean
   setHeadingUpMode: React.Dispatch<React.SetStateAction<boolean>>
   onRecenterCamera?: () => void
-  selectedMockCourseId?: string
-  onSelectMockCourse?: (courseId: string) => void
   mapViewMode?: '2d' | '3d'
   onToggleMapViewMode?: () => void
   navHudEnabled: boolean
   onToggleNavHud: () => void
   onCloseFollow: () => void
+  onClearRoute?: () => void
+  gpsActive?: boolean
   language?: Language
 }) {
   const tx = EXT_UI_COPY[language]
 
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return
-      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        e.preventDefault()
-        setIsPlaying(false)
-        setProgressDist((d) => Math.min(totalDistance, d + ROUTE_NAV_CONFIG.KEYBOARD_STEP_M))
-      } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-        e.preventDefault()
-        setIsPlaying(false)
-        setProgressDist((d) => Math.max(0, d - ROUTE_NAV_CONFIG.KEYBOARD_STEP_M))
-      } else if (e.key === ' ') {
-        e.preventDefault()
-        setIsPlaying((p) => !p)
-      }
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [totalDistance, setIsPlaying, setProgressDist])
-
   const currentSlopeInfo = classifySlope(currentSample.slope_pct, currentSample.is_step_free, language)
-  const remainingDist = Math.max(0, Math.round(totalDistance - currentSample.distFromStart))
-  const progressPct = Math.min(100, Math.round((currentSample.distFromStart / totalDistance) * 100))
-  const remainingMin = Math.max(1, Math.ceil((remainingDist / Math.max(1, totalDistance)) * route.estimated_minutes))
+  const walkedDist = Math.max(0, Math.min(totalDistance, progressDist))
+  const remainingDist = Math.max(0, Math.round(totalDistance - walkedDist))
+  const progressPct = Math.min(100, Math.round((walkedDist / Math.max(1, totalDistance)) * 100))
+  const remainingMin = remainingDist <= 5 ? 0 : Math.max(1, Math.ceil((remainingDist / Math.max(1, totalDistance)) * route.estimated_minutes))
+
+  const clearRouteLabel =
+    language === 'ko'
+      ? '경로 없애기'
+      : language === 'en'
+        ? 'Clear route'
+        : language === 'zh'
+          ? '清除路线'
+          : language === 'vi'
+            ? 'Xóa lộ trình'
+            : language === 'lt'
+              ? 'Išvalyti maršrutą'
+              : 'मार्ग हटाएं'
+
+  const gpsLiveLabel =
+    language === 'ko'
+      ? gpsActive
+        ? '실시간 GPS 이동 추적 중'
+        : 'GPS 수신 대기 · 이동 시 경로 자동 소거'
+      : gpsActive
+        ? 'Live GPS tracking'
+        : 'Waiting for GPS movement'
 
   const turnGuidance = useMemo(() => {
-    if (remainingDist <= 4) {
+    if (remainingDist <= 10) {
       return {
         type: 'arrived' as const,
         title: tx.arrivedTitle(route.destinationName),
       }
     }
-    const aheadDist = Math.min(totalDistance, currentSample.distFromStart + 18)
+    const aheadDist = Math.min(totalDistance, walkedDist + 18)
     const aheadSample = samples.find((s) => s.distFromStart >= aheadDist) ?? samples[samples.length - 1]
     let diff = aheadSample.headingDeg - currentSample.headingDeg
     while (diff > 180) diff -= 360
     while (diff < -180) diff += 360
 
-    const distToTurn = Math.max(5, Math.round(aheadSample.distFromStart - currentSample.distFromStart))
+    const distToTurn = Math.max(5, Math.round(aheadSample.distFromStart - walkedDist))
 
     if (diff > 24) {
       return {
@@ -295,12 +288,7 @@ export default function Naver2DRouteFollower({
       type: 'straight' as const,
       title: tx.straightTitle(remainingDist, currentSample.nearBuildingName),
     }
-  }, [currentSample, samples, remainingDist, totalDistance, route.destinationName, tx])
-
-  const togglePlayback = () => {
-    if (progressDist >= totalDistance - 1) setProgressDist(0)
-    setIsPlaying(!isPlaying)
-  }
+  }, [currentSample, samples, walkedDist, remainingDist, totalDistance, route.destinationName, tx])
 
   if (!navHudEnabled) {
     return (
@@ -314,15 +302,17 @@ export default function Naver2DRouteFollower({
           <Navigation size={13} />
           <span>{tx.navToggleOn}</span>
         </button>
-        <button
-          type="button"
-          className="naver2d-collapsed-icon-btn"
-          onClick={togglePlayback}
-          aria-label={isPlaying ? tx.pauseBtn : tx.playBtn}
-          title={isPlaying ? tx.pauseBtn : progressDist >= totalDistance - 1 ? tx.replayBtn : tx.playBtn}
-        >
-          {isPlaying ? <Pause size={13} /> : <Play size={13} />}
-        </button>
+        {onClearRoute && (
+          <button
+            type="button"
+            className="naver2d-collapsed-icon-btn clear"
+            onClick={onClearRoute}
+            aria-label={clearRouteLabel}
+            title={clearRouteLabel}
+          >
+            <Trash2 size={13} />
+          </button>
+        )}
         <button
           type="button"
           className="naver2d-collapsed-icon-btn exit"
@@ -383,41 +373,13 @@ export default function Naver2DRouteFollower({
           </div>
         </div>
         <div className="naver2d-inline-controls">
-          <button
-            type="button"
-            className="naver2d-inline-play"
-            onClick={togglePlayback}
-            aria-label={isPlaying ? tx.pauseBtn : tx.playBtn}
-            title={isPlaying ? tx.pauseBtn : progressDist >= totalDistance - 1 ? tx.replayBtn : tx.playBtn}
-          >
-            {isPlaying ? <Pause size={12} /> : <Play size={12} />}
-          </button>
-          <input
-            type="range"
-            className="naver2d-inline-scrubber"
-            min={0}
-            max={Math.round(totalDistance)}
-            value={Math.round(currentSample.distFromStart)}
-            onChange={(e) => {
-              setIsPlaying(false)
-              setProgressDist(Number(e.target.value))
-            }}
-            aria-label={tx.playBtn}
-          />
-          {setSpeedMultiplier && (
-            <button
-              type="button"
-              className="naver2d-mini-btn naver2d-speed-btn"
-              onClick={() => {
-                const speeds = ROUTE_NAV_CONFIG.SPEED_MULTIPLIERS
-                const next = speeds[(speeds.indexOf(speedMultiplier) + 1) % speeds.length]
-                setSpeedMultiplier(next)
-              }}
-              title="이동 속도 배율"
-            >
-              {speedMultiplier}x
-            </button>
-          )}
+          <span className={gpsActive ? 'naver2d-gps-status live' : 'naver2d-gps-status'}>
+            <span className="dot" />
+            <span>{gpsLiveLabel}</span>
+          </span>
+          <div className="naver2d-live-progress" aria-label={`${progressPct}%`}>
+            <span style={{ width: `${progressPct}%` }} />
+          </div>
           <button
             type="button"
             className={headingUpMode ? 'naver2d-mini-btn active' : 'naver2d-mini-btn'}
@@ -453,21 +415,19 @@ export default function Naver2DRouteFollower({
               {mapViewMode === '3d' ? '2D' : '3D'}
             </button>
           )}
+          {onClearRoute && (
+            <button
+              type="button"
+              className="naver2d-mini-btn clear-route"
+              onClick={onClearRoute}
+              aria-label={clearRouteLabel}
+              title={clearRouteLabel}
+            >
+              <Trash2 size={12} />
+              <span>{clearRouteLabel}</span>
+            </button>
+          )}
         </div>
-        {onSelectMockCourse && (
-          <div className="naver2d-course-pills" role="group" aria-label="샘플 웨이포인트 경로">
-            {MOCK_WAYPOINT_COURSES.map((course) => (
-              <button
-                key={course.id}
-                type="button"
-                className={selectedMockCourseId === course.id ? 'naver2d-course-pill active' : 'naver2d-course-pill'}
-                onClick={() => onSelectMockCourse(course.id)}
-              >
-                {course.shortLabel}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   )

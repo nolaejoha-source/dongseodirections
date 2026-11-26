@@ -4,7 +4,7 @@ import { Capacitor } from '@capacitor/core'
 import { Geolocation } from '@capacitor/geolocation'
 import L from 'leaflet'
 import { MapContainer, Marker, Polygon, Polyline, TileLayer, useMap, useMapEvents } from 'react-leaflet'
-import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, Info, Languages, Layers, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, TrendingUp, X } from 'lucide-react'
+import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, Info, Languages, Layers, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, Trash2, TrendingUp, X } from 'lucide-react'
 import { getBuildingAppearanceSvgDataUri } from './buildingAppearance'
 import { CAMPUS_BOUNDARY, CAMPUS_BOUNDS, CAMPUS_CENTER, CAMPUS_MASK_POLYGON, SEEDED_PATH_EDGES, SEEDED_PATH_NODES } from './campusData'
 import Campus3DIsoMap from './Campus3DIsoMap'
@@ -20,6 +20,7 @@ import {
   getLocalizedRoomTitleAndNote,
 } from './i18nCatalog'
 import {
+  cancelSpeech,
   formatCardinalDirection,
   GpsFusion10HzEngine,
   loadCachedGpsFix,
@@ -28,12 +29,14 @@ import {
   requestMotionPermissionIfNeeded,
   saveCachedGpsFix,
   shortestAngleDeltaDeg,
+  speakArrivalAnnouncement,
   stepAngleDeg,
   subscribeLiveCompass,
+  unlockSpeechSynthesis,
   type FusedLocationTick,
   type RawGpsFixInput,
 } from './liveSensors'
-import { buildRouteFromWaypoints, MOCK_WAYPOINT_COURSES, ROUTE_NAV_CONFIG } from './routeNavigationConfig'
+import { ROUTE_NAV_CONFIG } from './routeNavigationConfig'
 
 // Minimal 2D Map Building Marker: keep campus numbers readable without rectangular photo or name cards.
 function createBuilding2DVisualIcon(building: Building, isSelected: boolean, language: Language) {
@@ -247,6 +250,12 @@ function isInsideCampusBounds(lat: number, lng: number) {
   )
 }
 
+const BUILDING_CUTTING_EDGE_IDS = new Set([
+  'edge-3', 'edge-6', 'edge-8', 'edge-57', 'edge-58', 'edge-65',
+  'edge-82', 'edge-83', 'edge-87', 'edge-88', 'edge-89', 'edge-93',
+  'edge-94', 'edge-97', 'edge-99', 'edge-254',
+])
+
 function computeClientRoute(
   fromId: number | 'current',
   toId: number,
@@ -259,15 +268,17 @@ function computeClientRoute(
   const nodes = SEEDED_PATH_NODES
   const edges = SEEDED_PATH_EDGES
   const byId = new Map(nodes.map((n) => [n.id, n]))
+  const roadNodes = nodes.filter((n) => n.building_id === null)
+  const snapPool = roadNodes.length ? roadNodes : nodes
 
   let startNodeIds: string[] = []
   let startName = '내 현재 위치'
   let prependOrigin: { lat: number; lng: number; elevation: number; distToFirst: number } | null = null
 
   if (fromId === 'current') {
-    let bestNode = nodes[0]
+    let bestNode = snapPool[0]
     let bestDist = Infinity
-    for (const n of nodes) {
+    for (const n of snapPool) {
       const d = haversineMeters(userPosition[0], userPosition[1], n.location.coordinates[1], n.location.coordinates[0])
       if (d < bestDist) {
         bestDist = d
@@ -288,12 +299,14 @@ function computeClientRoute(
   const goalIds = new Set(nodes.filter((n) => n.building_id === toId).map((n) => n.id))
   if (!startNodeIds.length || !goalIds.size) return null
 
+  const startSet = new Set(startNodeIds)
   const adj = new Map<string, Array<{ to: string; cost: number; edge: (typeof edges)[number] }>>()
   for (const n of nodes) adj.set(n.id, [])
   for (const e of edges) {
     if (!byId.has(e.from_node) || !byId.has(e.to_node) || !e.accessible) continue
     if (stepFree && !e.is_step_free) continue
-    const w = e.distance_m * (1 + (Math.abs(e.slope_pct) / 100) * (stepFree ? 1.2 : 0.35))
+    const penalty = BUILDING_CUTTING_EDGE_IDS.has(e.id) ? 8.0 : 1.0
+    const w = e.distance_m * (1 + (Math.abs(e.slope_pct) / 100) * (stepFree ? 1.2 : 0.35)) * penalty
     adj.get(e.from_node)?.push({ to: e.to_node, cost: w, edge: e })
     if (e.bidirectional) {
       const revEdge = { ...e, from_node: e.to_node, to_node: e.from_node, slope_pct: -e.slope_pct }
@@ -323,6 +336,11 @@ function computeClientRoute(
       break
     }
     for (const item of adj.get(u) ?? []) {
+      const targetNode = byId.get(item.to)
+      // Never cut through intermediate building-center interior nodes
+      if (targetNode && targetNode.building_id !== null && !goalIds.has(item.to) && !startSet.has(item.to)) {
+        continue
+      }
       const nc = best + item.cost
       if (nc < (dist.get(item.to) ?? Infinity)) {
         dist.set(item.to, nc)
@@ -343,6 +361,25 @@ function computeClientRoute(
   }
   routeNodeIds.reverse()
   routeEdges.reverse()
+
+  // Trim terminal building-center interior stubs so routes start/end at verified road/sidewalk entrances
+  if (
+    routeNodeIds.length >= 2 &&
+    fromId !== 'current' &&
+    byId.get(routeNodeIds[0])?.building_id !== null &&
+    byId.get(routeNodeIds[1])?.building_id === null
+  ) {
+    routeNodeIds.shift()
+    routeEdges.shift()
+  }
+  if (
+    routeNodeIds.length >= 2 &&
+    byId.get(routeNodeIds[routeNodeIds.length - 1])?.building_id !== null &&
+    byId.get(routeNodeIds[routeNodeIds.length - 2])?.building_id === null
+  ) {
+    routeNodeIds.pop()
+    routeEdges.pop()
+  }
 
   const waypoints: RouteWaypoint[] = []
   const segments: RouteSegment[] = []
@@ -647,23 +684,15 @@ export default function App() {
   const [stepFree, setStepFree] = useState(false)
   const [routeMessage, setRouteMessage] = useState('')
   const [searchMessage, setSearchMessage] = useState('')
-  const [selectedMockCourseId, setSelectedMockCourseId] = useState<string>(MOCK_WAYPOINT_COURSES[0].id)
-  const [activeRoute, setActiveRoute] = useState<ActiveRouteData | null>(() =>
-    buildRouteFromWaypoints(
-      MOCK_WAYPOINT_COURSES[0].waypoints,
-      MOCK_WAYPOINT_COURSES[0].startName,
-      MOCK_WAYPOINT_COURSES[0].destinationName,
-    ),
-  )
+  const [arrivalBanner, setArrivalBanner] = useState('')
+  const [activeRoute, setActiveRoute] = useState<ActiveRouteData | null>(null)
   const [googleElevationProfile, setGoogleElevationProfile] = useState<GoogleRouteElevationProfile | null>(null)
   const [googleElevationLoading, setGoogleElevationLoading] = useState(false)
   const [googleElevationMessage, setGoogleElevationMessage] = useState('')
 
   const [isFollowing2D, setIsFollowing2D] = useState(false)
-  const [isPlaying2D, setIsPlaying2D] = useState(false)
   const [cameraLock2D, setCameraLock2D] = useState(true)
   const [progressDist2D, setProgressDist2D] = useState(0)
-  const [speedMultiplier2D, setSpeedMultiplier2D] = useState<1 | 2 | 4>(1)
   const [navHudEnabled, setNavHudEnabled] = useState(true)
   const [mapViewMode, setMapViewMode] = useState<'2d' | '3d'>('3d')
 
@@ -674,8 +703,14 @@ export default function App() {
 
   const isFollowing2DRef = useRef(isFollowing2D)
   isFollowing2DRef.current = isFollowing2D
-  const isPlaying2DRef = useRef(isPlaying2D)
-  isPlaying2DRef.current = isPlaying2D
+  const activeRouteRef = useRef(activeRoute)
+  activeRouteRef.current = activeRoute
+  const progressDist2DRef = useRef(progressDist2D)
+  progressDist2DRef.current = progressDist2D
+  const arrivalAnnouncedRef = useRef(false)
+  const arrivalBannerTimerRef = useRef<number | null>(null)
+  const languageRef = useRef(language)
+  languageRef.current = language
   const activeTabRef = useRef(activeTab)
   activeTabRef.current = activeTab
   const userPositionRef = useRef(userPosition)
@@ -799,6 +834,8 @@ export default function App() {
 
   const routeSamplesRef = useRef(routeSamples)
   routeSamplesRef.current = routeSamples
+  const routeTotalDistRef = useRef(routeTotalDist)
+  routeTotalDistRef.current = routeTotalDist
 
   const currentFollowSample = useMemo(() => {
     if (!routeSamples.length) return null
@@ -806,36 +843,17 @@ export default function App() {
   }, [routeSamples, routeTotalDist, progressDist2D])
 
   useEffect(() => {
-    if (!isFollowing2D || !currentFollowSample) return
-    liveUserPosRef.current = [currentFollowSample.lat, currentFollowSample.lng]
-    liveHeadingRef.current = currentFollowSample.headingDeg
-    setUserPosition([currentFollowSample.lat, currentFollowSample.lng])
-    setUserElevation(currentFollowSample.elevation)
-    setUserHeadingDeg(currentFollowSample.headingDeg)
-    setLocationSource('2d-follow')
-  }, [isFollowing2D, currentFollowSample])
+    arrivalAnnouncedRef.current = false
+  }, [activeRoute])
 
   useEffect(() => {
-    if (!isFollowing2D || !isPlaying2D) return
-    let lastTime = performance.now()
-    let frameId = 0
-    const tick = (now: number) => {
-      const dt = Math.min(0.08, (now - lastTime) / 1000)
-      lastTime = now
-      const speedMetersPerSec = ROUTE_NAV_CONFIG.BASE_MOVE_SPEED_MPS * speedMultiplier2D
-      setProgressDist2D((prev) => {
-        const next = prev + speedMetersPerSec * dt
-        if (next >= routeTotalDist) {
-          setIsPlaying2D(false)
-          return routeTotalDist
-        }
-        return next
-      })
-      frameId = requestAnimationFrame(tick)
+    return () => {
+      if (arrivalBannerTimerRef.current !== null) {
+        window.clearTimeout(arrivalBannerTimerRef.current)
+      }
+      cancelSpeech()
     }
-    frameId = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frameId)
-  }, [isFollowing2D, isPlaying2D, speedMultiplier2D, routeTotalDist])
+  }, [])
 
   const userLocationSummary = useMemo(() => {
     let nearestBldg = campusBuildings[0]
@@ -987,13 +1005,108 @@ export default function App() {
 
   function chooseBuilding(building: Building, facility: FacilityMatch | null = null) {
     setIsFollowing2D(false)
-    setIsPlaying2D(false)
     setMobileSheetSnap('peek')
     setSelected(building)
     setMatchedFacility(facility)
     setSearchMessage('')
     setRouteMessage('')
     setQuery('')
+  }
+
+  function updateRouteProgressFromUserPos(lat: number, lng: number) {
+    const route = activeRouteRef.current
+    const samples = routeSamplesRef.current
+    if (!route || samples.length < 2) return
+
+    const totalD = routeTotalDistRef.current
+    const cosLat = Math.cos((CAMPUS_CENTER[0] * Math.PI) / 180)
+    const mLat = 111_320
+    const mLng = 111_320 * cosLat
+    const px = lng * mLng
+    const py = lat * mLat
+
+    let bestDistToRoute = Infinity
+    let bestAlong = progressDist2DRef.current
+    for (let i = 0; i < samples.length - 1; i++) {
+      const a = samples[i]
+      const b = samples[i + 1]
+      const ax = a.lng * mLng
+      const ay = a.lat * mLat
+      const bx = b.lng * mLng
+      const by = b.lat * mLat
+      const vx = bx - ax
+      const vy = by - ay
+      const len2 = vx * vx + vy * vy
+      const tProj = len2 > 1e-6 ? Math.max(0, Math.min(1, ((px - ax) * vx + (py - ay) * vy) / len2)) : 0
+      const projX = ax + vx * tProj
+      const projY = ay + vy * tProj
+      const dM = Math.hypot(px - projX, py - projY)
+      if (dM < bestDistToRoute) {
+        bestDistToRoute = dM
+        bestAlong = a.distFromStart + (b.distFromStart - a.distFromStart) * tProj
+      }
+    }
+
+    let nextProgress = progressDist2DRef.current
+    if (bestDistToRoute <= 35 && bestAlong > nextProgress) {
+      nextProgress = Math.min(totalD, bestAlong)
+      progressDist2DRef.current = nextProgress
+      setProgressDist2D(nextProgress)
+    }
+
+    const lastPt = samples[samples.length - 1]
+    const distToDestM = haversineMeters(lat, lng, lastPt.lat, lastPt.lng)
+    const remainingM = totalD - nextProgress
+    if (
+      isFollowing2DRef.current &&
+      !arrivalAnnouncedRef.current &&
+      (distToDestM <= 15 || remainingM <= 10)
+    ) {
+      arrivalAnnouncedRef.current = true
+      const lang = languageRef.current
+      speakArrivalAnnouncement(lang)
+      const toastMsg =
+        lang === 'ko'
+          ? `도착지점(${route.destinationName})에 도착하셨습니다.`
+          : lang === 'en'
+            ? `You have arrived at ${route.destinationName}.`
+            : lang === 'zh'
+              ? `您已到达${route.destinationName}。`
+              : lang === 'vi'
+                ? `Bạn đã đến ${route.destinationName}.`
+                : lang === 'lt'
+                  ? `Atvykote į ${route.destinationName}.`
+                  : `आप ${route.destinationName} पर पहुँच गए हैं।`
+      setArrivalBanner(toastMsg)
+      if (arrivalBannerTimerRef.current !== null) {
+        window.clearTimeout(arrivalBannerTimerRef.current)
+      }
+      arrivalBannerTimerRef.current = window.setTimeout(() => {
+        setArrivalBanner('')
+      }, 6000)
+
+      // Finish guidance & clear route upon arrival
+      isFollowing2DRef.current = false
+      activeRouteRef.current = null
+      progressDist2DRef.current = 0
+      setIsFollowing2D(false)
+      setActiveRoute(null)
+      setProgressDist2D(0)
+      setRouteMessage(toastMsg)
+    }
+  }
+
+  function clearActiveRoute() {
+    cancelSpeech()
+    arrivalAnnouncedRef.current = false
+    isFollowing2DRef.current = false
+    activeRouteRef.current = null
+    progressDist2DRef.current = 0
+    setIsFollowing2D(false)
+    setActiveRoute(null)
+    setProgressDist2D(0)
+    setRouteMessage('')
+    setArrivalBanner('')
   }
 
   function setCampusUserLocation(lat: number, lng: number, source: 'campus-pin' | 'gps' = 'campus-pin') {
@@ -1011,14 +1124,13 @@ export default function App() {
     } else {
       manualPinOverrideRef.current = false
     }
-    setIsFollowing2D(false)
-    setIsPlaying2D(false)
     liveUserPosRef.current = [lat, lng]
     setUserPosition([lat, lng])
     setUserElevation(nearestElev)
     setLocationSource(source)
     setPickingLocation(false)
     setFocusPos([lat, lng])
+    updateRouteProgressFromUserPos(lat, lng)
   }
 
   async function search() {
@@ -1122,8 +1234,7 @@ export default function App() {
   }
 
   function handleFusedLocationTick(tick: FusedLocationTick) {
-    const isSimulating = isFollowing2DRef.current && isPlaying2DRef.current
-    if (manualPinOverrideRef.current || isSimulating) return
+    if (manualPinOverrideRef.current) return
 
     const resolved = resolveCampusCoord(tick.lat, tick.lng)
     liveUserPosRef.current = [resolved.effectiveLat, resolved.effectiveLng]
@@ -1139,19 +1250,8 @@ export default function App() {
       setGpsReportHz(tick.reportHz)
     }
 
-    if (resolved.insideCampus && isFollowing2DRef.current && routeSamplesRef.current.length > 0) {
-      let bestDist = Infinity
-      let bestProgress: number | null = null
-      for (const s of routeSamplesRef.current) {
-        const d = haversineMeters(resolved.effectiveLat, resolved.effectiveLng, s.lat, s.lng)
-        if (d < bestDist) {
-          bestDist = d
-          bestProgress = s.distFromStart
-        }
-      }
-      if (bestProgress !== null && bestDist <= 45) {
-        setProgressDist2D(bestProgress)
-      }
+    if (resolved.insideCampus) {
+      updateRouteProgressFromUserPos(resolved.effectiveLat, resolved.effectiveLng)
     }
   }
 
@@ -1220,8 +1320,6 @@ export default function App() {
       pendingFocusOnGpsRef.current = false
       manualPinOverrideRef.current = false
       setSelected(null)
-      setIsFollowing2D(false)
-      setIsPlaying2D(false)
       liveUserPosRef.current = [effectiveLat, effectiveLng]
       setUserPosition([effectiveLat, effectiveLng])
       setUserElevation(nearestElev)
@@ -1232,6 +1330,7 @@ export default function App() {
       if (insideCampus) {
         setRouteMessage('')
         setSearchMessage('')
+        updateRouteProgressFromUserPos(effectiveLat, effectiveLng)
       } else if (!shownOutsideNoticeRef.current) {
         shownOutsideNoticeRef.current = true
         const msg = txRef.current.gpsOutsideMsg
@@ -1460,8 +1559,6 @@ export default function App() {
   // High-frequency phone compass / orientation streaming (60fps ref + throttled React sync)
   useEffect(() => {
     const unsubscribeCompass = subscribeLiveCompass((reading) => {
-      // Allow live phone heading anytime except when simulated route playback is actively driving heading
-      if (isFollowing2DRef.current && isPlaying2DRef.current) return
       const now = performance.now()
 
       const nextHeading = compassInitializedRef.current
@@ -1604,20 +1701,30 @@ export default function App() {
               waypoints: route.waypoints ?? [],
               segments: route.segments,
             }
+            activeRouteRef.current = built
+            progressDist2DRef.current = 0
+            arrivalAnnouncedRef.current = false
             setActiveRoute(built)
             setProgressDist2D(0)
+            setArrivalBanner('')
             setRouteMessage(
               tx.routeSummaryMsg(built.distance_m, built.estimated_minutes, built.uphill_distance_m, built.max_slope_pct),
             )
             if (startFollowAfter) {
+              unlockSpeechSynthesis()
+              void requestCompassPermissionIfNeeded().catch(() => 'unsupported')
+              void requestMotionPermissionIfNeeded().catch(() => 'unsupported')
+              if (gpsWatchIdRef.current === null && !gpsStartingRef.current) {
+                void startLiveGpsWatch({ focusOnFix: true, requestNativePerm: true, showErrors: false })
+              }
               setSelected(null)
               setCameraLock2D(true)
               setNavHudEnabled(true)
               setIsFollowing2D(true)
-              setIsPlaying2D(true)
+              setCompassViewActive(true)
+              manualCompassDisabledRef.current = false
             } else {
               setIsFollowing2D(false)
-              setIsPlaying2D(false)
             }
             return
           }
@@ -1631,25 +1738,35 @@ export default function App() {
     if (fallback) {
       fallback.startName = startName
       fallback.destinationName = destName
+      activeRouteRef.current = fallback
+      progressDist2DRef.current = 0
+      arrivalAnnouncedRef.current = false
       setActiveRoute(fallback)
       setProgressDist2D(0)
+      setArrivalBanner('')
       setRouteMessage(
         tx.routeSummaryMsg(fallback.distance_m, fallback.estimated_minutes, fallback.uphill_distance_m, fallback.max_slope_pct),
       )
       if (startFollowAfter) {
+        unlockSpeechSynthesis()
+        void requestCompassPermissionIfNeeded().catch(() => 'unsupported')
+        void requestMotionPermissionIfNeeded().catch(() => 'unsupported')
+        if (gpsWatchIdRef.current === null && !gpsStartingRef.current) {
+          void startLiveGpsWatch({ focusOnFix: true, requestNativePerm: true, showErrors: false })
+        }
         setSelected(null)
         setCameraLock2D(true)
         setNavHudEnabled(true)
         setIsFollowing2D(true)
-        setIsPlaying2D(true)
+        setCompassViewActive(true)
+        manualCompassDisabledRef.current = false
       } else {
         setIsFollowing2D(false)
-        setIsPlaying2D(false)
       }
     } else {
+      activeRouteRef.current = null
       setActiveRoute(null)
       setIsFollowing2D(false)
-      setIsPlaying2D(false)
       setRouteMessage(t.routeUnavailable)
     }
   }
@@ -1665,24 +1782,24 @@ export default function App() {
 
   function stop2DFollowMode() {
     isFollowing2DRef.current = false
-    isPlaying2DRef.current = false
     setIsFollowing2D(false)
-    setIsPlaying2D(false)
-    if (gpsActive && !manualPinOverrideRef.current && lastRawGpsCoordRef.current) {
-      applyLiveGpsPosition({
-        latitude: lastRawGpsCoordRef.current.lat,
-        longitude: lastRawGpsCoordRef.current.lng,
-      })
-    }
   }
 
   function launch2DFollowMode() {
+    unlockSpeechSynthesis()
+    void requestCompassPermissionIfNeeded().catch(() => 'unsupported')
+    void requestMotionPermissionIfNeeded().catch(() => 'unsupported')
+    if (gpsWatchIdRef.current === null && !gpsStartingRef.current) {
+      void startLiveGpsWatch({ focusOnFix: true, requestNativePerm: true, showErrors: false })
+    }
     if (activeRoute) {
       setSelected(null)
       setCameraLock2D(true)
       setNavHudEnabled(true)
       setIsFollowing2D(true)
-      setIsPlaying2D(true)
+      setCompassViewActive(true)
+      manualCompassDisabledRef.current = false
+      setFocusUserSignal((n) => n + 1)
       return
     }
     const targetDest = selected?.id ?? (toId !== '' ? toId : 9)
@@ -1694,27 +1811,10 @@ export default function App() {
 
   function handleUserCameraInterrupt() {
     setCameraLock2D(false)
-    setIsPlaying2D(false)
   }
 
   function handleRecenterFollowCamera() {
     setCameraLock2D(true)
-    setIsPlaying2D(true)
-    setFocusUserSignal((n) => n + 1)
-  }
-
-  function selectMockCourse(courseId: string) {
-    const course = MOCK_WAYPOINT_COURSES.find((c) => c.id === courseId)
-    if (!course) return
-    const built = buildRouteFromWaypoints(course.waypoints, course.startName, course.destinationName)
-    setSelectedMockCourseId(courseId)
-    setActiveRoute(built)
-    setProgressDist2D(0)
-    setSelected(null)
-    setCameraLock2D(true)
-    setNavHudEnabled(true)
-    setIsFollowing2D(true)
-    setIsPlaying2D(true)
     setFocusUserSignal((n) => n + 1)
   }
 
@@ -1727,11 +1827,7 @@ export default function App() {
   }
 
   function toggleNavHud() {
-    setNavHudEnabled((prev) => {
-      const next = !prev
-      if (!next) setIsPlaying2D(false)
-      return next
-    })
+    setNavHudEnabled((prev) => !prev)
   }
 
   const routePositions = useMemo<[number, number][]>(() => {
@@ -1749,25 +1845,29 @@ export default function App() {
     [activeRoute],
   )
 
-  const passedPositions = useMemo<[number, number][]>(() => {
-    if (!isFollowing2D || !routeSamples.length) return []
-    const pts = routeSamples
-      .filter((s) => s.distFromStart <= progressDist2D)
-      .map((s): [number, number] => [s.lat, s.lng])
-    if (currentFollowSample) pts.push([currentFollowSample.lat, currentFollowSample.lng])
-    return pts
-  }, [isFollowing2D, routeSamples, progressDist2D, currentFollowSample])
-
   const remainingPositions = useMemo<[number, number][]>(() => {
     if (!activeRoute) return []
-    if (!isFollowing2D || !routeSamples.length) return routePositions
+    if (progressDist2D <= 0.25 || !routeSamples.length) return routePositions
     const pts: [number, number][] = []
     if (currentFollowSample) pts.push([currentFollowSample.lat, currentFollowSample.lng])
     for (const s of routeSamples) {
       if (s.distFromStart > progressDist2D) pts.push([s.lat, s.lng])
     }
     return pts
-  }, [activeRoute, routePositions, isFollowing2D, routeSamples, progressDist2D, currentFollowSample])
+  }, [activeRoute, routePositions, routeSamples, progressDist2D, currentFollowSample])
+
+  const clearRouteLabel =
+    language === 'ko'
+      ? '경로 없애기'
+      : language === 'en'
+        ? 'Clear route'
+        : language === 'zh'
+          ? '清除路线'
+          : language === 'vi'
+            ? 'Xóa lộ trình'
+            : language === 'lt'
+              ? 'Išvalyti maršrutą'
+              : 'मार्ग हटाएं'
 
   return (
     <main className="app-shell">
@@ -2174,6 +2274,8 @@ export default function App() {
                     if (isFollowing2D) stop2DFollowMode()
                     else void executeRoute(fromId || 'current', toId || 9, stepFree, true)
                   }}
+                  onClearRoute={clearActiveRoute}
+                  clearRouteLabel={clearRouteLabel}
                   isFollowing2D={isFollowing2D}
                   activeRoute={activeRoute}
                   googleElevationProfile={googleElevationProfile}
@@ -2223,7 +2325,7 @@ export default function App() {
             compassActive={compassActive}
             focusUserSignal={focusUserSignal}
             activeRoute={activeRoute}
-            passedPositions={passedPositions}
+            passedPositions={[]}
             progressDist={progressDist2D}
             isFollowing={isFollowing2D}
             cameraLock={cameraLock2D}
@@ -2270,7 +2372,6 @@ export default function App() {
               onResetCampus={() => {
                 setSelected(null)
                 setIsFollowing2D(false)
-                setIsPlaying2D(false)
               }}
               onSwitchTo3D={() => setMapViewMode('3d')}
             />
@@ -2325,32 +2426,6 @@ export default function App() {
                   interactive: false,
                 }}
               />
-            )}
-
-            {/* Passed path polyline (muted gray) */}
-            {isFollowing2D && passedPositions.length > 1 && (
-              <>
-                <Polyline
-                  positions={passedPositions}
-                  pathOptions={{
-                    color: ROUTE_NAV_CONFIG.PASSED_CASING_COLOR,
-                    weight: ROUTE_NAV_CONFIG.LINE_PASSED_CASING_WEIGHT_2D,
-                    opacity: 0.55,
-                    lineCap: 'round',
-                    lineJoin: 'round',
-                  }}
-                />
-                <Polyline
-                  positions={passedPositions}
-                  pathOptions={{
-                    color: ROUTE_NAV_CONFIG.PASSED_LINE_COLOR,
-                    weight: ROUTE_NAV_CONFIG.LINE_PASSED_WEIGHT_2D,
-                    opacity: 0.72,
-                    lineCap: 'round',
-                    lineJoin: 'round',
-                  }}
-                />
-              </>
             )}
 
             {/* Remaining destination polyline with high-contrast white outer border & vivid green main stroke */}
@@ -2445,11 +2520,24 @@ export default function App() {
             </div>
 
             <div className="map-top-actions">
+              {activeRoute && (
+                <button type="button" className="map-clear-route-btn" onClick={clearActiveRoute} title={clearRouteLabel}>
+                  <Trash2 size={15} />
+                  <span>{clearRouteLabel}</span>
+                </button>
+              )}
               <button className="map-3d-launch" onClick={launch2DFollowMode}>
                 <Navigation size={16} />
                 <span>{tx.followMyViewBtn}</span>
               </button>
             </div>
+          </div>
+        )}
+
+        {arrivalBanner && (
+          <div className="arrival-tts-toast" role="status" aria-live="polite">
+            <Navigation size={15} />
+            <span>{arrivalBanner}</span>
           </div>
         )}
 
@@ -2461,21 +2549,16 @@ export default function App() {
             totalDistance={routeTotalDist}
             currentSample={currentFollowSample}
             progressDist={progressDist2D}
-            setProgressDist={setProgressDist2D}
-            isPlaying={isPlaying2D}
-            setIsPlaying={setIsPlaying2D}
-            speedMultiplier={speedMultiplier2D}
-            setSpeedMultiplier={setSpeedMultiplier2D}
             headingUpMode={cameraLock2D}
             setHeadingUpMode={setCameraLock2D}
             onRecenterCamera={handleRecenterFollowCamera}
-            selectedMockCourseId={selectedMockCourseId}
-            onSelectMockCourse={selectMockCourse}
             mapViewMode={mapViewMode}
             onToggleMapViewMode={() => setMapViewMode((m) => (m === '2d' ? '3d' : '2d'))}
             navHudEnabled={navHudEnabled}
             onToggleNavHud={toggleNavHud}
             onCloseFollow={stop2DFollowMode}
+            onClearRoute={clearActiveRoute}
+            gpsActive={gpsActive}
             language={language}
           />
         )}
@@ -2757,6 +2840,8 @@ function RoutePanel({
   setStepFree,
   onCheck,
   onStartFollow,
+  onClearRoute,
+  clearRouteLabel,
   isFollowing2D,
   activeRoute,
   googleElevationProfile,
@@ -2779,6 +2864,8 @@ function RoutePanel({
   setStepFree: (value: boolean) => void
   onCheck: () => void
   onStartFollow: () => void
+  onClearRoute: () => void
+  clearRouteLabel: string
   isFollowing2D: boolean
   activeRoute: ActiveRouteData | null
   googleElevationProfile: GoogleRouteElevationProfile | null
@@ -2880,6 +2967,12 @@ function RoutePanel({
           {isFollowing2D ? tx.followStopBtn : tx.followStartBtn}
           <ArrowRight size={16} />
         </button>
+        {activeRoute && (
+          <button type="button" className="route-clear-btn" onClick={onClearRoute}>
+            <Trash2 size={15} />
+            <span>{clearRouteLabel}</span>
+          </button>
+        )}
       </div>
 
       {message && (
