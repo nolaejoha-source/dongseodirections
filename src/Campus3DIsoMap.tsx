@@ -552,10 +552,12 @@ export default function Campus3DIsoMap({
       const nowPerf = performance.now()
       const dt = Math.min(0.05, Math.max(0.001, (nowPerf - lastFrameTime) / 1000))
       lastFrameTime = nowPerf
-      const posAlpha = 1 - Math.exp(-ROUTE_NAV_CONFIG.POSITION_SMOOTHING * dt)
+      const st = stateRef.current
+      const posRate =
+        st.gpsActive && !st.isFollowing ? 22.0 : ROUTE_NAV_CONFIG.POSITION_SMOOTHING
+      const posAlpha = 1 - Math.exp(-posRate * dt)
       const headAlpha = 1 - Math.exp(-ROUTE_NAV_CONFIG.HEADING_SMOOTHING * dt)
 
-      const st = stateRef.current
       const liveLatLng = st.liveUserPosRef?.current ?? st.userPosition
       const targetUser3D = toThreeVec3(liveLatLng[0], liveLatLng[1], 3.0)
       const targetHeadingDeg = st.liveHeadingRef?.current ?? st.userHeadingDeg

@@ -165,6 +165,7 @@ export function extractCompassHeading(
 }
 
 let cachedCompassPermission: 'granted' | 'denied' | 'unsupported' | null = null
+let cachedMotionPermission: 'granted' | 'denied' | 'unsupported' | null = null
 
 export async function requestCompassPermissionIfNeeded(): Promise<'granted' | 'denied' | 'unsupported'> {
   if (typeof window === 'undefined') return 'unsupported'
@@ -186,6 +187,29 @@ export async function requestCompassPermissionIfNeeded(): Promise<'granted' | 'd
     }
   }
   cachedCompassPermission = 'granted'
+  return 'granted'
+}
+
+export async function requestMotionPermissionIfNeeded(): Promise<'granted' | 'denied' | 'unsupported'> {
+  if (typeof window === 'undefined') return 'unsupported'
+  if (cachedMotionPermission === 'granted') return 'granted'
+  const DM = window.DeviceMotionEvent as
+    | (typeof DeviceMotionEvent & { requestPermission?: () => Promise<'granted' | 'denied'> })
+    | undefined
+  if (!DM) {
+    cachedMotionPermission = 'unsupported'
+    return 'unsupported'
+  }
+  if (typeof DM.requestPermission === 'function') {
+    try {
+      const res = await DM.requestPermission()
+      cachedMotionPermission = res === 'granted' ? 'granted' : 'denied'
+      return cachedMotionPermission
+    } catch {
+      return 'denied'
+    }
+  }
+  cachedMotionPermission = 'granted'
   return 'granted'
 }
 
@@ -331,4 +355,373 @@ export function formatCardinalDirection(deg: number, lang: string): string {
         ? ['北', '東北', '東', '東南', '南', '西南', '西', '西北']
         : ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
   return labels[idx]
+}
+
+export interface RawGpsFixInput {
+  latitude: number
+  longitude: number
+  accuracy?: number | null
+  heading?: number | null
+  trueHeading?: number | null
+  magneticHeading?: number | null
+  course?: number | null
+  speed?: number | null
+  timestamp?: number
+}
+
+export interface FusedLocationTick {
+  lat: number
+  lng: number
+  rawLat: number
+  rawLng: number
+  accuracyM: number | null
+  speedMps: number
+  reportHz: number
+  gpsFixAgeMs: number
+  isPredicted: boolean
+}
+
+const METERS_PER_DEG_LAT = 111_320
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value))
+}
+
+/**
+ * 10 Hz (0.1s) Hybrid GNSS + Accelerometer PDR Sensor Fusion Engine.
+ * Smoothly blends raw satellite fixes with 60Hz pedestrian dead reckoning & ZUPT
+ * so location updates continuously every 100ms with zero stationary drift.
+ */
+export class GpsFusion10HzEngine {
+  private readonly getHeadingDeg: () => number
+  private readonly onTick: (tick: FusedLocationTick) => void
+  private readonly reportIntervalMs: number
+
+  private timerId: number | null = null
+  private motionBound = false
+  private running = false
+
+  private originLat: number | null = null
+  private originLng: number | null = null
+  private metersPerDegLng = 91_000
+
+  private hasFix = false
+  private rawLat = 0
+  private rawLng = 0
+  private accuracyM: number | null = null
+  private estE = 0
+  private estN = 0
+  private velE = 0
+  private velN = 0
+  private anchorE = 0
+  private anchorN = 0
+  private prevFixE = 0
+  private prevFixN = 0
+  private lastFixPerf = 0
+  private lastTickPerf = 0
+  private lastGpsSpeedMps = 0
+  private outlierCount = 0
+
+  private gravEma = 9.81
+  private accelEnergyEma = 0
+  private lastStepPerf = 0
+  private stepActiveSincePerf = 0
+  private tickTimestamps: number[] = []
+
+  constructor(options: {
+    getHeadingDeg: () => number
+    onTick: (tick: FusedLocationTick) => void
+    reportIntervalMs?: number
+  }) {
+    this.getHeadingDeg = options.getHeadingDeg
+    this.onTick = options.onTick
+    this.reportIntervalMs = Math.max(50, options.reportIntervalMs ?? 100)
+  }
+
+  private toEnu(lat: number, lng: number): [number, number] {
+    if (this.originLat === null || this.originLng === null) {
+      this.originLat = lat
+      this.originLng = lng
+      this.metersPerDegLng = METERS_PER_DEG_LAT * Math.cos(lat * DEG_TO_RAD)
+    }
+    return [(lng - this.originLng) * this.metersPerDegLng, (lat - this.originLat) * METERS_PER_DEG_LAT]
+  }
+
+  private toLatLng(e: number, n: number): [number, number] {
+    const oLat = this.originLat ?? 0
+    const oLng = this.originLng ?? 0
+    return [oLat + n / METERS_PER_DEG_LAT, oLng + e / this.metersPerDegLng]
+  }
+
+  private handleDeviceMotion = (ev: DeviceMotionEvent) => {
+    if (!this.running || !this.hasFix) return
+    const now = performance.now()
+    const lin = ev.acceleration
+    let devMag = 0
+    if (
+      lin &&
+      typeof lin.x === 'number' &&
+      typeof lin.y === 'number' &&
+      typeof lin.z === 'number' &&
+      Number.isFinite(lin.x) &&
+      Number.isFinite(lin.y) &&
+      Number.isFinite(lin.z)
+    ) {
+      devMag = Math.hypot(lin.x, lin.y, lin.z)
+    } else {
+      const inc = ev.accelerationIncludingGravity
+      if (
+        !inc ||
+        typeof inc.x !== 'number' ||
+        typeof inc.y !== 'number' ||
+        typeof inc.z !== 'number' ||
+        !Number.isFinite(inc.x) ||
+        !Number.isFinite(inc.y) ||
+        !Number.isFinite(inc.z)
+      ) {
+        return
+      }
+      const totalMag = Math.hypot(inc.x, inc.y, inc.z)
+      this.gravEma = this.gravEma * 0.9 + totalMag * 0.1
+      devMag = Math.abs(totalMag - this.gravEma)
+    }
+
+    this.accelEnergyEma = this.accelEnergyEma * 0.85 + devMag * 0.15
+
+    // Step impulse peak detection with 260ms refractory guard
+    if (devMag >= 1.45 && this.accelEnergyEma >= 0.55 && now - this.lastStepPerf >= 260) {
+      this.lastStepPerf = now
+      this.stepActiveSincePerf = now
+      const headingRad = normalizeHeadingDeg(this.getHeadingDeg()) * DEG_TO_RAD
+      const dirE = Math.sin(headingRad)
+      const dirN = Math.cos(headingRad)
+      const strideSpeed = clamp(Math.max(1.25, this.lastGpsSpeedMps), 1.1, 2.6)
+      this.velE = this.velE * 0.35 + dirE * strideSpeed * 0.65
+      this.velN = this.velN * 0.35 + dirN * strideSpeed * 0.65
+      this.estE += dirE * 0.18
+      this.estN += dirN * 0.18
+      this.clampToAnchor()
+    }
+  }
+
+  private clampToAnchor() {
+    const dx = this.estE - this.anchorE
+    const dy = this.estN - this.anchorN
+    const d = Math.hypot(dx, dy)
+    const maxOffset = Math.max(4.5, Math.min(10, (this.accuracyM ?? 10) * 0.45))
+    if (d > maxOffset) {
+      const scale = maxOffset / d
+      this.estE = this.anchorE + dx * scale
+      this.estN = this.anchorN + dy * scale
+    }
+  }
+
+  start(): void {
+    if (this.running) return
+    this.running = true
+    this.lastTickPerf = performance.now()
+    if (typeof window !== 'undefined') {
+      window.addEventListener('devicemotion', this.handleDeviceMotion, true)
+      this.motionBound = true
+      this.timerId = window.setInterval(() => this.emitTick(false), this.reportIntervalMs)
+    }
+  }
+
+  stop(): void {
+    this.running = false
+    if (typeof window !== 'undefined') {
+      if (this.timerId !== null) {
+        window.clearInterval(this.timerId)
+        this.timerId = null
+      }
+      if (this.motionBound) {
+        window.removeEventListener('devicemotion', this.handleDeviceMotion, true)
+        this.motionBound = false
+      }
+    }
+  }
+
+  reset(): void {
+    this.hasFix = false
+    this.originLat = null
+    this.originLng = null
+    this.estE = 0
+    this.estN = 0
+    this.velE = 0
+    this.velN = 0
+    this.anchorE = 0
+    this.anchorN = 0
+    this.lastGpsSpeedMps = 0
+    this.outlierCount = 0
+    this.tickTimestamps = []
+  }
+
+  ingestGpsFix(fix: RawGpsFixInput): void {
+    const { latitude, longitude, accuracy, speed, course, heading, trueHeading, magneticHeading } = fix
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return
+
+    const now = performance.now()
+    const [fx, fy] = this.toEnu(latitude, longitude)
+    const acc = typeof accuracy === 'number' && Number.isFinite(accuracy) && accuracy > 0 ? accuracy : 14
+
+    if (!this.hasFix) {
+      this.hasFix = true
+      this.rawLat = latitude
+      this.rawLng = longitude
+      this.accuracyM = acc
+      this.estE = fx
+      this.estN = fy
+      this.anchorE = fx
+      this.anchorN = fy
+      this.prevFixE = fx
+      this.prevFixN = fy
+      this.velE = 0
+      this.velN = 0
+      this.lastFixPerf = now
+      this.lastTickPerf = now
+      this.emitTick(false)
+      return
+    }
+
+    const dtFix = Math.max(0.05, (now - this.lastFixPerf) / 1000)
+    const jumpFromEst = Math.hypot(fx - this.estE, fy - this.estN)
+
+    // Reject single-frame GNSS multipath spikes (>35 m/s jump) unless repeated
+    if (jumpFromEst / dtFix > 35 && this.outlierCount < 1) {
+      this.outlierCount += 1
+      return
+    }
+    this.outlierCount = 0
+
+    // Re-center tangent plane if user moved > 2km
+    if (Math.hypot(fx, fy) > 2000) {
+      this.originLat = latitude
+      this.originLng = longitude
+      this.metersPerDegLng = METERS_PER_DEG_LAT * Math.cos(latitude * DEG_TO_RAD)
+      this.estE = 0
+      this.estN = 0
+      this.anchorE = 0
+      this.anchorN = 0
+      this.prevFixE = 0
+      this.prevFixN = 0
+      this.lastFixPerf = now
+      this.rawLat = latitude
+      this.rawLng = longitude
+      this.accuracyM = acc
+      this.emitTick(false)
+      return
+    }
+
+    this.rawLat = latitude
+    this.rawLng = longitude
+    this.accuracyM = acc
+
+    // Accuracy-weighted Kalman alpha-beta update
+    const alpha = clamp(18 / (acc + 10), 0.3, 0.94)
+    this.estE += alpha * (fx - this.estE)
+    this.estN += alpha * (fy - this.estN)
+    this.anchorE = fx
+    this.anchorN = fy
+
+    const dispVx = (fx - this.prevFixE) / dtFix
+    const dispVy = (fy - this.prevFixN) / dtFix
+    this.prevFixE = fx
+    this.prevFixN = fy
+    this.lastFixPerf = now
+
+    const reportedSpeed =
+      typeof speed === 'number' && Number.isFinite(speed) && speed >= 0 ? clamp(speed, 0, 14) : null
+    if (reportedSpeed !== null) {
+      this.lastGpsSpeedMps = reportedSpeed
+    } else {
+      this.lastGpsSpeedMps = clamp(Math.hypot(dispVx, dispVy), 0, 14)
+    }
+
+    const nativeDir =
+      typeof course === 'number' && Number.isFinite(course) && course >= 0
+        ? course
+        : typeof trueHeading === 'number' && Number.isFinite(trueHeading) && trueHeading >= 0
+          ? trueHeading
+          : typeof magneticHeading === 'number' && Number.isFinite(magneticHeading) && magneticHeading >= 0
+            ? magneticHeading
+            : typeof heading === 'number' && Number.isFinite(heading) && heading >= 0
+              ? heading
+              : this.getHeadingDeg()
+
+    if (reportedSpeed !== null && reportedSpeed >= 0.25) {
+      const dirRad = normalizeHeadingDeg(nativeDir) * DEG_TO_RAD
+      const targetVx = reportedSpeed * Math.sin(dirRad)
+      const targetVy = reportedSpeed * Math.cos(dirRad)
+      this.velE = this.velE * 0.4 + targetVx * 0.6
+      this.velN = this.velN * 0.4 + targetVy * 0.6
+    } else if (dtFix >= 0.12 && Math.hypot(dispVx, dispVy) >= 0.35 && Math.hypot(dispVx, dispVy) <= 14) {
+      const beta = 0.48 * alpha
+      this.velE = this.velE * (1 - beta) + dispVx * beta
+      this.velN = this.velN * (1 - beta) + dispVy * beta
+    } else if (reportedSpeed !== null && reportedSpeed < 0.2 && now - this.lastStepPerf > 650) {
+      this.velE *= 0.25
+      this.velN *= 0.25
+    }
+
+    if (this.running) {
+      this.emitTick(false)
+    }
+  }
+
+  private emitTick(_predictedHint: boolean): void {
+    if (!this.hasFix) return
+    const now = performance.now()
+    const dt = clamp((now - this.lastTickPerf) / 1000, 0, 0.25)
+    this.lastTickPerf = now
+
+    const fixAgeMs = Math.max(0, now - this.lastFixPerf)
+    const isStationary =
+      now - this.stepActiveSincePerf > 650 && this.accelEnergyEma < 0.45 && this.lastGpsSpeedMps < 0.3
+
+    let predicted = false
+    if (isStationary) {
+      const damp = Math.exp(-8.0 * dt)
+      this.velE *= damp
+      this.velN *= damp
+    } else if (fixAgeMs <= 2500 && Math.hypot(this.velE, this.velN) > 0.15) {
+      const prevE = this.estE
+      const prevN = this.estN
+      this.estE += this.velE * dt
+      this.estN += this.velN * dt
+      this.clampToAnchor()
+      const decay = Math.exp(-0.95 * dt)
+      this.velE *= decay
+      this.velN *= decay
+      predicted = Math.hypot(this.estE - prevE, this.estN - prevN) > 0.005
+    }
+
+    this.tickTimestamps.push(now)
+    while (this.tickTimestamps.length > 0 && now - this.tickTimestamps[0] > 1000) {
+      this.tickTimestamps.shift()
+    }
+    const reportHz =
+      this.tickTimestamps.length >= 2
+        ? clamp(
+            Math.round(
+              ((this.tickTimestamps.length - 1) * 1000) /
+                Math.max(100, now - this.tickTimestamps[0]),
+            ),
+            1,
+            10,
+          )
+        : 10
+
+    const [lat, lng] = this.toLatLng(this.estE, this.estN)
+    this.onTick({
+      lat,
+      lng,
+      rawLat: this.rawLat,
+      rawLng: this.rawLng,
+      accuracyM: this.accuracyM !== null ? Math.round(this.accuracyM) : null,
+      speedMps: Math.round(Math.hypot(this.velE, this.velN) * 10) / 10,
+      reportHz,
+      gpsFixAgeMs: Math.round(fixAgeMs),
+      isPredicted: predicted,
+    })
+  }
 }
