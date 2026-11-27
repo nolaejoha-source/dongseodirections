@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dsu-campus-guide-v21'
+const CACHE_NAME = 'dsu-campus-guide-v22'
 const APP_SHELL = ['/', '/manifest.webmanifest', '/app-icon.svg', '/app-icon-192.png', '/app-icon-512.png']
 
 self.addEventListener('install', (event) => {
