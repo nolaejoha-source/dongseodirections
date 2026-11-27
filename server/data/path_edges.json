@@ -2822,9 +2822,9 @@
   {
     "id": "edge-v2-38",
     "from_node": "bldg-27",
-    "to_node": "road-msc-s",
-    "distance_m": 18.2,
-    "slope_pct": 16.5,
+    "to_node": "osm-4642036717",
+    "distance_m": 9.8,
+    "slope_pct": 0.0,
     "is_step_free": true,
     "bidirectional": true,
     "accessible": true
@@ -2832,9 +2832,9 @@
   {
     "id": "edge-v2-39",
     "from_node": "bldg-27",
-    "to_node": "osm-6974524314",
-    "distance_m": 52.7,
-    "slope_pct": 3.8,
+    "to_node": "osm-4632371518",
+    "distance_m": 15.7,
+    "slope_pct": 0.0,
     "is_step_free": true,
     "bidirectional": true,
     "accessible": true

@@ -54,6 +54,7 @@ function Live2DUserMarker({
   position,
   headingDeg,
   label,
+  accuracyM = null,
   isFollowing,
   language,
   title,
@@ -61,6 +62,7 @@ function Live2DUserMarker({
   position: [number, number]
   headingDeg: number
   label: string
+  accuracyM?: number | null
   isFollowing: boolean
   language: Language
   title: string
@@ -102,9 +104,10 @@ function Live2DUserMarker({
     }
     const pill = el.querySelector<HTMLElement>('.user-location-pill')
     if (pill) {
-      pill.textContent = `${tx.myLocPillPrefix} · ${label}`
+      const accSuffix = accuracyM !== null && accuracyM > 12 ? ` · ±${accuracyM}m` : ''
+      pill.textContent = `${tx.myLocPillPrefix} · ${label}${accSuffix}`
     }
-  }, [position, headingDeg, label, isFollowing, tx])
+  }, [position, headingDeg, label, accuracyM, isFollowing, tx])
 
   return <Marker ref={markerRef} position={initialPosRef.current} icon={icon} title={title} />
 }
@@ -2430,8 +2433,8 @@ export default function App() {
           />
         ) : (
           <MapContainer
-            center={CAMPUS_CENTER}
-            zoom={17}
+            center={gpsActive ? userPosition : CAMPUS_CENTER}
+            zoom={gpsActive ? 18 : 17}
             minZoom={15}
             maxZoom={19}
             maxBounds={CAMPUS_BOUNDS}
@@ -2611,6 +2614,7 @@ export default function App() {
               position={userPosition}
               headingDeg={userHeadingDeg}
               label={userLocationSummary.shortText}
+              accuracyM={gpsActive && locationSource === 'gps' ? gpsAccuracyM : null}
               isFollowing={isFollowing2D}
               language={language}
               title={t.current}

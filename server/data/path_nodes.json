@@ -2789,11 +2789,11 @@
     "location": {
       "type": "Point",
       "coordinates": [
-        129.01105,
-        35.14492
+        129.010465,
+        35.145327
       ]
     },
-    "elevation": 135
+    "elevation": 114
   },
   {
     "id": "bldg-28",

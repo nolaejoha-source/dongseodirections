@@ -121,7 +121,7 @@ export default function Campus3DIsoMap({
   const smoothHeadingRef = useRef<number>(userHeadingDeg)
   const followDistRef = useRef<number>(175)
   const manualDragActiveRef = useRef<boolean>(false)
-  const userSurfaceCacheRef = useRef<Map<string, number>>(new Map())
+  const userSurfaceCacheRef = useRef<Map<string, { y: number; onBuilding: boolean }>>(new Map())
   const userSurfaceRcRef = useRef<THREE.Raycaster>(new THREE.Raycaster())
   const userSurfaceOriginRef = useRef<THREE.Vector3>(new THREE.Vector3())
   const userSurfaceDownRef = useRef<THREE.Vector3>(new THREE.Vector3(0, -1, 0))
@@ -187,9 +187,10 @@ export default function Campus3DIsoMap({
   )
 
   // Cached vertical-surface elevation for the live user marker: lifts the marker onto building roofs
-  // when standing inside a building footprint so 3D isometric perspective parallax does not shift the dot South.
-  const getUserSurfaceY = useCallback(
-    (bx: number, by: number): number => {
+  // when standing inside a building footprint so 3D isometric perspective parallax does not shift the dot South,
+  // while keeping outdoor markers tightly anchored just above roads/terrain (eliminating floating parallax).
+  const getUserSurfaceInfo = useCallback(
+    (bx: number, by: number): { y: number; onBuilding: boolean } => {
       const cache = userSurfaceCacheRef.current
       const key = `${Math.round(bx * 2)},${Math.round(by * 2)}`
       const cached = cache.get(key)
@@ -210,9 +211,9 @@ export default function Campus3DIsoMap({
       const bHits = candBldgs.length ? rc.intersectObjects(candBldgs, false) : []
       const bldgY = bHits.length > 0 ? bHits[0].point.y : null
 
-      let surfaceY: number
+      let info: { y: number; onBuilding: boolean }
       if (bldgY !== null && bldgY > groundY + 2.0) {
-        surfaceY = bldgY
+        info = { y: bldgY, onBuilding: true }
       } else {
         const candRoads = roadMeshBoxesRef.current.length
           ? roadMeshBoxesRef.current
@@ -221,14 +222,14 @@ export default function Campus3DIsoMap({
           : roadMeshesRef.current
         const rHits = candRoads.length ? rc.intersectObjects(candRoads, false) : []
         const roadY = rHits.length > 0 ? rHits[0].point.y : null
-        surfaceY = roadY ?? groundY
+        info = { y: roadY ?? groundY, onBuilding: false }
       }
 
       if (cache.size >= 512) {
         cache.clear()
       }
-      cache.set(key, surfaceY)
-      return surfaceY
+      cache.set(key, info)
+      return info
     },
     [getGroundY],
   )
@@ -239,10 +240,11 @@ export default function Campus3DIsoMap({
         return new THREE.Vector3(0, 12, 0)
       }
       const [bx, by] = toBlenderXY(lat, lng)
-      const surfaceY = getUserSurfaceY(bx, by) + 3.0
-      return new THREE.Vector3(bx, Number.isFinite(surfaceY) ? surfaceY : 12, -by)
+      const { y, onBuilding } = getUserSurfaceInfo(bx, by)
+      const liftedY = y + (onBuilding ? 0.7 : 0.45)
+      return new THREE.Vector3(bx, Number.isFinite(liftedY) ? liftedY : 12, -by)
     },
-    [getUserSurfaceY],
+    [getUserSurfaceInfo],
   )
   const toUserThreeVec3Ref = useRef(toUserThreeVec3)
   toUserThreeVec3Ref.current = toUserThreeVec3
@@ -500,7 +502,7 @@ export default function Campus3DIsoMap({
     const maxAniso = renderer.capabilities.getMaxAnisotropy()
 
     loader.load(
-      '/campus_scene.glb?v=57',
+      '/campus_scene.glb?v=58',
       (gltf) => {
         const root = gltf.scene
         root.updateMatrixWorld(true)
@@ -669,7 +671,7 @@ export default function Campus3DIsoMap({
       const sPos = smoothUserPos3DRef.current
       const hRad = (smoothHeadingRef.current * Math.PI) / 180
       if (userBeaconGroupRef.current) {
-        userBeaconGroupRef.current.position.set(sPos.x, sPos.y - 2.15, sPos.z)
+        userBeaconGroupRef.current.position.set(sPos.x, sPos.y - 0.18, sPos.z)
         userBeaconGroupRef.current.rotation.y = -hRad
       }
 
@@ -1104,7 +1106,7 @@ export default function Campus3DIsoMap({
       const insideBuilding = initial.bldgY !== null && initial.bldgY > baseGroundY + 1.8
 
       if ((insideBuilding || initial.roadY === null) && roadSurfacePtsRef.current.length > 0) {
-        const searchRadius = insideBuilding ? 34 : 11
+        const searchRadius = insideBuilding ? 18 : 3.5
         let bestDist = searchRadius
         let bestPt: THREE.Vector3 | null = null
         for (const rp of roadSurfacePtsRef.current) {
