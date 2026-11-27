@@ -977,6 +977,8 @@ export const EXT_UI_COPY: Record<
     myLocPin: string
     nearText: (bName: string, distM: number) => string
     nearShort: (bName: string, distM: number) => string
+    insideShort: (bName: string) => string
+    insideText: (bName: string) => string
     coordElevText: (lat: string, lng: string, elev: string) => string
     gpsMyLocBtn: string
     clickMapPrompt: string
@@ -1097,6 +1099,8 @@ export const EXT_UI_COPY: Record<
     myLocPin: '캠퍼스 위치 지정됨',
     nearText: (bName, distM) => `${bName} 인근 (약 ${distM}m)`,
     nearShort: (bName, distM) => `${bName} 앞 (${distM}m)`,
+    insideShort: (bName) => `${bName} 내부`,
+    insideText: (bName) => `${bName} 건물 내부`,
     coordElevText: (lat, lng, elev) => `위도 ${lat}° · 경도 ${lng}° · 해발 ${elev}m`,
     gpsMyLocBtn: 'GPS 내 위치',
     clickMapPrompt: '지도를 클릭하세요',
@@ -1214,6 +1218,8 @@ export const EXT_UI_COPY: Record<
     myLocPin: 'Campus Pin Set',
     nearText: (bName, distM) => `Near ${bName} (~${distM}m)`,
     nearShort: (bName, distM) => `Near ${bName} (${distM}m)`,
+    insideShort: (bName) => `Inside ${bName}`,
+    insideText: (bName) => `Inside ${bName}`,
     coordElevText: (lat, lng, elev) => `Lat ${lat}° · Lng ${lng}° · Elev ${elev}m`,
     gpsMyLocBtn: 'GPS Location',
     clickMapPrompt: 'Click on the map',
@@ -1331,6 +1337,8 @@ export const EXT_UI_COPY: Record<
     myLocPin: '已指定校園位置',
     nearText: (bName, distM) => `${bName} 附近 (約 ${distM}m)`,
     nearShort: (bName, distM) => `${bName} 前 (${distM}m)`,
+    insideShort: (bName) => `${bName} 內部`,
+    insideText: (bName) => `${bName} 建築內部`,
     coordElevText: (lat, lng, elev) => `緯度 ${lat}° · 經度 ${lng}° · 海拔 ${elev}m`,
     gpsMyLocBtn: 'GPS 我的位置',
     clickMapPrompt: '請點擊地圖',
@@ -1448,6 +1456,8 @@ export const EXT_UI_COPY: Record<
     myLocPin: 'Đã chọn trên bản đồ',
     nearText: (bName, distM) => `Gần ${bName} (~${distM}m)`,
     nearShort: (bName, distM) => `Trước ${bName} (${distM}m)`,
+    insideShort: (bName) => `Bên trong ${bName}`,
+    insideText: (bName) => `Bên trong ${bName}`,
     coordElevText: (lat, lng, elev) => `Vĩ độ ${lat}° · Kinh độ ${lng}° · Độ cao ${elev}m`,
     gpsMyLocBtn: 'Vị trí GPS',
     clickMapPrompt: 'Nhấn vào bản đồ',
@@ -1565,6 +1575,8 @@ export const EXT_UI_COPY: Record<
     myLocPin: 'Pasirinkta žemėlapyje',
     nearText: (bName, distM) => `Šalia ${bName} (~${distM}m)`,
     nearShort: (bName, distM) => `Prie ${bName} (${distM}m)`,
+    insideShort: (bName) => `${bName} viduje`,
+    insideText: (bName) => `Pastato ${bName} viduje`,
     coordElevText: (lat, lng, elev) => `Plat. ${lat}° · Ilg. ${lng}° · Aukštis ${elev}m`,
     gpsMyLocBtn: 'GPS vieta',
     clickMapPrompt: 'Spustelėkite žemėlapį',
@@ -1682,6 +1694,8 @@ export const EXT_UI_COPY: Record<
     myLocPin: 'कैंपस स्थान चयनित',
     nearText: (bName, distM) => `${bName} के पास (~${distM}m)`,
     nearShort: (bName, distM) => `${bName} के पास (${distM}m)`,
+    insideShort: (bName) => `${bName} के अंदर`,
+    insideText: (bName) => `${bName} भवन के अंदर`,
     coordElevText: (lat, lng, elev) => `अक्षांश ${lat}° · देशांतर ${lng}° · ऊँचाई ${elev}m`,
     gpsMyLocBtn: 'GPS स्थान',
     clickMapPrompt: 'नक्शे पर क्लिक करें',

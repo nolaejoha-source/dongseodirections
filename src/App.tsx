@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { Capacitor } from '@capacitor/core'
 import { Geolocation } from '@capacitor/geolocation'
 import L from 'leaflet'
-import { MapContainer, Marker, Polygon, Polyline, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { Circle, MapContainer, Marker, Polygon, Polyline, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import { ArrowDownUp, ArrowRight, Building2, Check, ChevronDown, Compass, Crosshair, DoorOpen, Download, ExternalLink, Info, Languages, Layers, LocateFixed, LockKeyhole, MapPin, Maximize2, Minus, Mountain, Navigation, Plus, Search, Trash2, TrendingUp, X } from 'lucide-react'
 import { getBuildingAppearanceSvgDataUri } from './buildingAppearance'
 import { CAMPUS_BOUNDARY, CAMPUS_BOUNDS, CAMPUS_CENTER, CAMPUS_MASK_POLYGON, SEEDED_PATH_EDGES, SEEDED_PATH_NODES } from './campusData'
@@ -248,6 +248,45 @@ function isInsideCampusBounds(lat: number, lng: number) {
     lng >= CAMPUS_BOUNDS[0][1] &&
     lng <= CAMPUS_BOUNDS[1][1]
   )
+}
+
+function pointInFootprint(lat: number, lng: number, footprint?: [number, number][]): boolean {
+  if (!footprint || footprint.length < 3) return false
+  let inside = false
+  for (let i = 0, j = footprint.length - 1; i < footprint.length; j = i++) {
+    const xi = footprint[i][1]
+    const yi = footprint[i][0]
+    const xj = footprint[j][1]
+    const yj = footprint[j][0]
+    const intersect = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi + 1e-12) + xi
+    if (intersect) inside = !inside
+  }
+  return inside
+}
+
+function distanceToFootprintMeters(lat: number, lng: number, footprint?: [number, number][]): number {
+  if (!footprint || footprint.length < 3) return Infinity
+  if (pointInFootprint(lat, lng, footprint)) return 0
+  const mLat = 111_320
+  const mLng = 111_320 * Math.cos((CAMPUS_CENTER[0] * Math.PI) / 180)
+  const px = (lng - CAMPUS_CENTER[1]) * mLng
+  const py = (lat - CAMPUS_CENTER[0]) * mLat
+  let minD = Infinity
+  for (let i = 0; i < footprint.length; i++) {
+    const a = footprint[i]
+    const b = footprint[(i + 1) % footprint.length]
+    const ax = (a[1] - CAMPUS_CENTER[1]) * mLng
+    const ay = (a[0] - CAMPUS_CENTER[0]) * mLat
+    const bx = (b[1] - CAMPUS_CENTER[1]) * mLng
+    const by = (b[0] - CAMPUS_CENTER[0]) * mLat
+    const vx = bx - ax
+    const vy = by - ay
+    const lenSq = vx * vx + vy * vy
+    const t = lenSq > 1e-8 ? Math.max(0, Math.min(1, ((px - ax) * vx + (py - ay) * vy) / lenSq)) : 0
+    const d = Math.hypot(px - (ax + t * vx), py - (ay + t * vy))
+    if (d < minD) minD = d
+  }
+  return minD
 }
 
 function computeClientRoute(
@@ -666,6 +705,7 @@ export default function App() {
   const gpsFusionEngineRef = useRef<GpsFusion10HzEngine | null>(null)
   const gpsStallWatchdogRef = useRef<number | null>(null)
   const lastGpsFixPerfRef = useRef(0)
+  const lastFineGpsPerfRef = useRef(0)
   const lastTelemetryCommitRef = useRef(0)
   const lastGpsCoordRef = useRef<{ lat: number; lng: number } | null>(null)
   const lastRawGpsCoordRef = useRef<{ lat: number; lng: number } | null>(null)
@@ -860,24 +900,44 @@ export default function App() {
   }, [])
 
   const userLocationSummary = useMemo(() => {
+    const [uLat, uLng] = userPosition
+    const inside = isInsideCampusBounds(uLat, uLng)
+    const containingBldg = campusBuildings.find((b) => pointInFootprint(uLat, uLng, b.footprint))
+    if (containingBldg) {
+      const localName = getLocalizedBuildingName(containingBldg, language)
+      return {
+        insideBuilding: containingBldg,
+        nearestBuilding: containingBldg,
+        nearestDisplayName: localName,
+        distanceMeters: 0,
+        insideCampus: inside,
+        shortText: tx.insideShort(localName),
+        detailText: tx.insideText(localName),
+      }
+    }
+
     let nearestBldg = campusBuildings[0]
     let minD = Infinity
     for (const b of campusBuildings) {
-      const d = haversineMeters(userPosition[0], userPosition[1], b.lat, b.lng)
+      const d =
+        b.footprint && b.footprint.length >= 3
+          ? distanceToFootprintMeters(uLat, uLng, b.footprint)
+          : haversineMeters(uLat, uLng, b.lat, b.lng)
       if (d < minD) {
         minD = d
         nearestBldg = b
       }
     }
     const distMeters = Math.round(minD)
-    const inside = isInsideCampusBounds(userPosition[0], userPosition[1])
     const localNearestName = nearestBldg ? getLocalizedBuildingName(nearestBldg, language) : ''
     return {
+      insideBuilding: null as Building | null,
       nearestBuilding: nearestBldg,
       nearestDisplayName: localNearestName,
       distanceMeters: distMeters,
       insideCampus: inside,
       shortText: nearestBldg ? tx.nearShort(localNearestName, distMeters) : tx.campusWalkway,
+      detailText: nearestBldg ? tx.nearText(localNearestName, distMeters) : tx.campusWalkway,
     }
   }, [userPosition, campusBuildings, language, tx])
 
@@ -1294,6 +1354,9 @@ export default function App() {
     setRawGpsCoord([latitude, longitude])
     lastRawGpsCoordRef.current = { lat: latitude, lng: longitude }
     if (typeof coords.accuracy === 'number' && Number.isFinite(coords.accuracy)) {
+      if (coords.accuracy <= 22) {
+        lastFineGpsPerfRef.current = performance.now()
+      }
       setGpsAccuracyM(Math.round(coords.accuracy))
     }
 
@@ -1463,7 +1526,9 @@ export default function App() {
         }
         // Fire fast coarse + fast fine fix in parallel so first location renders immediately
         void Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 2500, maximumAge: 60000 })
-          .then(({ coords }) => applyLiveGpsPosition(coords))
+          .then(({ coords }) => {
+            if (lastFineGpsPerfRef.current === 0) applyLiveGpsPosition(coords)
+          })
           .catch(() => undefined)
         void Geolocation.getCurrentPosition({
           enableHighAccuracy: true,
@@ -1498,7 +1563,9 @@ export default function App() {
 
     // Immediate parallel coarse + fine fix for fastest first render while watchPosition streams updates
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => applyLiveGpsPosition(coords),
+      ({ coords }) => {
+        if (lastFineGpsPerfRef.current === 0) applyLiveGpsPosition(coords)
+      },
       () => undefined,
       { enableHighAccuracy: false, timeout: 2500, maximumAge: 60000 },
     )
@@ -2017,7 +2084,7 @@ export default function App() {
                       )
                     </span>
                     <strong>
-                      {tx.nearText(userLocationSummary.nearestDisplayName, userLocationSummary.distanceMeters)}
+                      {userLocationSummary.detailText}
                     </strong>
                     <small>
                       {tx.coordElevText(
@@ -2341,6 +2408,7 @@ export default function App() {
             liveUserPosRef={liveUserPosRef}
             liveHeadingRef={liveHeadingRef}
             gpsActive={gpsActive && locationSource === 'gps'}
+            gpsAccuracyM={gpsAccuracyM}
             compassViewActive={compassViewActive}
             compassActive={compassActive}
             focusUserSignal={focusUserSignal}
@@ -2523,6 +2591,21 @@ export default function App() {
                 />
               )
             })}
+
+            {gpsActive && locationSource === 'gps' && gpsAccuracyM !== null && gpsAccuracyM > 3 && (
+              <Circle
+                center={userPosition}
+                radius={Math.min(Math.max(gpsAccuracyM, 4), 45)}
+                pathOptions={{
+                  color: '#3b82f6',
+                  weight: 1.2,
+                  opacity: 0.45,
+                  fillColor: '#60a5fa',
+                  fillOpacity: 0.14,
+                  interactive: false,
+                }}
+              />
+            )}
 
             <Live2DUserMarker
               position={userPosition}

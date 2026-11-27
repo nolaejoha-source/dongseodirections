@@ -39,6 +39,7 @@ export default function Campus3DIsoMap({
   liveUserPosRef,
   liveHeadingRef,
   gpsActive = false,
+  gpsAccuracyM = null,
   compassViewActive = false,
   compassActive = false,
   focusUserSignal = 0,
@@ -66,6 +67,7 @@ export default function Campus3DIsoMap({
   liveUserPosRef?: MutableRefObject<[number, number]>
   liveHeadingRef?: MutableRefObject<number>
   gpsActive?: boolean
+  gpsAccuracyM?: number | null
   compassViewActive?: boolean
   compassActive?: boolean
   focusUserSignal?: number
@@ -119,6 +121,10 @@ export default function Campus3DIsoMap({
   const smoothHeadingRef = useRef<number>(userHeadingDeg)
   const followDistRef = useRef<number>(175)
   const manualDragActiveRef = useRef<boolean>(false)
+  const userSurfaceCacheRef = useRef<Map<string, number>>(new Map())
+  const userSurfaceRcRef = useRef<THREE.Raycaster>(new THREE.Raycaster())
+  const userSurfaceOriginRef = useRef<THREE.Vector3>(new THREE.Vector3())
+  const userSurfaceDownRef = useRef<THREE.Vector3>(new THREE.Vector3(0, -1, 0))
 
   // Elevation field interpolator matching the exact Blender terrain formula
   const elevationNodes = useMemo(() => {
@@ -180,6 +186,67 @@ export default function Campus3DIsoMap({
     [getGroundY],
   )
 
+  // Cached vertical-surface elevation for the live user marker: lifts the marker onto building roofs
+  // when standing inside a building footprint so 3D isometric perspective parallax does not shift the dot South.
+  const getUserSurfaceY = useCallback(
+    (bx: number, by: number): number => {
+      const cache = userSurfaceCacheRef.current
+      const key = `${Math.round(bx * 2)},${Math.round(by * 2)}`
+      const cached = cache.get(key)
+      if (cached !== undefined) return cached
+
+      const groundY = getGroundY(bx, by)
+      const tx = bx
+      const tz = -by
+      const rc = userSurfaceRcRef.current
+      userSurfaceOriginRef.current.set(tx, 240, tz)
+      rc.set(userSurfaceOriginRef.current, userSurfaceDownRef.current)
+
+      const candBldgs = bldgMeshBoxesRef.current.length
+        ? bldgMeshBoxesRef.current
+            .filter((b) => tx >= b.minX && tx <= b.maxX && tz >= b.minZ && tz <= b.maxZ)
+            .map((b) => b.mesh)
+        : buildingMeshesRef.current
+      const bHits = candBldgs.length ? rc.intersectObjects(candBldgs, false) : []
+      const bldgY = bHits.length > 0 ? bHits[0].point.y : null
+
+      let surfaceY: number
+      if (bldgY !== null && bldgY > groundY + 2.0) {
+        surfaceY = bldgY
+      } else {
+        const candRoads = roadMeshBoxesRef.current.length
+          ? roadMeshBoxesRef.current
+              .filter((b) => tx >= b.minX && tx <= b.maxX && tz >= b.minZ && tz <= b.maxZ)
+              .map((b) => b.mesh)
+          : roadMeshesRef.current
+        const rHits = candRoads.length ? rc.intersectObjects(candRoads, false) : []
+        const roadY = rHits.length > 0 ? rHits[0].point.y : null
+        surfaceY = roadY ?? groundY
+      }
+
+      if (cache.size >= 512) {
+        cache.clear()
+      }
+      cache.set(key, surfaceY)
+      return surfaceY
+    },
+    [getGroundY],
+  )
+
+  const toUserThreeVec3 = useCallback(
+    (lat: number, lng: number): THREE.Vector3 => {
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return new THREE.Vector3(0, 12, 0)
+      }
+      const [bx, by] = toBlenderXY(lat, lng)
+      const surfaceY = getUserSurfaceY(bx, by) + 3.0
+      return new THREE.Vector3(bx, Number.isFinite(surfaceY) ? surfaceY : 12, -by)
+    },
+    [getUserSurfaceY],
+  )
+  const toUserThreeVec3Ref = useRef(toUserThreeVec3)
+  toUserThreeVec3Ref.current = toUserThreeVec3
+
   // Latest state refs for the render loop
   const stateRef = useRef({
     buildings,
@@ -192,6 +259,7 @@ export default function Campus3DIsoMap({
     liveUserPosRef,
     liveHeadingRef,
     gpsActive,
+    gpsAccuracyM,
     compassViewActive,
     compassActive,
     activeRoute,
@@ -216,6 +284,7 @@ export default function Campus3DIsoMap({
     liveUserPosRef,
     liveHeadingRef,
     gpsActive,
+    gpsAccuracyM,
     compassViewActive,
     compassActive,
     activeRoute,
@@ -539,6 +608,7 @@ export default function Campus3DIsoMap({
         roadMeshesRef.current = rMeshes
         bldgMeshBoxesRef.current = bMeshes.map(toMeshBox)
         roadMeshBoxesRef.current = rMeshes.map(toMeshBox)
+        userSurfaceCacheRef.current.clear()
         roadSurfacePtsRef.current = rPts
         bldgMeshByNumRef.current = byNum
         bldgTopCentersRef.current = topCenters
@@ -586,7 +656,7 @@ export default function Campus3DIsoMap({
       const headAlpha = 1 - Math.exp(-ROUTE_NAV_CONFIG.HEADING_SMOOTHING * dt)
 
       const liveLatLng = st.liveUserPosRef?.current ?? st.userPosition
-      const targetUser3D = toThreeVec3(liveLatLng[0], liveLatLng[1], 3.0)
+      const targetUser3D = toUserThreeVec3Ref.current(liveLatLng[0], liveLatLng[1])
       const targetHeadingDeg = st.liveHeadingRef?.current ?? st.userHeadingDeg
 
       if (!smoothUserPos3DRef.current) {
@@ -599,7 +669,7 @@ export default function Campus3DIsoMap({
       const sPos = smoothUserPos3DRef.current
       const hRad = (smoothHeadingRef.current * Math.PI) / 180
       if (userBeaconGroupRef.current) {
-        userBeaconGroupRef.current.position.set(sPos.x, sPos.y - 2.25, sPos.z)
+        userBeaconGroupRef.current.position.set(sPos.x, sPos.y - 2.15, sPos.z)
         userBeaconGroupRef.current.rotation.y = -hRad
       }
 
@@ -797,7 +867,7 @@ export default function Campus3DIsoMap({
       hitBoxesRef.current = nextHits
 
       // 3. Live User Location 3D Beacon (animated pulse + perspective-accurate directional heading cone & ▲ arrow)
-      const uPos3D = smoothUserPos3DRef.current ?? toThreeVec3(st.userPosition[0], st.userPosition[1], 3.0)
+      const uPos3D = smoothUserPos3DRef.current ?? toUserThreeVec3Ref.current(st.userPosition[0], st.userPosition[1])
       const uSp = projectToScreen(uPos3D)
       if (uSp.z > -1 && uSp.z < 1) {
         const azimuth = controls.getAzimuthalAngle()
@@ -862,7 +932,9 @@ export default function Campus3DIsoMap({
 
         const dirLabel = formatCardinalDirection(smoothHeadingRef.current, st.language)
         const dirDeg = Math.round(smoothHeadingRef.current)
-        const uTxt = `${st.tx.myLocPillPrefix} · ${st.userLocationLabel} · ${dirLabel} ${dirDeg}°`
+        const accSuffix =
+          st.gpsActive && st.gpsAccuracyM !== null && st.gpsAccuracyM > 12 ? ` · ±${st.gpsAccuracyM}m` : ''
+        const uTxt = `${st.tx.myLocPillPrefix} · ${st.userLocationLabel}${accSuffix} · ${dirLabel} ${dirDeg}°`
         ctx.font = '800 10px "Noto Sans KR", sans-serif'
         const liveDotPad = st.gpsActive || st.compassActive ? 11 : 0
         const uw = ctx.measureText(uTxt).width + 15 + liveDotPad
@@ -1217,7 +1289,7 @@ export default function Campus3DIsoMap({
     const st = stateRef.current
     const [lat, lng] = st.liveUserPosRef?.current ?? st.userPosition
     const headingDeg = st.liveHeadingRef?.current ?? st.userHeadingDeg
-    const uPos = toThreeVec3(lat, lng, 3.0)
+    const uPos = toUserThreeVec3(lat, lng)
     smoothUserPos3DRef.current = uPos.clone()
     smoothHeadingRef.current = headingDeg
 
@@ -1258,7 +1330,7 @@ export default function Campus3DIsoMap({
     controls.target.copy(uPos)
     camera.position.copy(uPos).add(offset)
     controls.update()
-  }, [focusUserSignal, toThreeVec3])
+  }, [focusUserSignal, toUserThreeVec3])
 
   // Raycasting for 3D Building Click / Hover & Badge Click
   const pointerDownPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })

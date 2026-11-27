@@ -466,6 +466,9 @@ export class GpsFusion10HzEngine {
   private lastTickPerf = 0
   private lastGpsSpeedMps = 0
   private outlierCount = 0
+  private estVar = 100
+  private bestRecentAcc = Infinity
+  private bestRecentAccPerf = 0
 
   private gravEma = 9.81
   private accelEnergyEma = 0
@@ -598,6 +601,9 @@ export class GpsFusion10HzEngine {
     this.anchorN = 0
     this.lastGpsSpeedMps = 0
     this.outlierCount = 0
+    this.estVar = 100
+    this.bestRecentAcc = Infinity
+    this.bestRecentAccPerf = 0
     this.tickTimestamps = []
   }
 
@@ -622,6 +628,9 @@ export class GpsFusion10HzEngine {
       this.prevFixN = fy
       this.velE = 0
       this.velN = 0
+      this.estVar = clamp(acc * acc, 16, 2500)
+      this.bestRecentAcc = acc
+      this.bestRecentAccPerf = now
       this.lastFixPerf = now
       this.lastTickPerf = now
       this.emitTick(false)
@@ -664,17 +673,35 @@ export class GpsFusion10HzEngine {
       return
     }
 
+    const recentlyStepped = now - this.stepActiveSincePerf < 1400
+    const reportedMoving = typeof speed === 'number' && Number.isFinite(speed) && speed >= 0.45
+
+    // Reject degraded coarse/Wi-Fi fallback fixes when a sharp GNSS fix was recently observed
+    if (now - this.bestRecentAccPerf < 15_000 && this.bestRecentAcc <= 18 && acc > Math.max(35, this.bestRecentAcc * 2.4)) {
+      return
+    }
+
+    if (acc <= this.bestRecentAcc || now - this.bestRecentAccPerf > 15_000) {
+      this.bestRecentAcc = acc
+      this.bestRecentAccPerf = now
+    }
+
     this.rawLat = latitude
     this.rawLng = longitude
     this.accuracyM = acc
 
-    // Accuracy-weighted Kalman alpha-beta update
-    const alpha = clamp(18 / (acc + 10), 0.3, 0.94)
+    // True inverse-variance Kalman update (low weight on degraded indoor fixes, anchored to filtered state)
+    const processSigma = recentlyStepped || reportedMoving ? 1.8 : 0.35
+    this.estVar = Math.min(2500, this.estVar + (dtFix * processSigma) ** 2)
+    const measVar = Math.max(16, acc * acc)
+    const alpha = clamp(this.estVar / (this.estVar + measVar), 0.08, 0.95)
     this.estE += alpha * (fx - this.estE)
     this.estN += alpha * (fy - this.estN)
-    this.anchorE = fx
-    this.anchorN = fy
+    this.estVar = Math.max(4, (1 - alpha) * this.estVar)
+    this.anchorE = this.estE
+    this.anchorN = this.estN
 
+    const rawStepDist = Math.hypot(fx - this.prevFixE, fy - this.prevFixN)
     const dispVx = (fx - this.prevFixE) / dtFix
     const dispVy = (fy - this.prevFixN) / dtFix
     this.prevFixE = fx
@@ -685,8 +712,10 @@ export class GpsFusion10HzEngine {
       typeof speed === 'number' && Number.isFinite(speed) && speed >= 0 ? clamp(speed, 0, 14) : null
     if (reportedSpeed !== null) {
       this.lastGpsSpeedMps = reportedSpeed
-    } else {
+    } else if (recentlyStepped || (acc <= 16 && rawStepDist >= Math.max(2.5, acc * 0.45))) {
       this.lastGpsSpeedMps = clamp(Math.hypot(dispVx, dispVy), 0, 14)
+    } else {
+      this.lastGpsSpeedMps = 0
     }
 
     const nativeDir =
@@ -706,11 +735,16 @@ export class GpsFusion10HzEngine {
       const targetVy = reportedSpeed * Math.cos(dirRad)
       this.velE = this.velE * 0.4 + targetVx * 0.6
       this.velN = this.velN * 0.4 + targetVy * 0.6
-    } else if (dtFix >= 0.12 && Math.hypot(dispVx, dispVy) >= 0.35 && Math.hypot(dispVx, dispVy) <= 14) {
+    } else if (
+      dtFix >= 0.12 &&
+      Math.hypot(dispVx, dispVy) >= 0.35 &&
+      Math.hypot(dispVx, dispVy) <= 14 &&
+      (recentlyStepped || (acc <= 16 && rawStepDist >= Math.max(2.5, acc * 0.45)))
+    ) {
       const beta = 0.48 * alpha
       this.velE = this.velE * (1 - beta) + dispVx * beta
       this.velN = this.velN * (1 - beta) + dispVy * beta
-    } else if (reportedSpeed !== null && reportedSpeed < 0.2 && now - this.lastStepPerf > 650) {
+    } else {
       this.velE *= 0.25
       this.velN *= 0.25
     }
