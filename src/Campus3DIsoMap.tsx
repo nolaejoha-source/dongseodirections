@@ -552,6 +552,12 @@ export default function Campus3DIsoMap({
             const match = checkName.match(/(?:^|\s)(\d{2})_/)
             if (match) {
               const bNum = parseInt(match[1], 10)
+              // Clone materials per building mesh so selecting/hovering a building never mutates shared terrain/road/other-building materials
+              if (Array.isArray(mesh.material)) {
+                mesh.material = mesh.material.map((m) => m.clone())
+              } else if (mesh.material) {
+                mesh.material = mesh.material.clone()
+              }
               mesh.userData.campusNumber = bNum
               bMeshes.push(mesh)
               const list = byNum.get(bNum) ?? []
